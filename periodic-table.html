@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Periodic table</title>
+<style>
+  :root {
+    --bg: #fafaf8; --card: #ffffff; --text: #1a1a1a; --text-secondary: #666;
+    --border: #ddd; --border-strong: #999;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17181a; --card: #222325; --text: #e8e8e6; --text-secondary: #a0a0a0;
+      --border: #3a3b3d; --border-strong: #555; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  p.sub { color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; }
+  .controls { display: flex; gap: 8px; margin-bottom: 16px; }
+  button.mode {
+    padding: 6px 14px; font-size: 13px; cursor: pointer; border-radius: 6px;
+    border: 1px solid var(--border-strong); background: transparent; color: var(--text);
+  }
+  button.mode.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  #wrap { overflow-x: auto; }
+  #grid { display: grid; gap: 2px; margin: 0 0 16px; width: max-content; }
+  .el {
+    position: relative; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; border-radius: 4px; cursor: pointer; line-height: 1;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .el:hover { outline: 2px solid var(--border-strong); }
+  .el .num { position: absolute; top: 2px; left: 3px; font-size: 9px; opacity: .75; }
+  .el .sym { font-weight: 600; }
+  .el .mass { font-size: 9px; margin-top: 1px; opacity: .85; }
+  #detail {
+    min-height: 56px; padding: 12px 16px; border-radius: 8px; background: var(--card);
+    border: 1px solid var(--border); font-size: 13px; color: var(--text-secondary);
+  }
+  #detail .name { font-size: 15px; font-weight: 600; color: var(--text); }
+  #detail a {
+    margin-left: auto; padding: 6px 12px; font-size: 13px; border-radius: 6px;
+    border: 1px solid var(--border-strong); color: var(--text); text-decoration: none; white-space: nowrap;
+  }
+  #detail a:hover { background: var(--border); }
+  #detail .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  #legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 16px 0 0; font-size: 12px; color: var(--text-secondary); }
+  #legend span.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+<h1>Periodic table</h1>
+<p class="sub">Toggle between the standard layout and the wide-form layout (f-block placed inline, matching electron-filling order).</p>
+<div class="controls">
+  <button class="mode active" id="btn-standard" onclick="setMode('standard')">Standard</button>
+  <button class="mode" id="btn-wide" onclick="setMode('wide')">Wide-form</button>
+</div>
+<div id="wrap"><div id="grid"></div></div>
+<div id="detail">Click an element to see details.</div>
+<div id="legend"></div>
+
+<script>
+const EL=[[1,"H","Hydrogen",1,1,"NM",1.008],[2,"He","Helium",1,18,"NG",4.003],[3,"Li","Lithium",2,1,"AM",6.94],[4,"Be","Beryllium",2,2,"AE",9.012],[5,"B","Boron",2,13,"ML",10.81],[6,"C","Carbon",2,14,"NM",12.01],[7,"N","Nitrogen",2,15,"NM",14.01],[8,"O","Oxygen",2,16,"NM",16.00],[9,"F","Fluorine",2,17,"NM",19.00],[10,"Ne","Neon",2,18,"NG",20.18],[11,"Na","Sodium",3,1,"AM",22.99],[12,"Mg","Magnesium",3,2,"AE",24.31],[13,"Al","Aluminium",3,13,"PT",26.98],[14,"Si","Silicon",3,14,"ML",28.09],[15,"P","Phosphorus",3,15,"NM",30.97],[16,"S","Sulfur",3,16,"NM",32.07],[17,"Cl","Chlorine",3,17,"NM",35.45],[18,"Ar","Argon",3,18,"NG",39.95],[19,"K","Potassium",4,1,"AM",39.10],[20,"Ca","Calcium",4,2,"AE",40.08],[21,"Sc","Scandium",4,3,"TM",44.96],[22,"Ti","Titanium",4,4,"TM",47.87],[23,"V","Vanadium",4,5,"TM",50.94],[24,"Cr","Chromium",4,6,"TM",52.00],[25,"Mn","Manganese",4,7,"TM",54.94],[26,"Fe","Iron",4,8,"TM",55.85],[27,"Co","Cobalt",4,9,"TM",58.93],[28,"Ni","Nickel",4,10,"TM",58.69],[29,"Cu","Copper",4,11,"TM",63.55],[30,"Zn","Zinc",4,12,"TM",65.38],[31,"Ga","Gallium",4,13,"PT",69.72],[32,"Ge","Germanium",4,14,"ML",72.63],[33,"As","Arsenic",4,15,"ML",74.92],[34,"Se","Selenium",4,16,"NM",78.97],[35,"Br","Bromine",4,17,"NM",79.90],[36,"Kr","Krypton",4,18,"NG",83.80],[37,"Rb","Rubidium",5,1,"AM",85.47],[38,"Sr","Strontium",5,2,"AE",87.62],[39,"Y","Yttrium",5,3,"TM",88.91],[40,"Zr","Zirconium",5,4,"TM",91.22],[41,"Nb","Niobium",5,5,"TM",92.91],[42,"Mo","Molybdenum",5,6,"TM",95.95],[43,"Tc","Technetium",5,7,"TM",98],[44,"Ru","Ruthenium",5,8,"TM",101.07],[45,"Rh","Rhodium",5,9,"TM",102.91],[46,"Pd","Palladium",5,10,"TM",106.42],[47,"Ag","Silver",5,11,"TM",107.87],[48,"Cd","Cadmium",5,12,"TM",112.41],[49,"In","Indium",5,13,"PT",114.82],[50,"Sn","Tin",5,14,"PT",118.71],[51,"Sb","Antimony",5,15,"ML",121.76],[52,"Te","Tellurium",5,16,"ML",127.60],[53,"I","Iodine",5,17,"NM",126.90],[54,"Xe","Xenon",5,18,"NG",131.29],[55,"Cs","Caesium",6,1,"AM",132.91],[56,"Ba","Barium",6,2,"AE",137.33],[57,"La","Lanthanum",6,0,"LN",138.91],[58,"Ce","Cerium",6,0,"LN",140.12],[59,"Pr","Praseodymium",6,0,"LN",140.91],[60,"Nd","Neodymium",6,0,"LN",144.24],[61,"Pm","Promethium",6,0,"LN",145],[62,"Sm","Samarium",6,0,"LN",150.36],[63,"Eu","Europium",6,0,"LN",151.96],[64,"Gd","Gadolinium",6,0,"LN",157.25],[65,"Tb","Terbium",6,0,"LN",158.93],[66,"Dy","Dysprosium",6,0,"LN",162.50],[67,"Ho","Holmium",6,0,"LN",164.93],[68,"Er","Erbium",6,0,"LN",167.26],[69,"Tm","Thulium",6,0,"LN",168.93],[70,"Yb","Ytterbium",6,0,"LN",173.05],[71,"Lu","Lutetium",6,3,"TM",174.97],[72,"Hf","Hafnium",6,4,"TM",178.49],[73,"Ta","Tantalum",6,5,"TM",180.95],[74,"W","Tungsten",6,6,"TM",183.84],[75,"Re","Rhenium",6,7,"TM",186.21],[76,"Os","Osmium",6,8,"TM",190.23],[77,"Ir","Iridium",6,9,"TM",192.22],[78,"Pt","Platinum",6,10,"TM",195.08],[79,"Au","Gold",6,11,"TM",196.97],[80,"Hg","Mercury",6,12,"TM",200.59],[81,"Tl","Thallium",6,13,"PT",204.38],[82,"Pb","Lead",6,14,"PT",207.2],[83,"Bi","Bismuth",6,15,"PT",208.98],[84,"Po","Polonium",6,16,"PT",209],[85,"At","Astatine",6,17,"ML",210],[86,"Rn","Radon",6,18,"NG",222],[87,"Fr","Francium",7,1,"AM",223],[88,"Ra","Radium",7,2,"AE",226],[89,"Ac","Actinium",7,0,"AC",227],[90,"Th","Thorium",7,0,"AC",232.04],[91,"Pa","Protactinium",7,0,"AC",231.04],[92,"U","Uranium",7,0,"AC",238.03],[93,"Np","Neptunium",7,0,"AC",237],[94,"Pu","Plutonium",7,0,"AC",244],[95,"Am","Americium",7,0,"AC",243],[96,"Cm","Curium",7,0,"AC",247],[97,"Bk","Berkelium",7,0,"AC",247],[98,"Cf","Californium",7,0,"AC",251],[99,"Es","Einsteinium",7,0,"AC",252],[100,"Fm","Fermium",7,0,"AC",257],[101,"Md","Mendelevium",7,0,"AC",258],[102,"No","Nobelium",7,0,"AC",259],[103,"Lr","Lawrencium",7,3,"TM",262],[104,"Rf","Rutherfordium",7,4,"TM",267],[105,"Db","Dubnium",7,5,"TM",270],[106,"Sg","Seaborgium",7,6,"TM",271],[107,"Bh","Bohrium",7,7,"TM",270],[108,"Hs","Hassium",7,8,"TM",277],[109,"Mt","Meitnerium",7,9,"TM",278],[110,"Ds","Darmstadtium",7,10,"TM",281],[111,"Rg","Roentgenium",7,11,"TM",282],[112,"Cn","Copernicium",7,12,"TM",285],[113,"Nh","Nihonium",7,13,"PT",286],[114,"Fl","Flerovium",7,14,"PT",289],[115,"Mc","Moscovium",7,15,"PT",290],[116,"Lv","Livermorium",7,16,"PT",293],[117,"Ts","Tennessine",7,17,"NM",294],[118,"Og","Oganesson",7,18,"NG",294]];
+
+// category -> [background, dark-bg, text-on-light, text-on-dark, label]
+const CAT = {
+  AM: ["#f6c7b3","#5a2f1c","#7a2f10","#f6c7b3","Alkali metal"],
+  AE: ["#fbe2b0","#5a4213","#7a5709","#fbe2b0","Alkaline earth metal"],
+  TM: ["#c3ddf6","#123554","#0d4f80","#c3ddf6","Transition metal"],
+  LN: ["#dcd7fb","#302a5c","#3f3689","#dcd7fb","Lanthanide"],
+  AC: ["#f6cfe0","#4b1e33","#7d2f52","#f6cfe0","Actinide"],
+  PT: ["#c0ecdd","#0c3f33","#0f6e56","#c0ecdd","Post-transition metal"],
+  ML: ["#d6ecc0","#28430e","#3b6d11","#d6ecc0","Metalloid"],
+  NM: ["#e3e1d8","#3a3a37","#5f5e5a","#e3e1d8","Nonmetal"],
+  NG: ["#f6c6c6","#502222","#7d2626","#f6c6c6","Noble gas"]
+};
+
+const BLURB = {
+H:"Most abundant element in the universe, forming ~75% of its mass, mostly in stars and gas giants. Used in ammonia production, oil refining, and increasingly as a fuel cell energy carrier. Produced industrially from natural gas worldwide.",
+He:"Second most abundant element in the universe but rare on Earth, extracted from natural gas wells rich in radioactive decay byproducts. Used for cooling MRI magnets, filling balloons/airships, and inert welding atmospheres. Major sources: US, Qatar, Algeria.",
+Li:"Light, soft metal central to rechargeable batteries in phones and EVs. Not rare, but concentrated in few economic deposits. Major production from Australian hard-rock mines and South American brine lakes (Chile, Argentina).",
+Be:"Rare, lightweight, stiff metal used in aerospace components, X-ray windows, and nuclear reactor parts. Toxic to handle. Mined mainly in the US (Utah), with smaller output from China and Mozambique.",
+B:"Used in glass (borosilicate/Pyrex), detergents, and semiconductor doping. Never found free in nature, occurs as borate minerals. Turkey holds the largest known reserves, followed by the US and Chile.",
+C:"Basis of all known life and organic chemistry; forms diamond, graphite, and countless compounds. Used in steel-making, pencils, and as graphene/carbon fiber in advanced materials. Found everywhere as coal, graphite, and diamond deposits worldwide.",
+N:"Makes up 78% of Earth's atmosphere, extracted industrially by air separation. Used to make ammonia fertilizer via the Haber process and as an inert gas for food packaging and preservation.",
+O:"21% of Earth's atmosphere and the most abundant element in the crust (as oxides). Essential for respiration and combustion; used medically, in steelmaking, and water treatment. Produced globally by air separation plants.",
+F:"Most reactive nonmetal; never found free in nature. Used in toothpaste (fluoride), Teflon nonstick coatings, and uranium enrichment. Sourced from fluorite ore, with China and Mexico as leading producers.",
+Ne:"Rare atmospheric gas (0.0018% of air), extracted by fractional distillation of liquid air. Famous for red-orange neon signage and used in high-power gas lasers. Produced mainly where large air separation plants operate (US, Ukraine historically key for supply).",
+Na:"Highly reactive alkali metal, never found free; abundant as rock salt and in seawater. Used in table salt, sodium vapor street lamps (historically), and chemical manufacturing. Extracted worldwide from salt deposits and brine.",
+Mg:"Light structural metal used in aluminum alloys, car parts, and fireworks (bright white flame). Sixth most abundant element in Earth's crust. Major production from China, extracting from magnesite ore and seawater.",
+Al:"Most abundant metal in Earth's crust, prized for being lightweight, corrosion-resistant, and recyclable. Used in cans, foil, aircraft, and construction. Refined from bauxite ore, with Australia, China, and Guinea as top sources.",
+Si:"Second most abundant element in Earth's crust, found as silica/quartz. Backbone of computer chips and solar cells, plus glass and silicone products. Refined mainly in China from quartzite, with global electronics-grade purification elsewhere.",
+P:"Essential to DNA, ATP, and fertilizers; never found free in nature. Mined as phosphate rock, mainly in Morocco (largest reserves), China, and the US, then processed into fertilizer and food additives.",
+S:"Byproduct of oil and gas refining (removed as pollution control), also mined as native sulfur historically. Used mostly to make sulfuric acid for fertilizers. Major producers: China, US, Russia, via petroleum desulfurization.",
+Cl:"Reactive greenish gas, used to disinfect drinking water and swimming pools, and to manufacture PVC plastic and bleach. Produced by electrolysis of salt brine. Never found free in nature; extracted from seawater and salt deposits globally.",
+Ar:"Makes up ~1% of the atmosphere, the most abundant noble gas on Earth. Used as an inert shielding gas in welding and to fill incandescent/fluorescent light bulbs. Extracted everywhere via air separation.",
+K:"Soft reactive alkali metal essential to plant growth; mined as potash for fertilizer. Highly reactive with water. Canada, Russia, and Belarus hold the largest potash reserves and production.",
+Ca:"Fifth most abundant element in Earth's crust, found as limestone and gypsum. Vital for bones and cement production. Mined virtually everywhere as limestone; a component in nearly all construction materials.",
+Sc:"Rare, lightweight metal used in aerospace alloys and sports equipment (baseball bats, bike frames) and high-intensity stadium lighting. Scattered thinly in ores worldwide, with China and small mines in Russia and Ukraine as main producers.",
+Ti:"Strong, lightweight, corrosion-resistant metal used in aircraft, medical implants, and white pigment (TiO2) in paint and sunscreen. Ninth most abundant element in the crust. Mined as ilmenite/rutile in Australia, South Africa, and Canada.",
+V:"Mostly used to strengthen steel (rebar, tools) and in vanadium redox-flow batteries for grid storage. Rarely occurs uncombined. China, Russia, and South Africa are the leading producers, often as a steelmaking byproduct.",
+Cr:"Gives stainless steel its corrosion resistance and chrome plating its shine. Mined as chromite ore. South Africa and Kazakhstan hold the majority of world reserves and production.",
+Mn:"Critical steelmaking additive that removes impurities and adds strength; also used in batteries. Not found free in nature. South Africa, Australia, and Gabon are the largest producers of manganese ore.",
+Fe:"Most widely used metal on Earth, backbone of steel and construction; also the core component of Earth's core and hemoglobin in blood. Mined as iron ore, mainly in Australia, Brazil, and China.",
+Co:"Key ingredient in lithium-ion battery cathodes and superalloys for jet engines. Mostly mined as a byproduct of copper/nickel mining. The Democratic Republic of Congo produces the large majority of the world's supply.",
+Ni:"Used in stainless steel and rechargeable batteries; resists corrosion well. Mined as sulfide and laterite ores. Indonesia and the Philippines are now the largest producers, followed by Russia and Canada.",
+Cu:"Excellent electrical conductor used in wiring, plumbing, and electronics; one of the first metals used by humans. Mined as copper ore, primarily in Chile and Peru, which hold the largest reserves.",
+Zn:"Used to galvanize steel against rust and in brass alloys and batteries. Mined as sphalerite ore. China, Australia, and Peru are the top producers of zinc concentrate.",
+Ga:"Rare metal that melts near room temperature; essential for LEDs and semiconductor chips (gallium arsenide/nitride). Extracted mainly as a byproduct of aluminum and zinc refining, with China dominating global supply.",
+Ge:"Used in fiber-optic cables, infrared optics, and early transistors. Rare and dispersed, recovered mainly as a byproduct of zinc ore processing. China produces the majority of world supply.",
+As:"Historically used as a poison and pigment, now mainly in semiconductor doping (gallium arsenide) and wood preservatives. Toxic in most forms. Occurs naturally in some groundwater; China is the leading producer.",
+Se:"Trace element essential to human health in small amounts, used in glassmaking (to counteract green tint) and photocopier drums. Recovered mainly as a byproduct of copper refining, largely from Japan, Germany, and Belgium refineries.",
+Br:"Only nonmetal that's liquid at room temperature, with a strong odor. Used in flame retardants and some pharmaceuticals. Extracted from brine deposits, chiefly in Israel (Dead Sea), Jordan, and the US.",
+Kr:"Rare atmospheric gas used in energy-efficient fluorescent lighting and some camera flashes. Extracted via fractional distillation of liquid air; supply chains concentrated where large air separation facilities operate, notably Ukraine and the US historically.",
+Rb:"Soft, highly reactive alkali metal with limited commercial use, mainly in research and some specialty glass. Found in trace amounts within other minerals like lepidolite. Extracted as a byproduct of lithium and cesium processing, mainly in Canada and Zimbabwe.",
+Sr:"Used in fireworks for bright red color and in some ceramic magnets. Found as the mineral celestine/strontianite. China, Spain, and Argentina are the leading producers.",
+Y:"Used in LED phosphors, camera lenses, and superconductors. Classified as a rare earth element though not especially scarce. China dominates production, mined alongside other rare earths.",
+Zr:"Highly corrosion-resistant, used in nuclear reactor fuel cladding and ceramics. Extracted from zircon sand. Australia and South Africa are the largest producers of zirconium minerals.",
+Nb:"Used to strengthen steel alloys (pipeline and structural steel) and in superconducting magnets. Brazil produces the vast majority of the world's niobium, mainly from a single massive deposit.",
+Mo:"Strengthens steel for high-temperature and high-stress uses like drill bits and engine parts. Mined as molybdenite. China, Chile, and the US are the top producers.",
+Tc:"First artificially produced element; virtually absent in nature since all isotopes are radioactive and short-lived (geologically). Used medically as a radioactive tracer (Tc-99m) in diagnostic imaging, produced in nuclear reactors.",
+Ru:"Rare platinum-group metal used to harden platinum/palladium alloys for jewelry and electrical contacts. Found alongside platinum and nickel ores. South Africa and Russia are the main producers.",
+Rh:"One of the rarest and most expensive precious metals, used in catalytic converters to reduce vehicle emissions. Mined as a byproduct of platinum and nickel refining, mostly in South Africa and Russia.",
+Pd:"Widely used in catalytic converters and electronics. Mined alongside platinum and nickel. Russia and South Africa produce the majority; Norilsk Nickel is a major single source.",
+Ag:"Best electrical and thermal conductor of any metal; used in jewelry, electronics, and solar panels. Mined both as primary ore and as a byproduct of copper/lead/zinc mining. Mexico, Peru, and China lead production.",
+Cd:"Used historically in NiCd batteries and pigments, now restricted due to toxicity. Recovered mainly as a byproduct of zinc refining. China, South Korea, and Japan are major producers.",
+In:"Critical for indium tin oxide, the transparent conductive coating on touchscreens and flat-panel displays. Rare, recovered as a byproduct of zinc mining. China produces most of the world's supply.",
+Sn:"Used to coat steel (tin cans) and in solder for electronics. One of the earliest metals used by humans (bronze age alloy with copper). China, Indonesia, and Myanmar are top producers.",
+Sb:"Used in flame retardants and lead-acid battery alloys. Occurs mainly as the mineral stibnite. China dominates production, historically also mined in Bolivia and Russia.",
+Te:"Used in solar panels (cadmium telluride cells) and to strengthen alloys. One of the rarer stable elements in Earth's crust. Recovered mainly as a byproduct of copper refining, chiefly from China, US, and Japan refineries.",
+I:"Essential trace nutrient (thyroid function), added to table salt. Used in antiseptics and medical contrast dyes. Extracted from brine deposits and caliche ore mainly in Chile and Japan.",
+Xe:"Rare atmospheric gas used in ion propulsion for spacecraft, high-intensity camera flashes, and some anesthesia. Extracted via air separation; supply concentrated where large plants operate, notably Ukraine, US, and Russia historically.",
+Cs:"Softest metal, reacts explosively with water; melts near body temperature. Defines the second via atomic clocks and is used in drilling fluids. Mined mainly from a single deposit in Bernic Lake, Canada.",
+Ba:"Used in drilling mud (barite) for oil and gas wells, and to create green fireworks. Mined as barite ore. China and India are the largest producers.",
+La:"Used in camera and telescope lenses, and as a catalyst in oil refining (fluid cracking). A rare earth element, mined mostly in China alongside other lanthanides, plus deposits in the US and Australia.",
+Ce:"Most abundant rare earth element, used in catalytic converters, glass polishing, and self-cleaning ovens. China dominates production, though significant reserves exist in the US, Brazil, and Australia.",
+Pr:"Used in aircraft engine alloys and to color glass/ceramics yellow-green. Rare earth element mined mostly in China, typically alongside neodymium in the same ore deposits.",
+Nd:"Essential for powerful permanent magnets in EV motors, wind turbines, and headphones. Mined mostly in China (Bayan Obo deposit), with smaller output from Australia and the US (Mountain Pass).",
+Pm:"Only radioactive element among the lanthanides, with no stable isotopes; essentially absent in nature. Produced artificially in nuclear reactors, used in some luminous paint and niche battery research.",
+Sm:"Used in powerful samarium-cobalt magnets that retain magnetism at high temperatures (aerospace, military). Mined mainly in China alongside other rare earths.",
+Eu:"Used as a red and blue phosphor in TV/LED screens and as an anti-counterfeiting marker on euro banknotes. One of the rarer rare earths, mined mostly in China.",
+Gd:"Used as a contrast agent in MRI scans due to its magnetic properties, and in nuclear reactor control rods. Mined mainly in China alongside other lanthanides.",
+Tb:"Used in green phosphors for displays and in magnetostrictive alloys (sensors, actuators). One of the scarcer rare earths, produced almost entirely in China.",
+Dy:"Added to neodymium magnets to keep them working at high temperatures, critical for EV motors. Mined mostly in southern China's ion-adsorption clay deposits.",
+Ho:"Used in some of the strongest artificial magnetic fields for research and in yttrium-iron-garnet microwave devices. Rare earth mined mostly in China.",
+Er:"Used to amplify signals in fiber-optic communication cables (erbium-doped fiber amplifiers) and to color glass pink. Mined mostly in China alongside other lanthanides.",
+Tm:"One of the least abundant rare earths, used in portable X-ray devices and some medical lasers. Produced in very small quantities, mainly in China.",
+Yb:"Used in some fiber lasers and as a pressure gauge material (its resistance changes predictably under stress). Mined mostly in China alongside other lanthanides.",
+Lu:"Rarest naturally occurring lanthanide, used in PET scan detectors (as lutetium oxyorthosilicate) and petroleum refining catalysts. Extracted in very small amounts, mainly in China.",
+Hf:"Used in nuclear reactor control rods (absorbs neutrons well) and high-temperature superalloys for jet engines. Recovered mainly as a byproduct of zirconium refining, chiefly in France, Ukraine, and the US.",
+Ta:"Used in tiny, reliable capacitors for phones and electronics, and in surgical implants. Mined as coltan ore. Democratic Republic of Congo, Rwanda, and Brazil are leading producers.",
+W:"Has the highest melting point of any metal; used in light bulb filaments and cutting tools (tungsten carbide). Mined as wolframite/scheelite ore, dominated by China's production.",
+Re:"One of the rarest stable elements in Earth's crust, used in jet engine superalloys and as a catalyst. Recovered mainly as a byproduct of molybdenum/copper mining, chiefly in Chile and the US.",
+Os:"Densest naturally occurring element, used in fountain pen tips and electrical contacts, mostly as a hard alloy. Recovered as a byproduct of platinum and nickel mining, mainly in South Africa and Russia.",
+Ir:"Extremely corrosion-resistant, used to line the standard kilogram-mass artifacts historically and in spark plugs. Recovered as a byproduct of platinum mining, chiefly in South Africa.",
+Pt:"Prized in jewelry and essential in catalytic converters for reducing emissions. Rare and dense. South Africa produces the large majority of the world's platinum.",
+Au:"Prized for millennia as currency and jewelry due to resistance to tarnish; also used in electronics for reliable connections. Mined worldwide, with China, Russia, and Australia as top producers.",
+Hg:"Only metal liquid at room temperature; historically used in thermometers and mining (amalgamation) but now restricted due to toxicity. Mined as cinnabar ore, mainly in China and Mexico.",
+Tl:"Highly toxic, was historically used as rat poison until banned in many countries. Now used in some specialty electronics and medical imaging. Recovered as a byproduct of lead/zinc/copper smelting.",
+Pb:"Dense, soft, historically used in pipes and paint, now mainly in lead-acid car batteries due to toxicity concerns elsewhere. Mined as galena ore; China and Australia are top producers.",
+Bi:"Used as a nontoxic replacement for lead in solder, cosmetics, and stomach medicine (Pepto-Bismol). Recovered mainly as a byproduct of lead and copper refining, primarily in China.",
+Po:"Highly radioactive and extremely rare in nature (trace amounts in uranium ore); famously used to poison Alexander Litvinenko. Produced artificially in nuclear reactors for niche industrial static eliminators.",
+At:"Rarest naturally occurring element on Earth, with only grams estimated to exist at any time due to rapid radioactive decay. No commercial uses; studied only in research quantities produced in particle accelerators.",
+Rn:"Radioactive gas that seeps from uranium-bearing soil and rock into basements, a known health hazard (second-leading cause of lung cancer). No commercial use; monitored rather than mined.",
+Fr:"Second-rarest naturally occurring element after astatine, extremely radioactive with a short half-life. No practical uses; exists only in trace amounts from uranium/thorium decay.",
+Ra:"Radioactive, once used in glow-in-the-dark watch dials (causing famous 'Radium Girls' poisonings) before being banned. Now used in rare cancer treatments. Occurs in trace amounts in uranium ore.",
+Ac:"Highly radioactive, gives its name to the actinide series. Rare and hard to isolate, mainly used in medical research for targeted alpha-particle cancer therapy, produced artificially in reactors.",
+Th:"Mildly radioactive metal considered a potential nuclear fuel alternative to uranium; also used in some camera lenses and welding electrodes historically. Mined as monazite sand, mainly in India, China, and Brazil.",
+Pa:"Extremely rare and radioactive, found only in trace amounts in uranium ores. No commercial applications; studied mainly for nuclear physics and dating geological samples.",
+U:"Primary fuel for nuclear power plants and weapons, mined as uraninite ore. Kazakhstan is by far the largest producer, followed by Canada, Namibia, and Australia.",
+Np:"First transuranium element discovered; produced as a byproduct of nuclear reactors. No major commercial use, but studied for potential future reactor fuel and space power sources.",
+Pu:"Key fissile material for nuclear weapons and reactor fuel (especially in fast breeder reactors and spacecraft power sources like Voyager). Produced artificially in nuclear reactors, not mined.",
+Am:"Used in most household smoke detectors as a small radioactive source (americium-241) that ionizes air to detect smoke. Produced artificially in nuclear reactors.",
+Cm:"Highly radioactive, used in scientific instruments including the alpha-particle spectrometers on Mars rovers. Produced in nuclear reactors in tiny quantities, with no large-scale commercial use.",
+Bk:"Extremely rare synthetic element, produced only in nanogram quantities in specialized nuclear reactors for scientific research. No practical applications outside physics research.",
+Cf:"Used as a neutron source to start up nuclear reactors and in oil-well logging equipment. Produced in only milligram quantities worldwide, among the most expensive materials ever made.",
+Es:"Discovered in the debris of the first hydrogen bomb test in 1952. Produced only in trace amounts for research; no practical applications.",
+Fm:"Also discovered in hydrogen bomb test debris. Extremely short-lived and produced in only minute quantities for nuclear physics research; no practical applications.",
+Md:"Synthetic element produced one atom at a time in particle accelerators. Exists purely for scientific study of superheavy element chemistry and nuclear structure.",
+No:"Synthetic element with extremely short-lived isotopes, produced atom by atom in accelerators. Used only in fundamental research into the far end of the periodic table.",
+Lr:"Last of the actinide series, synthetic and produced only in tiny quantities via particle accelerators. Exists solely for nuclear and chemical research purposes.",
+Rf:"First element beyond the actinides (a superheavy transactinide), produced artificially by fusing lighter nuclei in accelerators. Only a few atoms have ever been made; purely a research subject.",
+Db:"Superheavy synthetic element produced by particle accelerator fusion reactions, existing for only seconds. No practical use; studied to test predictions about heavy element chemistry.",
+Sg:"Synthetic superheavy element, created in accelerators and named after physicist Glenn Seaborg. Extremely short-lived, produced only atom by atom for research.",
+Bh:"Synthetic superheavy element produced in particle accelerators, existing for a fraction of a second. Purely a subject of nuclear physics research.",
+Hs:"Synthetic superheavy element, its most stable isotopes last only seconds. Produced in accelerators to study the limits of nuclear stability.",
+Mt:"Synthetic superheavy element named after physicist Lise Meitner, produced only a handful of atoms at a time in accelerators for research.",
+Ds:"Synthetic superheavy element created by fusing nickel and lead nuclei in particle accelerators. Exists for only milliseconds; studied purely for nuclear science.",
+Rg:"Synthetic superheavy element, produced atom by atom in accelerator experiments. Named after Wilhelm Röntgen, discoverer of X-rays; no practical use.",
+Cn:"Synthetic superheavy element, predicted to behave like a volatile metal similar to mercury. Produced only in accelerators, a handful of atoms at a time.",
+Nh:"Synthetic superheavy element first confirmed by a Japanese research team (RIKEN), named after Japan (Nihon). Exists for only a fraction of a second.",
+Fl:"Synthetic superheavy element, part of the 'island of stability' region theorized to have longer-lived isotopes than neighboring elements. Produced only in accelerator experiments.",
+Mc:"Synthetic superheavy element named after Moscow, discovered via Russia-US collaboration. Extremely short-lived, produced only atom by atom for research.",
+Lv:"Synthetic superheavy element named after Lawrence Livermore National Laboratory. Exists for only fractions of a second, produced in particle accelerator collisions.",
+Ts:"Second-heaviest element created so far and the only synthetic halogen, named after Tennessee where it was partly produced. Extremely short-lived, purely research material.",
+Og:"Heaviest element confirmed so far, expected to behave unusually due to relativistic effects on its electrons. Only a few atoms have ever been detected, existing for under a millisecond."
+};
+
+function pos(e, mode) {
+  const [n, sym, name, p, g] = e;
+  if (g === 0) {
+    const fidx = p === 6 ? n - 57 : n - 89;
+    if (mode === "wide") return { row: p, col: 3 + fidx };
+    return { row: p === 6 ? 9 : 10, col: 3 + fidx };
+  }
+  if (mode === "wide" && p >= 6 && g >= 3) return { row: p, col: g + 14 };
+  return { row: p, col: g };
+}
+
+let mode = "standard";
+const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+function render() {
+  const grid = document.getElementById("grid");
+  const wide = mode === "wide";
+  const cols = wide ? 32 : 18, rows = wide ? 7 : 10;
+  const cw = wide ? 22 : 38, ch = wide ? 46 : 52;
+  const symFont = wide ? "12px" : "15px";
+  grid.style.gridTemplateColumns = `repeat(${cols}, ${cw}px)`;
+  grid.style.gridTemplateRows = `repeat(${rows}, ${ch}px)`;
+  grid.innerHTML = "";
+  EL.forEach(e => {
+    const { row, col } = pos(e, mode);
+    const [n, sym, , , , cat, mass] = e;
+    const [bgL, bgD, txL, txD] = CAT[cat];
+    const d = document.createElement("div");
+    d.className = "el";
+    d.style.gridRow = row; d.style.gridColumn = col;
+    d.style.background = dark ? bgD : bgL;
+    d.style.color = dark ? txD : txL;
+    d.innerHTML = `<span class="num">${n}</span><span class="sym" style="font-size:${symFont}">${sym}</span><span class="mass">${Math.round(mass)}</span>`;
+    d.onclick = () => select(e);
+    grid.appendChild(d);
+  });
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById("btn-standard").classList.toggle("active", m === "standard");
+  document.getElementById("btn-wide").classList.toggle("active", m === "wide");
+  render();
+}
+
+function select(e) {
+  const [n, sym, name, , , cat, mass] = e;
+  const label = CAT[cat][4];
+  const blurb = BLURB[sym] || "";
+  document.getElementById("detail").innerHTML = `
+    <div class="row">
+      <div><span class="name">${name}</span>
+      <span> &middot; ${sym} &middot; #${n} &middot; ${mass} u &middot; ${label}</span></div>
+      <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener">View on Wikipedia</a>
+    </div>
+    <p style="margin:8px 0 0;line-height:1.5">${blurb}</p>`;
+}
+
+function renderLegend() {
+  const legend = document.getElementById("legend");
+  legend.innerHTML = Object.entries(CAT).map(([k, v]) =>
+    `<span><span class="sw" style="background:${dark ? v[1] : v[0]}"></span>${v[4]}</span>`
+  ).join("");
+}
+
+render();
+renderLegend();
+</script>
+</body>
+</html>
