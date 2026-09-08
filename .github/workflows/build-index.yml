@@ -32,10 +32,13 @@ jobs:
           </head>
           <body>
           <h1>My Projects</h1>
-          <ul>
           EOF
+          if [ -f welcome.html ]; then
+            cat welcome.html >> index.html
+          fi
+          echo "<ul>" >> index.html
           for f in *.html; do
-            if [ "$f" != "index.html" ]; then
+            if [ "$f" != "index.html" ] && [ "$f" != "welcome.html" ]; then
               name=$(basename "$f" .html)
               echo "<li><a href=\"$f\">$name</a></li>" >> index.html
             fi
