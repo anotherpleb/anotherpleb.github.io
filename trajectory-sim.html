@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Trajectory Simulator — Elevation & Aim</title>
+<style>
+  :root {
+    --sky-top: #CFE3EE;
+    --sky-bot: #EAF3F8;
+    --ground: #8A9468;
+    --ground-dark: #6E7853;
+    --ink: #22303C;
+    --ink-soft: #5A6B78;
+    --panel: #F5F3ED;
+    --line: #C7CDBF;
+    --corrected: #D8491F;
+    --los: #3E6E8E;
+    --naive: #8B5A52;
+    --shooter: #2E7D46;
+    --target: #B0392C;
+    --warn-bg: #FBE4D8;
+    --warn-ink: #7A3418;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .frame { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; background: var(--panel); }
+  header h1 {
+    font-size: clamp(24px, 4.5vw, 34px);
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  header p.sub {
+    margin: 0 0 20px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    max-width: 70ch;
+  }
+
+  .layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+
+  .stage {
+    border: 1px solid var(--line);
+    background: linear-gradient(var(--sky-top), var(--sky-bot));
+  }
+  .stage svg { display: block; width: 100%; height: auto; }
+
+  .readouts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 1px;
+  }
+  .readout-cell { background: var(--panel); padding: 8px 12px; }
+  .readout-cell .k { display: block; font-size: 10px; letter-spacing: 0.04em; color: var(--ink-soft); text-transform: uppercase; }
+  .readout-cell .v { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 15px; }
+
+  .warn {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: var(--warn-bg);
+    color: var(--warn-ink);
+    font-size: 13.5px;
+    border-left: 3px solid var(--corrected);
+    display: none;
+  }
+  .warn.show { display: block; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 18px; height: 0; border-top-width: 3px; border-top-style: solid; display: inline-block; }
+
+  /* sidebar */
+  .side { display: flex; flex-direction: column; gap: 16px; }
+  .card { border: 1px solid var(--line); background: #fff; padding: 14px 16px; }
+  .card h3 { margin: 0 0 10px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); }
+
+  .select-toggle { display: flex; gap: 8px; margin-bottom: 6px; }
+  .select-toggle button {
+    flex: 1;
+    padding: 8px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .select-toggle button.active.shooter { background: var(--shooter); color: #fff; border-color: var(--shooter); }
+  .select-toggle button.active.target { background: var(--target); color: #fff; border-color: var(--target); }
+  .hint { font-size: 12px; color: var(--ink-soft); line-height: 1.4; margin-bottom: 10px; }
+
+  .dpad {
+    display: grid;
+    grid-template-columns: 44px 44px 44px;
+    grid-template-rows: 40px 40px 40px;
+    gap: 4px;
+    justify-content: center;
+  }
+  .dpad button {
+    font-size: 16px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .dpad button:active { background: var(--ink); color: #fff; }
+  .dpad-label { font-size: 9px; color: var(--ink-soft); display: flex; align-items: center; justify-content: center; text-align: center; }
+
+  .vfield { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .vfield input[type=number] {
+    width: 90px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    padding: 6px 8px;
+    border: 1px solid var(--line);
+  }
+  .vfield span { font-size: 13px; color: var(--ink-soft); }
+
+  .chiprow { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    padding: 6px 10px;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+  }
+  .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  table.ref { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+  table.ref th, table.ref td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+  table.ref th { color: var(--ink-soft); font-weight: 600; }
+
+  .scenario-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    cursor: pointer;
+  }
+  .scenario-btn:last-child { margin-bottom: 0; }
+  .scenario-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .note { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin-top: 4px; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <h1>Trajectory Simulator</h1>
+    <p class="sub">Move the shooter and target to see why aiming at elevated targets is counterintuitive: gravity acts on horizontal distance, not slant distance, so uphill and downhill shots both need <em>less</em> holdover than the slant range alone suggests.</p>
+  </header>
+
+  <div class="layout">
+    <div>
+      <div class="stage"><svg id="stageSvg" viewBox="0 0 900 520"></svg></div>
+      <div class="readouts" id="readouts"></div>
+      <div class="warn" id="warnBox"></div>
+      <div class="legend">
+        <span><i style="border-color:var(--los);border-top-style:dashed;"></i> line of sight</span>
+        <span><i style="border-color:var(--naive);border-top-style:dotted;"></i> aimed straight at target</span>
+        <span><i style="border-color:var(--corrected);"></i> corrected trajectory (hits target)</span>
+      </div>
+      <div class="note" style="margin-top:10px;">
+        Line of sight is a straight reference line — just geometry, no physics. The other two are curves: "aimed straight at target" uses the line-of-sight angle as the barrel angle, but gravity pulls the bullet off that straight line for the whole flight, so it lands short and low. "Corrected" starts at a steeper angle — enough above the line of sight that gravity's pull brings it down exactly on target instead.
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <h3>Move</h3>
+        <div class="select-toggle">
+          <button id="selShooter" class="shooter">● Shooter</button>
+          <button id="selTarget" class="target">● Target</button>
+        </div>
+        <div class="hint">Arrow keys move the selected point — ←/→ distance, ↑/↓ elevation. Click a marker on the diagram to select it.</div>
+        <div class="dpad" id="dpad">
+          <div></div><button data-dir="up">▲</button><div></div>
+          <button data-dir="left">◀</button><div class="dpad-label" id="dpadLabel"></div><button data-dir="right">▶</button>
+          <div></div><button data-dir="down">▼</button><div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Muzzle velocity</h3>
+        <div class="vfield">
+          <input type="number" id="vInput" value="2820" min="300" max="4000" step="10">
+          <span>ft/s</span>
+        </div>
+        <div class="chiprow" id="cartridgeChips"></div>
+        <table class="ref" id="cartridgeTable"></table>
+      </div>
+
+      <div class="card">
+        <h3>Crosswind</h3>
+        <div class="vfield">
+          <input type="number" id="windInput" value="0" min="0" max="40" step="1">
+          <span>mph, full value (90°)</span>
+        </div>
+        <div class="note">Still a rough estimate: it applies a constant sideways push over the flight time rather than a full 3D drag simulation (this tool only models drag along the shooter→target plane). Treat it as illustrative, not a substitute for a real drag/BC-based ballistic calculator.</div>
+      </div>
+
+      <div class="card">
+        <h3>Scenarios</h3>
+        <div id="scenarioList"></div>
+      </div>
+
+      <div class="note">Model: numerical simulation with quadratic air drag (constant drag coefficient ≈0.45, not a full Mach-dependent G1/G7 curve). Bullet weight and diameter come from the selected cartridge; drag scales accordingly, so lighter/blunter bullets (like .22 LR) lose velocity and range faster than heavier, more streamlined ones. Absolute drop won't match a certified ballistic calculator, but the relative behavior — and the elevation/holdover effect this tool exists to show — is physically grounded.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const G = 32.174; // ft/s^2
+const YD = 3; // ft per yard
+
+const CARTRIDGES = [
+  { id: "22lr", label: ".22 LR", velocity: 1255, weightGr: 40, diameter: 0.222 },
+  { id: "556",  label: "5.56 NATO", velocity: 3020, weightGr: 55, diameter: 0.224 },
+  { id: "308",  label: ".308 Win", velocity: 2820, weightGr: 150, diameter: 0.308 },
+  { id: "270",  label: ".270 Win", velocity: 2900, weightGr: 130, diameter: 0.277 },
+  { id: "50",   label: ".50 BMG", velocity: 2910, weightGr: 660, diameter: 0.510 }
+];
+
+const SCENARIOS = [
+  { name: "Flat ground", shooter: {x:0,y:0}, target: {x:150*YD,y:0} },
+  { name: "Treestand, close & steep", shooter: {x:0,y:20}, target: {x:40*YD,y:0} },
+  { name: "Elevated shooter, ridge", shooter: {x:0,y:150}, target: {x:200*YD,y:0} },
+  { name: "Elevated target, uphill", shooter: {x:0,y:0}, target: {x:200*YD,y:150} },
+  { name: "Mountain shot, long uphill", shooter: {x:0,y:0}, target: {x:400*YD,y:300} }
+];
+
+let shooter = { x: SCENARIOS[0].shooter.x, y: SCENARIOS[0].shooter.y };
+let target = { x: SCENARIOS[0].target.x, y: SCENARIOS[0].target.y };
+let velocity = 2820;
+let currentBullet = CARTRIDGES.find(c => c.id === "308");
+let windMph = 0;
+let selected = "target";
+let activeScenario = 0;
+let activeCartridge = "308";
+
+const svg = document.getElementById('stageSvg');
+const W = 900, H = 520, padL = 60, padR = 40, padT = 40, padB = 60;
+
+// ---- drag model ----
+// Simplified point-mass model: constant drag coefficient (no Mach-dependent G1/G7
+// curve), quadratic drag force. Real bullets' Cd varies with velocity, so this
+// won't match a certified ballistic calculator, but it reproduces the right
+// qualitative behavior: heavier, more streamlined bullets (higher sectional
+// density) retain velocity better than light round-nose ones.
+const AIR_RHO = 0.0023769; // slug/ft^3, sea-level standard
+const CD_ASSUMED = 0.45;
+
+function dragK(bullet) {
+  const dFt = bullet.diameter / 12;
+  const area = Math.PI * (dFt / 2) ** 2;
+  const massSlug = (bullet.weightGr / 7000) / 32.174;
+  return (AIR_RHO * CD_ASSUMED * area) / (2 * massSlug); // 1/ft
+}
+
+// Numerically integrate one trajectory. Stops when x reaches stopAtX (if given)
+// or y drops to groundY (if given), whichever first.
+function simulate(x0, y0, v0, theta, k, stopAtX, groundY) {
+  const dt = 0.002, maxT = 8;
+  let vx = v0 * Math.cos(theta), vy = v0 * Math.sin(theta);
+  let x = x0, y = y0, t = 0;
+  const pts = [{ x, y }];
+  let reachedX = false;
+  while (t < maxT) {
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    const ax = -k * speed * vx;
+    const ay = -k * speed * vy - G;
+    vx += ax * dt;
+    vy += ay * dt;
+    x += vx * dt;
+    y += vy * dt;
+    t += dt;
+    pts.push({ x, y });
+    if (stopAtX !== undefined && x >= stopAtX) { reachedX = true; break; }
+    if (groundY !== undefined && y <= groundY) break;
+  }
+  return { pts, x, y, t, reachedX };
+}
+
+// Bisection search for the launch angle that lands on (xt, yt).
+function solveAngleDrag(v0, x0, y0, xt, yt, k) {
+  const groundFloor = Math.min(y0, yt) - 200;
+  function missAt(theta) {
+    const r = simulate(x0, y0, v0, theta, k, xt, groundFloor);
+    if (!r.reachedX) return -1e6; // fell short — big undershoot
+    return r.y - yt;
+  }
+  const losAngle = Math.atan2(yt - y0, xt - x0);
+  let lo = losAngle - 0.02;
+  if (missAt(lo) > 0) lo = -15 * Math.PI / 180;
+
+  let hi = losAngle, found = false;
+  for (let i = 0; i < 16; i++) {
+    hi += 5 * Math.PI / 180;
+    if (hi > 85 * Math.PI / 180) break;
+    if (missAt(hi) > 0) { found = true; break; }
+  }
+  if (!found) return null;
+
+  for (let i = 0; i < 28; i++) {
+    const mid = (lo + hi) / 2;
+    if (missAt(mid) > 0) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function worldToPx(x, y, b) {
+  const px = padL + ((x - b.minX) / (b.maxX - b.minX)) * (W - padL - padR);
+  const py = H - padB - ((y - b.minY) / (b.maxY - b.minY)) * (H - padT - padB);
+  return [px, py];
+}
+
+function pathFromPts(pts, b) {
+  return pts.map((p, i) => {
+    const [px, py] = worldToPx(p.x, p.y, b);
+    return (i === 0 ? "M" : "L") + px.toFixed(1) + "," + py.toFixed(1);
+  }).join(" ");
+}
+
+function render() {
+  const dx = target.x - shooter.x;
+  const dy = target.y - shooter.y;
+  const dxYd = dx / YD;
+  const slantFt = Math.sqrt(dx * dx + dy * dy);
+  const slantYd = slantFt / YD;
+  const thetaLOS = Math.atan2(dy, dx);
+  const k = dragK(currentBullet);
+
+  const warnBox = document.getElementById('warnBox');
+  let unreachable = false;
+  let thetaCorrected = null;
+
+  if (dx <= 0) {
+    unreachable = true;
+    warnBox.textContent = "Target must be farther out than the shooter — move the target right or the shooter left.";
+  } else {
+    thetaCorrected = solveAngleDrag(velocity, shooter.x, shooter.y, target.x, target.y, k);
+    if (thetaCorrected === null) {
+      unreachable = true;
+      warnBox.textContent = "Target unreachable at this muzzle velocity, bullet, and distance — pick a faster/heavier cartridge or move the target closer.";
+    }
+  }
+  warnBox.classList.toggle('show', unreachable);
+
+  // naive: aim straight down the line of sight
+  const groundFloor = Math.min(shooter.y, target.y) - 200;
+  const naiveRun = dx > 0 ? simulate(shooter.x, shooter.y, velocity, thetaLOS, k, target.x, groundFloor) : null;
+  const naivePts = naiveRun ? naiveRun.pts : [];
+  const naiveImpactY = naiveRun ? naiveRun.y : shooter.y;
+  const naiveReachedTarget = naiveRun ? naiveRun.reachedX : false;
+  const naiveMiss = target.y - naiveImpactY; // positive = naive shot lands low
+
+  let correctedPts = [];
+  let holdoverDeg = null;
+  let tHit = null;
+  if (!unreachable) {
+    const correctedRun = simulate(shooter.x, shooter.y, velocity, thetaCorrected, k, target.x, groundFloor);
+    correctedPts = correctedRun.pts;
+    tHit = correctedRun.t;
+    holdoverDeg = (thetaCorrected - thetaLOS) * (180 / Math.PI);
+  }
+
+  // bounds
+  const xs = [shooter.x, target.x, ...naivePts.map(p=>p.x), ...correctedPts.map(p=>p.x)];
+  const ys = [0, shooter.y, target.y, ...naivePts.map(p=>p.y), ...correctedPts.map(p=>p.y)];
+  const minX = Math.min(...xs) - 30, maxX = Math.max(...xs) + 30;
+  const minY = Math.min(0, ...ys) - 20, maxY = Math.max(...ys) + 40;
+  const b = { minX, maxX, minY: Math.min(minY,0), maxY: Math.max(maxY, minY+100) };
+
+  // ---- build SVG ----
+  let s = "";
+
+  // ground datum
+  const [gx0, gy0] = worldToPx(minX, 0, b);
+  const [gx1, gy1] = worldToPx(maxX, 0, b);
+  s += `<rect x="${padL}" y="${gy0}" width="${W-padL-padR}" height="${H-padB-gy0}" fill="${'var(--ground)'.replace('var(--ground)','#8A9468')}" opacity="0.35"/>`;
+  s += `<line x1="${gx0}" y1="${gy0}" x2="${gx1}" y2="${gy1}" stroke="#6E7853" stroke-width="2"/>`;
+
+  // grid: vertical every 50 yd, horizontal every 50 ft
+  for (let gxYd = Math.ceil(minX/YD/50)*50; gxYd*YD <= maxX; gxYd += 50) {
+    const [px] = worldToPx(gxYd*YD, 0, b);
+    s += `<line x1="${px}" y1="${padT}" x2="${px}" y2="${gy0}" stroke="#C7CDBF" stroke-width="1" opacity="0.6"/>`;
+    s += `<text x="${px}" y="${H-padB+16}" font-size="10" fill="#5A6B78" text-anchor="middle">${gxYd}yd</text>`;
+  }
+  for (let gy = Math.ceil(minY/50)*50; gy <= maxY; gy += 50) {
+    const [,py] = worldToPx(0, gy, b);
+    s += `<line x1="${padL}" y1="${py}" x2="${W-padR}" y2="${py}" stroke="#C7CDBF" stroke-width="1" opacity="0.5"/>`;
+    s += `<text x="${padL-8}" y="${py+3}" font-size="10" fill="#5A6B78" text-anchor="end">${gy}ft</text>`;
+  }
+
+  // riser lines (marker to ground)
+  const [sx, sy] = worldToPx(shooter.x, shooter.y, b);
+  const [sxg] = [sx]; const [,syg] = worldToPx(shooter.x, 0, b);
+  const [tx, ty] = worldToPx(target.x, target.y, b);
+  const [,tyg] = worldToPx(target.x, 0, b);
+  s += `<line x1="${sx}" y1="${sy}" x2="${sx}" y2="${syg}" stroke="${'#2E7D46'}" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>`;
+  s += `<line x1="${tx}" y1="${ty}" x2="${tx}" y2="${tyg}" stroke="${'#B0392C'}" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>`;
+
+  // line of sight
+  s += `<line x1="${sx}" y1="${sy}" x2="${tx}" y2="${ty}" stroke="#3E6E8E" stroke-width="2" stroke-dasharray="6 5"/>`;
+
+  // naive trajectory + impact marker
+  if (naivePts.length) {
+    s += `<path d="${pathFromPts(naivePts, b)}" fill="none" stroke="#8B5A52" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round"/>`;
+    const [ix, iy] = worldToPx(naivePts[naivePts.length-1].x, naivePts[naivePts.length-1].y, b);
+    s += `<circle cx="${ix}" cy="${iy}" r="4" fill="#8B5A52"/>`;
+  }
+
+  // corrected trajectory
+  if (correctedPts.length) {
+    s += `<path d="${pathFromPts(correctedPts, b)}" fill="none" stroke="#D8491F" stroke-width="3" stroke-linecap="round"/>`;
+  }
+
+  // markers
+  s += `<g style="cursor:pointer" data-role="shooter">
+          <circle cx="${sx}" cy="${sy}" r="9" fill="#2E7D46" stroke="${selected==='shooter' ? '#22303C' : '#fff'}" stroke-width="${selected==='shooter'?3:2}"/>
+          <text x="${sx}" y="${sy-14}" font-size="12" font-weight="600" fill="#22303C" text-anchor="middle">Shooter</text>
+        </g>`;
+  s += `<g style="cursor:pointer" data-role="target">
+          <circle cx="${tx}" cy="${ty}" r="9" fill="#B0392C" stroke="${selected==='target' ? '#22303C' : '#fff'}" stroke-width="${selected==='target'?3:2}"/>
+          <text x="${tx}" y="${ty-14}" font-size="12" font-weight="600" fill="#22303C" text-anchor="middle">Target</text>
+        </g>`;
+
+  svg.innerHTML = s;
+  svg.querySelectorAll('[data-role]').forEach(el => {
+    el.addEventListener('click', () => { selected = el.dataset.role; updateSelectButtons(); render(); });
+  });
+
+  // readouts
+  const readouts = document.getElementById('readouts');
+  const cells = [
+    ["Horizontal dist.", dxYd.toFixed(0) + " yd"],
+    ["Elevation diff.", (dy>=0?"+":"") + dy.toFixed(0) + " ft"],
+    ["Slant range", slantYd.toFixed(0) + " yd"],
+    ["Line-of-sight angle", (thetaLOS*180/Math.PI).toFixed(1) + "°"],
+    ["Required holdover", unreachable ? "—" : holdoverDeg.toFixed(2) + "°"],
+    ["Point-and-shoot miss", dx<=0 ? "—" : (!naiveReachedTarget ? "fell short" : (naiveMiss>=0? feetInches(naiveMiss)+" low" : feetInches(Math.abs(naiveMiss))+" high"))],
+    ["Est. crosswind drift", (tHit && windMph>0) ? ((windMph*1.4667*tHit*12).toFixed(1) + " in") : "—"]
+  ];
+  readouts.innerHTML = cells.map(([k,v]) => `<div class="readout-cell"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+
+function feetInches(ft) {
+  const sign = ft < 0 ? -1 : 1;
+  const abs = Math.abs(ft);
+  const wholeFt = Math.floor(abs);
+  const inches = Math.round((abs - wholeFt) * 12);
+  const carry = inches === 12 ? 1 : 0;
+  const finalFt = wholeFt + carry;
+  const finalIn = carry ? 0 : inches;
+  return (sign < 0 ? "-" : "") + finalFt + " ft " + finalIn + " in";
+}
+
+function updateSelectButtons() {
+  document.getElementById('selShooter').classList.toggle('active', selected === 'shooter');
+  document.getElementById('selTarget').classList.toggle('active', selected === 'target');
+  document.getElementById('dpadLabel').textContent = selected === 'shooter' ? 'Shooter' : 'Target';
+}
+
+document.getElementById('selShooter').addEventListener('click', () => { selected = 'shooter'; updateSelectButtons(); render(); });
+document.getElementById('selTarget').addEventListener('click', () => { selected = 'target'; updateSelectButtons(); render(); });
+
+function movePoint(dir) {
+  const p = selected === 'shooter' ? shooter : target;
+  const other = selected === 'shooter' ? target : shooter;
+  if (dir === 'right') p.x += 10*YD;
+  else if (dir === 'left') p.x -= 10*YD;
+  else if (dir === 'up') p.y = Math.min(300, p.y + 10);
+  else if (dir === 'down') p.y = Math.max(-300, p.y - 10);
+  if (selected === 'target' && p.x - other.x < 10*YD) p.x = other.x + 10*YD;
+  if (selected === 'shooter' && other.x - p.x < 10*YD) p.x = other.x - 10*YD;
+  render();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  const map = { ArrowRight: 'right', ArrowLeft: 'left', ArrowUp: 'up', ArrowDown: 'down' };
+  if (!map[e.key]) return;
+  e.preventDefault();
+  movePoint(map[e.key]);
+});
+
+document.getElementById('dpad').querySelectorAll('button[data-dir]').forEach(btn => {
+  btn.addEventListener('click', () => movePoint(btn.dataset.dir));
+});
+
+// ---- velocity input & cartridge chips ----
+const vInput = document.getElementById('vInput');
+vInput.addEventListener('input', () => {
+  velocity = Number(vInput.value) || 0;
+  activeCartridge = null;
+  renderChips();
+  render();
+});
+
+document.getElementById('windInput').addEventListener('input', (e) => {
+  windMph = Number(e.target.value) || 0;
+  render();
+});
+
+function renderChips() {
+  document.getElementById('cartridgeChips').innerHTML = CARTRIDGES.map(c =>
+    `<button class="chip ${c.id===activeCartridge?'active':''}" data-id="${c.id}">${c.label}</button>`
+  ).join('');
+  document.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = CARTRIDGES.find(c => c.id === btn.dataset.id);
+      velocity = c.velocity;
+      currentBullet = c;
+      activeCartridge = c.id;
+      vInput.value = velocity;
+      renderChips();
+      render();
+    });
+  });
+}
+
+document.getElementById('cartridgeTable').innerHTML =
+  `<tr><th>Cartridge</th><th>Bullet</th><th>Velocity</th></tr>` +
+  CARTRIDGES.map(c => `<tr><td>${c.label}</td><td>${c.weightGr} gr</td><td>${c.velocity} ft/s</td></tr>`).join('');
+
+// ---- scenarios ----
+function renderScenarios() {
+  document.getElementById('scenarioList').innerHTML = SCENARIOS.map((sc,i) =>
+    `<button class="scenario-btn ${i===activeScenario?'active':''}" data-i="${i}">${sc.name}</button>`
+  ).join('');
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.i);
+      activeScenario = i;
+      shooter = { ...SCENARIOS[i].shooter };
+      target = { ...SCENARIOS[i].target };
+      renderScenarios();
+      render();
+    });
+  });
+}
+
+renderChips();
+renderScenarios();
+updateSelectButtons();
+render();
+</script>
+<script src="site-header.js"></script>
+</body>
+</html>
