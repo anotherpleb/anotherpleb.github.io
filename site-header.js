@@ -22,6 +22,19 @@
     'box-shadow: 0 1px 4px rgba(0,0,0,0.3)'
   ].join(';'));
 
+  var brand = document.createElement('span');
+  brand.textContent = 'anotherpleb';
+  brand.setAttribute('style', [
+    'position: absolute',
+    'left: 50%',
+    'top: 50%',
+    'transform: translate(-50%, -50%)',
+    'color: #fff',
+    'font-weight: 600',
+    'letter-spacing: 0.03em',
+    'pointer-events: none'
+  ].join(';'));
+
   var back = document.createElement('a');
   back.href = './';
   back.textContent = '← Back to index';
@@ -40,6 +53,7 @@
   ].join(';'));
 
   bar.appendChild(back);
+  bar.appendChild(brand);
   bar.appendChild(download);
   document.body.insertBefore(bar, document.body.firstChild);
 })();
