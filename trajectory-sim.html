@@ -179,10 +179,11 @@
       <div class="legend">
         <span><i style="border-color:var(--los);border-top-style:dashed;"></i> line of sight</span>
         <span><i style="border-color:var(--naive);border-top-style:dotted;"></i> aimed straight at target</span>
+        <span><i style="border-color:#B8860B;border-top-style:dashed;"></i> corrected barrel angle, straight</span>
         <span><i style="border-color:var(--corrected);"></i> corrected trajectory (hits target)</span>
       </div>
       <div class="note" style="margin-top:10px;">
-        Line of sight is a straight reference line — just geometry, no physics. The other two are curves: "aimed straight at target" uses the line-of-sight angle as the barrel angle, but gravity pulls the bullet off that straight line for the whole flight, so it lands short and low. "Corrected" starts at a steeper angle — enough above the line of sight that gravity's pull brings it down exactly on target instead.
+        Line of sight is a straight reference line — just geometry, no physics. "Aimed straight at target" and "corrected trajectory" are curves: gravity pulls the bullet off a straight line for the whole flight. The gold dashed line is where the corrected barrel is actually pointed, extended straight with no gravity — the gap between it and the target at the target's range is how far above (or below) the target you're physically aiming to make the curve land on it.
       </div>
     </div>
 
@@ -385,16 +386,21 @@ function render() {
   let correctedPts = [];
   let holdoverDeg = null;
   let tHit = null;
+  let straightAimEndY = null, aimOverUnder = null;
   if (!unreachable) {
     const correctedRun = simulate(shooter.x, shooter.y, velocity, thetaCorrected, k, target.x, groundFloor);
     correctedPts = correctedRun.pts;
     tHit = correctedRun.t;
     holdoverDeg = (thetaCorrected - thetaLOS) * (180 / Math.PI);
+    // straight-line extension of the corrected barrel angle (no gravity) out to target.x
+    straightAimEndY = shooter.y + Math.tan(thetaCorrected) * dx;
+    aimOverUnder = straightAimEndY - target.y; // positive = aim point sits above target
   }
 
   // bounds
   const xs = [shooter.x, target.x, ...naivePts.map(p=>p.x), ...correctedPts.map(p=>p.x)];
   const ys = [0, shooter.y, target.y, ...naivePts.map(p=>p.y), ...correctedPts.map(p=>p.y)];
+  if (straightAimEndY !== null) ys.push(straightAimEndY);
   const minX = Math.min(...xs) - 30, maxX = Math.max(...xs) + 30;
   const minY = Math.min(0, ...ys) - 20, maxY = Math.max(...ys) + 40;
   const b = { minX, maxX, minY: Math.min(minY,0), maxY: Math.max(maxY, minY+100) };
@@ -443,6 +449,19 @@ function render() {
     s += `<path d="${pathFromPts(correctedPts, b)}" fill="none" stroke="#D8491F" stroke-width="3" stroke-linecap="round"/>`;
   }
 
+  // straight-line aim (no gravity) along the corrected barrel angle, plus the
+  // over/under gap where it crosses the target's range
+  if (straightAimEndY !== null) {
+    const [ax, ay] = worldToPx(shooter.x, shooter.y, b);
+    const [aex, aey] = worldToPx(target.x, straightAimEndY, b);
+    s += `<line x1="${ax}" y1="${ay}" x2="${aex}" y2="${aey}" stroke="#B8860B" stroke-width="2" stroke-dasharray="2 4"/>`;
+    s += `<circle cx="${aex}" cy="${aey}" r="4" fill="#B8860B"/>`;
+    s += `<line x1="${tx}" y1="${ty}" x2="${aex}" y2="${aey}" stroke="#B8860B" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    const midY = (ty + aey) / 2;
+    const label = feetInches(Math.abs(aimOverUnder)) + (aimOverUnder >= 0 ? " over" : " under");
+    s += `<text x="${tx - 10}" y="${midY}" font-size="10.5" fill="#7A5C05" text-anchor="end">${label}</text>`;
+  }
+
   // markers
   s += `<g style="cursor:pointer" data-role="shooter">
           <circle cx="${sx}" cy="${sy}" r="9" fill="#2E7D46" stroke="${selected==='shooter' ? '#22303C' : '#fff'}" stroke-width="${selected==='shooter'?3:2}"/>
@@ -466,6 +485,7 @@ function render() {
     ["Slant range", slantYd.toFixed(0) + " yd"],
     ["Line-of-sight angle", (thetaLOS*180/Math.PI).toFixed(1) + "°"],
     ["Required holdover", unreachable ? "—" : holdoverDeg.toFixed(2) + "°"],
+    ["Aim point vs. target", unreachable ? "—" : feetInches(Math.abs(aimOverUnder)) + (aimOverUnder>=0?" over":" under")],
     ["Point-and-shoot miss", dx<=0 ? "—" : (!naiveReachedTarget ? "fell short" : (naiveMiss>=0? feetInches(naiveMiss)+" low" : feetInches(Math.abs(naiveMiss))+" high"))],
     ["Est. crosswind drift", (tHit && windMph>0) ? ((windMph*1.4667*tHit*12).toFixed(1) + " in") : "—"]
   ];
