@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Router Bit Field Guide</title>
+<style>
+  :root {
+    --paper: #EDE6D6;
+    --paper-dim: #E2D9C4;
+    --ink: #2B211A;
+    --ink-soft: #5B5145;
+    --walnut: #7A4B2A;
+    --walnut-dark: #4A2E1A;
+    --brass: #A9863F;
+    --bearing: #3E6570;
+    --bearing-bg: #E3EDEE;
+    --fence: #B14A1E;
+    --fence-bg: #F6E4D8;
+    --line: #C9BEA5;
+    --wood-fill: #C9995E;
+    --wood-fill-dark: #B37F45;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Georgia", "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .frame {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  header.masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  header.masthead h1 {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-size: clamp(28px, 5vw, 42px);
+    margin: 0;
+    color: var(--walnut-dark);
+  }
+
+  header.masthead .tag {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    max-width: 320px;
+    line-height: 1.4;
+    text-align: right;
+  }
+
+  .layout {
+    display: block;
+  }
+
+  /* ---- bit selector ---- */
+  nav.bitlist {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  nav.bitlist .arrow {
+    flex: none;
+    width: 44px;
+    background: var(--walnut-dark);
+    color: var(--paper);
+    border: none;
+    font-size: 18px;
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    cursor: pointer;
+  }
+  nav.bitlist .arrow:active { background: var(--walnut); }
+
+  nav.bitlist .select-wrap {
+    flex: 1;
+    position: relative;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+  }
+
+  nav.bitlist .select-wrap .dot {
+    margin-left: 14px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: none;
+  }
+  nav.bitlist .select-wrap .dot.bearing { background: var(--bearing); }
+  nav.bitlist .select-wrap .dot.fence { background: var(--fence); }
+
+  nav.bitlist select {
+    flex: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    padding: 10px 36px 10px 10px;
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  nav.bitlist .select-wrap::after {
+    content: "▾";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  nav.bitlist .position {
+    flex: none;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ---- detail panel ---- */
+  .panel {
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.35);
+    padding: 24px;
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .panel-head h2 {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 26px;
+    margin: 0;
+    color: var(--walnut-dark);
+  }
+
+  .guide-badge {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .guide-badge.bearing { background: var(--bearing-bg); color: var(--bearing); border-color: var(--bearing); }
+  .guide-badge.fence { background: var(--fence-bg); color: var(--fence); border-color: var(--fence); }
+
+  .aka {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 2px 0 18px;
+    font-style: italic;
+  }
+
+  .diagram-wrap {
+    background: var(--paper-dim);
+    border: 1px solid var(--line);
+    padding: 12px;
+    margin-bottom: 18px;
+  }
+
+  .diagram-wrap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .diagram-caption {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-top: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .body-text {
+    font-size: 16.5px;
+    line-height: 1.55;
+    max-width: 68ch;
+  }
+
+  .body-text p { margin: 0 0 14px; }
+
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 18px 0;
+  }
+
+  .spec-cell {
+    background: var(--paper);
+    padding: 10px 14px;
+  }
+
+  .spec-cell .k {
+    font-family: "Futura", "Century Gothic", "Trebuchet MS", sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .spec-cell .v {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .guide-note {
+    font-size: 14.5px;
+    line-height: 1.5;
+    padding: 12px 14px;
+    border-left: 3px solid var(--fence);
+    background: var(--fence-bg);
+  }
+  .guide-note.bearing { border-left-color: var(--bearing); background: var(--bearing-bg); }
+
+  /* ---- mobile ---- */
+  @media (max-width: 780px) {
+    nav.bitlist .position { display: none; }
+    header.masthead .tag { text-align: left; }
+    .panel { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <h1>Router Bit Field Guide</h1>
+    <div class="tag">Twelve bits worth knowing: what each one cuts, and whether it rides a bearing or needs a fence.</div>
+  </header>
+
+  <div class="layout">
+    <nav class="bitlist" id="bitlist" aria-label="Router bit selector">
+      <button class="arrow" id="prevBtn" aria-label="Previous bit">‹</button>
+      <div class="select-wrap">
+        <span class="dot" id="listDot"></span>
+        <select id="bitSelect"></select>
+      </div>
+      <button class="arrow" id="nextBtn" aria-label="Next bit">›</button>
+      <span class="position" id="listPosition"></span>
+    </nav>
+    <section class="panel" id="panel"></section>
+  </div>
+
+</div>
+
+<script>
+const WOOD_LIGHT = "#D9AA6D";
+const WOOD_EDGE = "#8A5A34";
+const BEARING = "#3E6570";
+const FENCE = "#B14A1E";
+const CUT_FACE = "#F1D9AE";
+
+// ---------- diagram builders ----------
+
+// Edge-profile bit: board corner is reshaped. cornerPath is the SVG path
+// segment from (200,40) to (240,80) describing the new corner contour.
+function edgeDiagram(cornerPath, hasBearing) {
+  const outline = `M40,40 L200,40 ${cornerPath.replace('M200,40 ','')} L240,200 L40,200 Z`;
+  const bearing = hasBearing ? `
+    <circle cx="252" cy="60" r="9" fill="${BEARING}" stroke="#22343A" stroke-width="1.5"/>
+    <line x1="252" y1="60" x2="240" y2="70" stroke="${BEARING}" stroke-width="2"/>
+    <text x="252" y="86" font-size="10" font-family="Futura, sans-serif" fill="${BEARING}" text-anchor="middle">bearing</text>
+  ` : `
+    <rect x="256" y="40" width="14" height="160" fill="none" stroke="${FENCE}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="263" y="30" font-size="10" font-family="Futura, sans-serif" fill="${FENCE}" text-anchor="middle">fence</text>
+  `;
+  return `
+  <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="300" height="220" fill="none"/>
+    <path d="${outline}" fill="${WOOD_LIGHT}" stroke="${WOOD_EDGE}" stroke-width="3" stroke-linejoin="round"/>
+    ${[...Array(6)].map((_,i)=>`<line x1="40" y1="${55+i*24}" x2="196" y2="${55+i*24}" stroke="${WOOD_EDGE}" stroke-width="1" opacity="0.25"/>`).join('')}
+    ${bearing}
+  </svg>`;
+}
+
+// Groove bit: channel cut into the top face. groovePath draws the channel
+// opening between x=110 and x=170 at y=40 downward.
+function grooveDiagram(groovePath, hasFence, doubleArrow) {
+  const fence = hasFence ? `
+    <rect x="60" y="18" width="30" height="18" fill="none" stroke="${FENCE}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="75" y="12" font-size="10" font-family="Futura, sans-serif" fill="${FENCE}" text-anchor="middle">straightedge</text>
+  ` : '';
+  const arrow = doubleArrow ? `
+    <line x1="140" y1="15" x2="140" y2="30" stroke="${WOOD_EDGE}" stroke-width="1.5" marker-end="url(#arrowd)" marker-start="url(#arrowu)"/>
+  ` : '';
+  return `
+  <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrowd" markerWidth="6" markerHeight="6" refX="3" refY="5" orient="auto"><path d="M0,0 L6,0 L3,5 Z" fill="${WOOD_EDGE}"/></marker>
+      <marker id="arrowu" markerWidth="6" markerHeight="6" refX="3" refY="0" orient="auto"><path d="M0,5 L6,5 L3,0 Z" fill="${WOOD_EDGE}"/></marker>
+    </defs>
+    <rect x="40" y="40" width="200" height="160" fill="${WOOD_LIGHT}" stroke="${WOOD_EDGE}" stroke-width="3"/>
+    ${[...Array(6)].map((_,i)=>`<line x1="40" y1="${55+i*24}" x2="240" y2="${55+i*24}" stroke="${WOOD_EDGE}" stroke-width="1" opacity="0.2"/>`).join('')}
+    <path d="${groovePath}" fill="${CUT_FACE}" stroke="${WOOD_EDGE}" stroke-width="2.5" stroke-linejoin="round"/>
+    ${fence}
+    ${arrow}
+  </svg>`;
+}
+
+function flushTrimDiagram() {
+  return `
+  <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+    <rect x="40" y="120" width="210" height="60" fill="${WOOD_LIGHT}" stroke="${WOOD_EDGE}" stroke-width="3"/>
+    <rect x="40" y="96" width="180" height="24" fill="#D8D0BC" stroke="${WOOD_EDGE}" stroke-width="2"/>
+    <text x="130" y="112" font-size="10" font-family="Futura, sans-serif" fill="${WOOD_EDGE}" text-anchor="middle">template</text>
+    <line x1="220" y1="94" x2="250" y2="94" stroke="${WOOD_EDGE}" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <line x1="220" y1="180" x2="250" y2="180" stroke="${WOOD_EDGE}" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <text x="252" y="98" font-size="10" font-family="Futura, sans-serif" fill="${WOOD_EDGE}">overhang</text>
+    <text x="252" y="185" font-size="10" font-family="Futura, sans-serif" fill="${WOOD_EDGE}">trimmed off</text>
+    <circle cx="220" cy="107" r="8" fill="${BEARING}" stroke="#22343A" stroke-width="1.5"/>
+    <rect x="212" y="112" width="16" height="68" fill="#8FA6AC" stroke="${BEARING}" stroke-width="1"/>
+    <text x="220" y="205" font-size="10" font-family="Futura, sans-serif" fill="${BEARING}" text-anchor="middle">bearing rides template edge</text>
+  </svg>`;
+}
+
+function raisedPanelDiagram(hasFence) {
+  const outline = `M40,40 L200,40 L200,50 L228,66 L232,82 L240,90 L240,200 L40,200 Z`;
+  return `
+  <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+    <path d="${outline}" fill="${WOOD_LIGHT}" stroke="${WOOD_EDGE}" stroke-width="3" stroke-linejoin="round"/>
+    ${[...Array(6)].map((_,i)=>`<line x1="40" y1="${55+i*24}" x2="196" y2="${55+i*24}" stroke="${WOOD_EDGE}" stroke-width="1" opacity="0.25"/>`).join('')}
+    <rect x="256" y="40" width="14" height="160" fill="none" stroke="${FENCE}" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="263" y="30" font-size="10" font-family="Futura, sans-serif" fill="${FENCE}" text-anchor="middle">table fence</text>
+  </svg>`;
+}
+
+// ---------- bit data ----------
+const BITS = [
+  {
+    id: "straight",
+    name: "Straight bit",
+    guide: "fence",
+    diagram: () => grooveDiagram(`M120,40 L120,70 L160,70 L160,40`, true, false),
+    caption: "Flat-bottom groove, cut along a clamped straightedge or with a template + guide bushing.",
+    sizes: "1/4\" – 3/4\" dia.",
+    depth: "Up to bit length, in passes",
+    use: `<p>The everyday bit. Two straight flutes cut a flat-bottomed, square-sided channel — grooves, dadoes, rabbets (run along an edge), mortises, and template pattern work.</p>
+          <p>It has no bearing, so the cut only goes where you guide the router: a clamped straightedge, an edge guide attached to the base, or a template with a guide bushing.</p>`
+  },
+  {
+    id: "spiral",
+    name: "Spiral up/downcut",
+    guide: "fence",
+    diagram: () => grooveDiagram(`M120,40 L120,70 L160,70 L160,40`, true, true),
+    caption: "Same flat-bottom groove as a straight bit — the spiral flute shears the cut instead of chopping it.",
+    sizes: "1/4\" – 1/2\" dia.",
+    depth: "Full-depth plunge in one pass (upcut) or several (downcut)",
+    use: `<p>A straight bit's flutes are ground parallel to the shaft; a spiral bit's flutes wind around it, so the cut is a continuous shearing action instead of a chop — cleaner edges, less tear-out, easier plunging.</p>
+          <p><strong>Upcut</strong> pulls chips out of the cut (good for through-mortises, but can splinter the top face). <strong>Downcut</strong> pushes chips down (clean top face, better for stopped grooves and inlay work). Same fence/template guiding rules as a straight bit — no bearing.</p>`
+  },
+  {
+    id: "rabbet",
+    name: "Rabbeting bit",
+    guide: "bearing",
+    diagram: () => edgeDiagram(`M200,40 L200,64 L240,64`, true),
+    caption: "L-shaped step cut into the edge, bearing follows the board edge below the cut.",
+    sizes: "3/8\" – 1-3/8\" cut width (bearing-set)",
+    depth: "Set by bearing diameter, often a swap-bearing kit",
+    use: `<p>Cuts a stepped notch (a rabbet) along an edge — for cabinet backs, picture frames, drawer bottoms, and lap joints. The bearing rides the uncut face below the step, so the cut follows the board's own edge automatically.</p>
+          <p>Most kits include interchangeable bearings for different rabbet widths on the same cutter.</p>`
+  },
+  {
+    id: "flushtrim",
+    name: "Flush trim bit",
+    guide: "bearing",
+    diagram: flushTrimDiagram,
+    caption: "Bearing (top or bottom) tracks a template; the cutter trims the overhang flush to it.",
+    sizes: "1/4\" – 1\" cut length",
+    depth: "Matched to material thickness",
+    use: `<p>Straight flutes with a bearing set exactly flush to the cutting edge, mounted above or below the bit. Stick a template or an already-shaped piece against the workpiece and the bit trims the excess flush to it.</p>
+          <p>Standard use: laminate and veneer trimming, and copying a template shape onto rough-cut stock. No fence needed — the template <em>is</em> the guide.</p>`
+  },
+  {
+    id: "roundover",
+    name: "Round-over bit",
+    guide: "bearing",
+    diagram: () => edgeDiagram(`M200,40 Q240,40 240,80`, true),
+    caption: "Sharp corner replaced with a smooth convex curve, bearing follows the edge below.",
+    sizes: "1/8\" – 1/2\" radius",
+    depth: "Fixed by bit radius",
+    use: `<p>Softens a sharp 90° edge into a rounded quarter-circle profile. The most common edge-treatment bit — tabletops, shelf edges, handles, anywhere a crisp corner is uncomfortable or fragile.</p>
+          <p>Bearing rides the board's face or edge below the cutter, so depth is fixed by the bit's own radius, not by how deep you plunge.</p>`
+  },
+  {
+    id: "chamfer",
+    name: "Chamfer bit",
+    guide: "bearing",
+    diagram: () => edgeDiagram(`M200,40 L240,80`, true),
+    caption: "Flat 45° bevel replacing the square corner, bearing follows the edge below.",
+    sizes: "1/4\" – 1-1/4\" cutting length, usually 45°",
+    depth: "Adjustable within the bevel face",
+    use: `<p>Cuts a flat angled bevel (typically 45°, some bits offer 15°–45°) instead of a round-over's curve — a crisper, more architectural edge treatment. Also used to break sharp edges for safety and to prep edges for glue-up on mitered joints.</p>
+          <p>Bearing-guided, same as round-over; plunge depth controls how wide the bevel face is.</p>`
+  },
+  {
+    id: "cove",
+    name: "Cove bit",
+    guide: "bearing",
+    diagram: () => edgeDiagram(`M200,40 Q200,80 240,80`, true),
+    caption: "Concave curve scooped into the edge, bearing follows the board below.",
+    sizes: "1/4\" – 1\" radius",
+    depth: "Fixed by bit radius",
+    use: `<p>The inverse of a round-over — a concave, scooped curve instead of a convex one. Used decoratively on edges and mouldings, and to form a comfortable finger-pull groove on drawer fronts and cutting boards.</p>
+          <p>Bearing-guided; combine with a round-over or bead pass for a built-up moulding profile.</p>`
+  },
+  {
+    id: "ogee",
+    name: "Roman ogee bit",
+    guide: "bearing",
+    diagram: () => edgeDiagram(`M200,40 C215,40 205,60 220,60 C235,60 225,80 240,80`, true),
+    caption: "S-curve of convex and concave sections, bearing follows the board below.",
+    sizes: "1/4\" – 1-1/8\" radius",
+    depth: "Fixed by bit radius",
+    use: `<p>A classic S-shaped decorative profile — convex near the surface, concave near the edge. Standard on picture frames, tabletop edges, and traditional furniture mouldings where a plain round-over reads as too plain.</p>
+          <p>Bearing-guided like the other edge-profile bits above.</p>`
+  },
+  {
+    id: "dovetail",
+    name: "Dovetail bit",
+    guide: "fence",
+    diagram: () => grooveDiagram(`M135,40 L110,72 L170,72 L145,40 Z`, true, false),
+    caption: "Trapezoid groove, wide at the base, narrow at the mouth — cut with a jig or fence, no bearing.",
+    sizes: "1/2\" dia., 7°–14° angle",
+    depth: "Set to stock thickness for through-joints",
+    use: `<p>Angled flutes cut a groove that's wider at the bottom than at the opening — the interlocking shape behind dovetail joints and sliding dovetails (shelves into a case side).</p>
+          <p>No bearing. Guided by a dovetail jig (for box joints) or a straight fence (for sliding dovetail housings) — precision here is entirely on the setup, not the bit.</p>`
+  },
+  {
+    id: "corebox",
+    name: "Core box (round nose)",
+    guide: "fence",
+    diagram: () => grooveDiagram(`M110,40 L110,55 A 30 30 0 0 0 170,55 L170,40 Z`, true, false),
+    caption: "U-shaped channel with a rounded bottom, guided by a fence or steady hand.",
+    sizes: "1/8\" – 1\" dia.",
+    depth: "Shallow passes, bit is radiused not pointed",
+    use: `<p>Cuts a smooth, round-bottomed channel — flutes on a serving board, sign lettering, finger pulls, and decorative grooves where a flat-bottomed straight-bit channel would look wrong.</p>
+          <p>No bearing; run it against a fence or straightedge for a straight channel, or freehand for lettering and organic shapes (steady hands or a light touch and shallow passes matter more than for any other bit here).</p>`
+  },
+  {
+    id: "vgroove",
+    name: "V-groove bit",
+    guide: "fence",
+    diagram: () => grooveDiagram(`M110,40 L140,75 L170,40 Z`, true, false),
+    caption: "Triangular groove tapering to a point, guided by a fence or steady hand.",
+    sizes: "60°–90° included angle, 1/4\" – 1\" dia.",
+    depth: "Shallow — width grows fast with depth",
+    use: `<p>Cuts a crisp V-shaped channel — decorative lines, chamfered panel details, and sign/lettering work where a pointed groove reads better than a round one.</p>
+          <p>No bearing; fence-guided for straight lines, freehand for lettering. Because the bit is a cone, small changes in depth change the groove's width a lot — sneak up on the final pass.</p>`
+  },
+  {
+    id: "raisedpanel",
+    name: "Raised panel bit",
+    guide: "fence",
+    diagram: () => raisedPanelDiagram(true),
+    caption: "Multi-step bevel profile shaping a cabinet door panel, run against a router table fence.",
+    sizes: "2-1/2\" – 3-1/2\" dia. (large, table-mount only)",
+    depth: "Multiple shallow passes to full profile",
+    use: `<p>A large-diameter bit that shapes the classic sunken cabinet-door panel: a flat field in the center, an angled bevel, and a flat back edge (or tongue) that fits the door frame's groove.</p>
+          <p>Big enough that it's table-mounted only, never handheld. No bearing — the router table fence sets the cut, taken in several shallow passes rather than one full-depth pass.</p>`
+  }
+];
+
+// ---------- render ----------
+const panelEl = document.getElementById('panel');
+const selectEl = document.getElementById('bitSelect');
+const dotEl = document.getElementById('listDot');
+const positionEl = document.getElementById('listPosition');
+let activeIndex = 0;
+
+selectEl.innerHTML = BITS.map((bit, i) => `<option value="${i}">${bit.name}</option>`).join('');
+
+function goTo(index) {
+  activeIndex = (index + BITS.length) % BITS.length;
+  renderList();
+  renderPanel();
+}
+
+function renderList() {
+  const bit = BITS[activeIndex];
+  selectEl.value = activeIndex;
+  dotEl.className = `dot ${bit.guide}`;
+  positionEl.textContent = `${activeIndex + 1} / ${BITS.length}`;
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(activeIndex - 1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(activeIndex + 1));
+selectEl.addEventListener('change', () => goTo(Number(selectEl.value)));
+
+function renderPanel() {
+  const bit = BITS[activeIndex];
+  const badgeLabel = bit.guide === 'bearing' ? 'Bearing-guided' : 'Fence / straightedge required';
+  const noteText = bit.guide === 'bearing'
+    ? 'Self-guiding: a bearing on the bit rides the workpiece edge (or a template), so the cutter automatically follows the existing shape. No fence needed — but the surface it rides against must already be fair and smooth, since the bit copies it exactly.'
+    : 'No bearing on this bit: the cut goes wherever the router is guided. Clamp a straightedge, use an edge guide, a router table fence, or a template with a guide bushing — the setup does the work the bearing would otherwise do.';
+
+  panelEl.innerHTML = `
+    <div class="panel-head">
+      <h2>${bit.name}</h2>
+      <span class="guide-badge ${bit.guide}">${badgeLabel}</span>
+    </div>
+    <div class="diagram-wrap">
+      ${bit.diagram()}
+      <div class="diagram-caption">${bit.caption}</div>
+    </div>
+    <div class="specs">
+      <div class="spec-cell"><span class="k">TYPICAL SIZE</span><span class="v">${bit.sizes}</span></div>
+      <div class="spec-cell"><span class="k">CUT DEPTH</span><span class="v">${bit.depth}</span></div>
+    </div>
+    <div class="body-text">${bit.use}</div>
+    <div style="height:14px"></div>
+    <div class="guide-note ${bit.guide}">${noteText}</div>
+  `;
+}
+
+goTo(0);
+</script>
+</body>
+</html>
