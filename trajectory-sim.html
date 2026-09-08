@@ -96,22 +96,27 @@
   .select-toggle button.active.target { background: var(--target); color: #fff; border-color: var(--target); }
   .hint { font-size: 12px; color: var(--ink-soft); line-height: 1.4; margin-bottom: 10px; }
 
-  .dpad {
-    display: grid;
-    grid-template-columns: 44px 44px 44px;
-    grid-template-rows: 40px 40px 40px;
-    gap: 4px;
-    justify-content: center;
-  }
-  .dpad button {
+  .stepper-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .stepper-row:last-child { margin-bottom: 0; }
+  .stepper-row .stepper-label { flex: none; width: 62px; font-size: 12px; color: var(--ink-soft); }
+  .stepper-row button {
+    flex: none;
+    width: 34px;
+    height: 34px;
     font-size: 16px;
     border: 1px solid var(--line);
     background: var(--panel);
     cursor: pointer;
     touch-action: manipulation;
   }
-  .dpad button:active { background: var(--ink); color: #fff; }
-  .dpad-label { font-size: 9px; color: var(--ink-soft); display: flex; align-items: center; justify-content: center; text-align: center; }
+  .stepper-row button:active { background: var(--ink); color: #fff; }
+  .stepper-row .stepper-value {
+    flex: 1;
+    text-align: center;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
 
   .vfield { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .vfield input[type=number] {
@@ -188,11 +193,18 @@
           <button id="selShooter" class="shooter">● Shooter</button>
           <button id="selTarget" class="target">● Target</button>
         </div>
-        <div class="hint">Arrow keys move the selected point — ←/→ distance, ↑/↓ elevation. Click a marker on the diagram to select it.</div>
-        <div class="dpad" id="dpad">
-          <div></div><button data-dir="up">▲</button><div></div>
-          <button data-dir="left">◀</button><div class="dpad-label" id="dpadLabel"></div><button data-dir="right">▶</button>
-          <div></div><button data-dir="down">▼</button><div></div>
+        <div class="hint">Arrow keys also work — ←/→ distance, ↑/↓ elevation. Click a marker on the diagram to select it.</div>
+        <div class="stepper-row">
+          <span class="stepper-label">Distance</span>
+          <button data-dir="left">◀</button>
+          <span class="stepper-value" id="distValue"></span>
+          <button data-dir="right">▶</button>
+        </div>
+        <div class="stepper-row">
+          <span class="stepper-label">Elevation Δ</span>
+          <button data-dir="down">◀</button>
+          <span class="stepper-value" id="elevValue"></span>
+          <button data-dir="up">▶</button>
         </div>
       </div>
 
@@ -458,6 +470,9 @@ function render() {
     ["Est. crosswind drift", (tHit && windMph>0) ? ((windMph*1.4667*tHit*12).toFixed(1) + " in") : "—"]
   ];
   readouts.innerHTML = cells.map(([k,v]) => `<div class="readout-cell"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+
+  document.getElementById('distValue').textContent = dxYd.toFixed(0) + " yd";
+  document.getElementById('elevValue').textContent = (dy>=0?"+":"") + dy.toFixed(0) + " ft";
 }
 
 function feetInches(ft) {
@@ -474,11 +489,14 @@ function feetInches(ft) {
 function updateSelectButtons() {
   document.getElementById('selShooter').classList.toggle('active', selected === 'shooter');
   document.getElementById('selTarget').classList.toggle('active', selected === 'target');
-  document.getElementById('dpadLabel').textContent = selected === 'shooter' ? 'Shooter' : 'Target';
 }
 
 document.getElementById('selShooter').addEventListener('click', () => { selected = 'shooter'; updateSelectButtons(); render(); });
 document.getElementById('selTarget').addEventListener('click', () => { selected = 'target'; updateSelectButtons(); render(); });
+
+document.querySelectorAll('.stepper-row button[data-dir]').forEach(btn => {
+  btn.addEventListener('click', () => movePoint(btn.dataset.dir));
+});
 
 function movePoint(dir) {
   const p = selected === 'shooter' ? shooter : target;
@@ -498,10 +516,6 @@ document.addEventListener('keydown', (e) => {
   if (!map[e.key]) return;
   e.preventDefault();
   movePoint(map[e.key]);
-});
-
-document.getElementById('dpad').querySelectorAll('button[data-dir]').forEach(btn => {
-  btn.addEventListener('click', () => movePoint(btn.dataset.dir));
 });
 
 // ---- velocity input & cartridge chips ----
