@@ -68,6 +68,35 @@
   .card ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.55; }
   .card li { margin-bottom: 6px; }
 
+  .haz-term {
+    text-decoration: underline dotted;
+    text-decoration-color: var(--ink-soft);
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .haz-term:hover, .haz-term:focus, .haz-term.open {
+    background: rgba(0,0,0,0.08);
+    outline: none;
+  }
+
+  #hazPopover {
+    position: fixed;
+    z-index: 500;
+    display: none;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    padding: 12px 14px;
+    width: 260px;
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  #hazPopover .pop-head { margin-bottom: 6px; }
+  #hazPopover .label { font-weight: 700; font-size: 14px; }
+  #hazPopover .cue { color: var(--ink); }
+
   .nextreads { margin-top: 24px; border: 1px solid var(--line); background: var(--panel); padding: 16px 18px; }
   .nextreads h3 { margin: 0 0 8px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); }
   .nextreads ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.6; }
@@ -119,6 +148,8 @@
     <div class="card terrain"><h3>Terrain & climate</h3><ul id="terrainList"></ul></div>
   </div>
 
+  <div id="hazPopover"></div>
+
   <div class="nextreads">
     <h3>Next reads</h3>
     <ul>
@@ -138,7 +169,7 @@ const REGIONS = [
     name: "North America",
     note: "US, Canada, Mexico — huge range from arctic tundra to desert.",
     wild: ["Black bears in wooded areas; grizzlies in parts of the west", "Rattlesnakes and other venomous snakes, especially in the south and west", "Ticks carrying Lyme and other diseases", "Scorpions in the desert Southwest", "Mountain lions in some backcountry areas"],
-    plant: ["Poison ivy, oak, and sumac cause itchy rashes on contact", "Cacti and thorny desert plants", "Some wild berries and mushrooms are toxic — don't eat anything you can't positively identify"],
+    plant: ["Poison ivy and poison oak cause itchy, blistering rashes on contact (poison sumac too, less common)", "Cacti and thorny desert plants", "Some wild berries and mushrooms are toxic — don't eat anything you can't positively identify"],
     terrain: ["Weather can shift fast, especially in mountains", "Extreme heat and fast dehydration in the desert Southwest", "Flash floods in dry washes during storms", "Cold-exposure risk in winter and at elevation"]
   },
   {
@@ -258,6 +289,115 @@ assign("oceania", ["australia","new zealand","fiji","solomon islands","vanuatu",
 assign("casia", ["russia","kazakhstan","uzbekistan","turkmenistan","kyrgyzstan","tajikistan","armenia","azerbaijan","georgia"]);
 assign("arctic", ["greenland"]);
 
+// ---------- hazard terms: region-specific detail on hover/click ----------
+// Phrase -> generic term key, used to find and wrap mentions in bullet text.
+const TERM_PATTERNS = [
+  ["black bears", "bear"], ["grizzlies", "bear"], ["polar bears", "polarbear"],
+  ["rattlesnakes", "snake"], ["venomous snakes", "snake"], ["venomous vipers", "snake"], ["snakes", "snake"],
+  ["ticks", "tick"], ["scorpions", "scorpion"],
+  ["mountain lions", "bigcat"], ["jaguars", "bigcat"], ["tigers and leopards", "bigcat"], ["big cats", "bigcat"],
+  ["crocodiles", "crocodile"],
+  ["venomous spiders", "spider"], ["spiders", "spider"],
+  ["biting/stinging insects", "mosquito"], ["biting insects", "mosquito"],
+  ["disease-carrying mosquitoes", "mosquito"], ["malaria-carrying mosquitoes", "mosquito"],
+  ["wild boar", "boar"], ["wolves", "wolf"], ["sharks", "shark"],
+  ["jellyfish", "jellyfish"], ["marine stingers", "jellyfish"],
+  ["hippos", "hippo"], ["elephants", "elephant"],
+  ["poison ivy", "poisonivy"], ["poison oak", "poisonoak"], ["poison sumac", "poisonsumac"]
+];
+
+// Generic fallback text per term key — used only when a region below doesn't
+// override it with actual regional species.
+const DEFAULT_INFO = {
+  bear: { label: "Bear", detail: "Don't approach — back away slowly, make noise so you don't surprise one." },
+  polarbear: { label: "Polar bear", detail: "All-white/cream coat, blocky head, seen on ice or snow. One of the few animals that will actively hunt humans — treat any sighting as an emergency." },
+  snake: { label: "Snake", detail: "Don't try to judge 'venomous' from appearance alone — treat any snake you can't positively identify as potentially dangerous and give it space." },
+  tick: { label: "Tick", detail: "Tiny (often sesame-seed sized, swelling after feeding), flat oval body, 8 legs. Remove with fine-tipped tweezers, grasp close to the skin, pull straight up steadily — don't twist or squeeze the body." },
+  scorpion: { label: "Scorpion", detail: "Segmented tail curling over the back with a stinger at the tip; pincers up front. Don't handle any of them." },
+  bigcat: { label: "Big cat", detail: "The danger is proximity, not misidentification. Don't approach, don't run — back away slowly while facing it." },
+  crocodile: { label: "Crocodile", detail: "Narrow, V-shaped snout (an alligator's is wider and U-shaped). Often nearly invisible at the waterline." },
+  spider: { label: "Spider", detail: "Most spiders are harmless even when alarming-looking. If unsure, don't handle it." },
+  mosquito: { label: "Biting insect", detail: "Cover up and use repellent, especially at dawn and dusk when many species are most active." },
+  boar: { label: "Wild boar", detail: "Fast and can be aggressive if startled or with young nearby — give a wide, calm berth." },
+  wolf: { label: "Wolf", detail: "Attacks on people are very uncommon. Give any sighted wolf distance and never feed one." },
+  shark: { label: "Shark", detail: "No reliable way to judge a dangerous species from a harmless one by sight. Avoid swimming at dawn/dusk, in murky water, or near bait fish." },
+  jellyfish: { label: "Jellyfish", detail: "Trailing tentacles can sting well beyond where the visible body is, and beached ones can still sting if touched." },
+  hippo: { label: "Hippo", detail: "Looks slow but is fast on land and fiercely territorial in water — among Africa's most dangerous animals to humans by death toll." },
+  elephant: { label: "Elephant", detail: "Generally calm but can charge with little warning, especially if surprised or with calves nearby." },
+  poisonivy: { label: "Poison ivy", detail: "Leaflets in groups of three (\"leaves of three, let it be\"), each almond-shaped with a pointed tip. Often glossy; can turn red in fall. The oil (urushiol) stays active on skin, clothing, or gear for a long time." },
+  poisonoak: { label: "Poison oak", detail: "Also three leaflets, but each is lobed and rounded like a small oak leaf, with a duller, sometimes fuzzy surface rather than ivy's glossy sheen." },
+  poisonsumac: { label: "Poison sumac", detail: "7–13 leaflets in rows along a reddish central stem, usually in wet, swampy ground. Widely considered to cause an even worse reaction than ivy or oak." }
+};
+
+// Region-specific overrides — this is the point of the whole mechanism:
+// "venomous snakes" in North America and in Australia are not the same
+// hazard, so name what's actually there rather than repeating one generic
+// line everywhere.
+const REGION_OVERRIDES = {
+  na: {
+    snake: { label: "Venomous snakes here", detail: "Species include eastern & western diamondback rattlesnakes, timber rattlesnake, copperhead, cottonmouth (water moccasin), and coral snakes in the south. Exact range varies a lot by state." },
+    scorpion: { label: "Scorpions here", detail: "The Arizona bark scorpion (desert Southwest) is the most medically significant US species; most others here cause only a painful sting." },
+    tick: { label: "Ticks here", detail: "Blacklegged (deer) ticks spread Lyme disease across the Northeast, Upper Midwest, and West Coast; other regional ticks carry different diseases, like Rocky Mountain spotted fever." }
+  },
+  ca_carib: {
+    snake: { label: "Venomous snakes here", detail: "On the mainland: fer-de-lance, eyelash viper, and coral snakes are the ones to know. Many Caribbean islands actually have few or no venomous snakes — it varies a lot by island." }
+  },
+  sa_trop: {
+    snake: { label: "Venomous snakes here", detail: "Fer-de-lance (Bothrops species) and bushmaster are the two to take most seriously; coral snakes are also present." },
+    spider: { label: "Spiders here", detail: "The Brazilian wandering spider is the most medically significant species in this region; recluse spiders are also present." }
+  },
+  sa_andes: {
+    spider: { label: "Spiders here", detail: "Recluse and wandering spider species occur at lower elevations; risk drops sharply at higher altitude." }
+  },
+  europe: {
+    snake: { label: "Venomous snakes here", detail: "The common European adder (Vipera berus) is the main one across much of the continent; a few other viper species occur in southern/eastern Europe. Europe has very few venomous snake species compared to most regions on this list." },
+    tick: { label: "Ticks here", detail: "The castor bean tick (Ixodes ricinus) is the main Lyme disease vector across much of Europe." }
+  },
+  ssafrica: {
+    snake: { label: "Venomous snakes here", detail: "Species to know include the black mamba, puff adder, boomslang, and various cobras — puff adders cause the most bites region-wide, black mambas are the most feared due to venom potency and speed." }
+  },
+  namena: {
+    snake: { label: "Venomous snakes here", detail: "Species include the Egyptian cobra, saw-scaled viper, and horned desert vipers." },
+    scorpion: { label: "Scorpions here", detail: "The deathstalker scorpion, one of the most dangerous scorpion species anywhere, is native to this region." }
+  },
+  sasia: {
+    snake: { label: "Venomous snakes here", detail: "The \"Big Four\" — Indian cobra, Russell's viper, common krait, and saw-scaled viper — cause the large majority of snakebite injuries and deaths in this region." }
+  },
+  seasia: {
+    snake: { label: "Venomous snakes here", detail: "Species include the king cobra (the world's longest venomous snake), Malayan pit viper, and various kraits and cobras." }
+  },
+  eastasia: {
+    snake: { label: "Venomous snakes here", detail: "Fewer species than in South/Southeast Asia. Japan has the mamushi pit viper (and the habu in Okinawa); China has several regional pit viper species and the Chinese cobra." }
+  },
+  oceania: {
+    snake: { label: "Venomous snakes here", detail: "Australia has an unusually high share of venomous species, including the eastern brown snake, coastal taipan, tiger snake, and death adder. This is a real outlier — most regions on this list have far fewer venomous species overall." },
+    spider: { label: "Spiders here", detail: "The Sydney funnel-web spider and the redback spider (a black-widow relative) are the two most medically significant Australian species." },
+    jellyfish: { label: "Jellyfish here", detail: "Australian waters have the box jellyfish and the much smaller Irukandji jellyfish — both capable of serious, occasionally fatal stings. Stinger season and nets vary by beach; check local signage." }
+  },
+  casia: {},
+  arctic: {}
+};
+
+function escapeAttr(s) {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+const TERM_REGEX = new RegExp(
+  TERM_PATTERNS.map(([p]) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).sort((a,b) => b.length - a.length).join('|'),
+  "gi"
+);
+const TERM_KEY_MAP = new Map(TERM_PATTERNS.map(([phrase, key]) => [phrase.toLowerCase(), key]));
+
+function annotate(text, regionKey) {
+  return text.replace(TERM_REGEX, (match) => {
+    const termKey = TERM_KEY_MAP.get(match.toLowerCase());
+    if (!termKey) return match;
+    const info = (REGION_OVERRIDES[regionKey] && REGION_OVERRIDES[regionKey][termKey]) || DEFAULT_INFO[termKey];
+    if (!info) return match;
+    return `<span class="haz-term" data-label="${escapeAttr(info.label)}" data-detail="${escapeAttr(info.detail)}" tabindex="0" role="button">${match}</span>`;
+  });
+}
+
 // ---------- region panel (dropdown/arrows) ----------
 const selectEl = document.getElementById('regionSelect');
 const posLabel = document.getElementById('posLabel');
@@ -277,8 +417,8 @@ function renderPanel() {
   const r = REGIONS[activeIndex];
   document.getElementById('regionName').textContent = r.name;
   document.getElementById('regionNote').textContent = r.note;
-  document.getElementById('wildList').innerHTML = r.wild.map(x => `<li>${x}</li>`).join('');
-  document.getElementById('plantList').innerHTML = r.plant.map(x => `<li>${x}</li>`).join('');
+  document.getElementById('wildList').innerHTML = r.wild.map(x => `<li>${annotate(x, r.key)}</li>`).join('');
+  document.getElementById('plantList').innerHTML = r.plant.map(x => `<li>${annotate(x, r.key)}</li>`).join('');
   document.getElementById('terrainList').innerHTML = r.terrain.map(x => `<li>${x}</li>`).join('');
 }
 
@@ -308,7 +448,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(t
   // on its own — falling back to a location check only when a part's
   // centroid lands somewhere that clearly contradicts the country-level
   // region (e.g. a "Europe" country with a piece centered in South America).
-  const OLD_WORLD = new Set(["europe","ssafrica","namena","sasia","seasia","eastasia","casia","oceania","arctic"]);
+  const OLD_WORLD = new Set(["europe","ssafrica","namena","sasia","seasia","eastasia","casia","oceania"]);
   const NEW_WORLD = new Set(["na","ca_carib","sa_trop","sa_andes"]);
 
   function splitParts(feature) {
@@ -381,6 +521,49 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(t
   }
   svg.innerHTML = s;
 })();
+
+// ---------- hazard term popover ----------
+const popover = document.getElementById('hazPopover');
+
+function openPopover(el) {
+  const label = el.dataset.label;
+  const detail = el.dataset.detail || '';
+  popover.innerHTML = `<div class="pop-head label">${label}</div><div class="cue">${detail}</div>`;
+  popover.style.display = 'block';
+  const rect = el.getBoundingClientRect();
+  const pw = 260, ph = Math.min(260, popover.offsetHeight || 200);
+  let left = Math.min(rect.left, window.innerWidth - pw - 8);
+  let top = rect.bottom + 8;
+  if (top + ph > window.innerHeight) top = Math.max(8, rect.top - ph - 8);
+  popover.style.left = Math.max(8, left) + 'px';
+  popover.style.top = top + 'px';
+  document.querySelectorAll('.haz-term.open').forEach(o => o.classList.remove('open'));
+  el.classList.add('open');
+}
+function closePopover() {
+  popover.style.display = 'none';
+  document.querySelectorAll('.haz-term.open').forEach(o => o.classList.remove('open'));
+}
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest && e.target.closest('.haz-term');
+  if (t) openPopover(t);
+});
+document.addEventListener('mouseout', e => {
+  const t = e.target.closest && e.target.closest('.haz-term');
+  if (t && !t.contains(e.relatedTarget)) closePopover();
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest && e.target.closest('.haz-term');
+  if (t) { e.preventDefault(); openPopover(t); }
+  else if (!e.target.closest('#hazPopover')) closePopover();
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('haz-term')) {
+    e.preventDefault();
+    openPopover(document.activeElement);
+  }
+  if (e.key === 'Escape') closePopover();
+});
 
 goTo(0);
 </script>
