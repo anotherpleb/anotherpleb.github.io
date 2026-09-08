@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate index.html
         run: |
@@ -24,6 +26,7 @@ jobs:
           <style>
             body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
             h1 { border-bottom: 2px solid #333; padding-bottom: 10px; }
+            h2 { margin-top: 30px; color: #555; font-size: 1em; text-transform: uppercase; letter-spacing: 0.05em; }
             ul { list-style: none; padding: 0; }
             li { margin: 10px 0; }
             a { text-decoration: none; color: #0366d6; font-size: 1.1em; }
@@ -36,12 +39,27 @@ jobs:
           if [ -f welcome.html ]; then
             cat welcome.html >> index.html
           fi
-          echo "<ul>" >> index.html
-          for f in *.html; do
+
+          # collect "timestamp|filename", newest first
+          entries=$(for f in *.html; do
             if [ "$f" != "index.html" ] && [ "$f" != "welcome.html" ]; then
-              name=$(basename "$f" .html)
-              echo "<li><a href=\"$f\">$name</a></li>" >> index.html
+              ts=$(git log --diff-filter=A --follow --format=%aI -- "$f" | tail -1)
+              if [ -z "$ts" ]; then ts=$(date -Iseconds); fi
+              echo "$ts|$f"
             fi
+          done | sort -r)
+
+          current_month=""
+          echo "$entries" | while IFS='|' read -r ts f; do
+            [ -z "$f" ] && continue
+            month=$(date -d "$ts" "+%B %Y")
+            name=$(basename "$f" .html)
+            if [ "$month" != "$current_month" ]; then
+              if [ -n "$current_month" ]; then echo "</ul>" >> index.html; fi
+              echo "<h2>$month</h2><ul>" >> index.html
+              current_month="$month"
+            fi
+            echo "<li><a href=\"$f\">$name</a></li>" >> index.html
           done
           echo "</ul></body></html>" >> index.html
 
