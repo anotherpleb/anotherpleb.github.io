@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Talking to AI for the First Time</title>
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --panel: #FFFFFF;
+    --ink: #24262B;
+    --ink-soft: #5C6068;
+    --line: #DEDAD0;
+    --accent: #3E5C8A;
+    --good-bg: #E3EEE3;
+    --good-line: #6E9E72;
+    --bad-bg: #F6E4D8;
+    --bad-line: #C77B4A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.55; }
+  .frame { max-width: 720px; margin: 0 auto; padding: 28px 20px 70px; }
+
+  header h1 { font-size: clamp(24px, 5vw, 32px); margin: 0 0 6px; }
+  header p.sub { color: var(--ink-soft); font-size: 15px; margin: 0 0 6px; max-width: 60ch; }
+  header p.meta { color: var(--ink-soft); font-size: 12.5px; margin: 0 0 24px; }
+
+  h2 { font-size: 19px; margin: 36px 0 10px; }
+  p { font-size: 15.5px; margin: 0 0 12px; }
+
+  .callout {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    padding: 14px 16px; font-size: 14.5px; margin: 14px 0;
+  }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+  .split .box { padding: 14px 16px; border: 1px solid var(--line); }
+  .split .good { background: var(--good-bg); border-left: 4px solid var(--good-line); }
+  .split .bad { background: var(--bad-bg); border-left: 4px solid var(--bad-line); }
+  .split h3 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .split ul { margin: 0; padding-left: 18px; font-size: 14px; }
+  .split li { margin-bottom: 5px; }
+  @media (max-width: 560px) { .split { grid-template-columns: 1fr; } }
+
+  .mistake { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+  .mistake .x { color: var(--bad-line); font-weight: 700; flex: none; }
+  .mistake .fix { color: var(--ink-soft); font-size: 14px; margin-top: 2px; }
+
+  dl.glossary { margin: 0; }
+  dl.glossary dt { font-weight: 700; margin-top: 12px; font-size: 15px; }
+  dl.glossary dd { margin: 2px 0 0; font-size: 14.5px; color: var(--ink-soft); }
+
+  .nextreads { margin-top: 32px; border: 1px solid var(--line); background: var(--panel); padding: 18px 20px; }
+  .nextreads h3 { margin: 0 0 8px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); }
+  .nextreads ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.6; }
+  .nextreads a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .nextreads a:hover { text-decoration: underline; }
+  .nextreads .note { font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <h1>Talking to AI for the First Time</h1>
+    <p class="sub">No account, no course, no hour of your time. Just enough to open a chatbot and actually get something useful out of it.</p>
+    <p class="meta">~4 minute read</p>
+  </header>
+
+  <div class="callout">
+    <strong>This is not Google.</strong> A search engine hands you a ranked list of links and you go read them. A chatbot doesn't search an index and rank pages — it writes an answer directly, from what it learned during training (sometimes after searching the web first, if the tool supports that). There are no "results" to scan. You're having a conversation, not looking something up.
+  </div>
+
+  <h2>What it actually is</h2>
+  <p>An AI chatbot (ChatGPT, Claude, Gemini, and others) is a program trained on huge amounts of text that got very good at predicting what words should come next. When you type something, it generates a reply the same way — one plausible next word at a time, extremely fast.</p>
+  <p>It's not thinking or understanding the way a person does. It's closer to an extremely well-read, fast writer who sometimes says things confidently that aren't true — more on that below.</p>
+
+  <h2>How to actually talk to it</h2>
+  <p>Just write like you're asking a capable person for help. Full sentences, not keywords. There's no special syntax to learn.</p>
+  <div class="callout">
+    Instead of: <em>"resume tips"</em><br>
+    Try: <em>"I'm applying for a marketing coordinator job with 2 years of retail experience. Can you help me rewrite my resume bullet points to sound more relevant?"</em>
+  </div>
+  <p>The single most useful habit: <strong>treat the first reply as a draft, not a verdict.</strong> If it's not right, just say so — "make it shorter," "that's too formal," "I actually meant X." It'll adjust. Nobody gets the perfect answer on the first try, and that's normal, not a failure.</p>
+
+  <h2>Set the scene before you ask</h2>
+  <p>You can open a chat by telling the AI who you are, what you're trying to accomplish, and even what role you want it to play — a patient tutor, a blunt editor, a skeptical reviewer. That framing sticks for the rest of the conversation and changes every answer that follows, because the AI is generating each reply based on everything said so far in that chat, including how you set things up at the start.</p>
+  <p>Compare: <em>"check this email"</em> gets a generic pass. <em>"For this whole conversation, act as a strict copy editor — flag every awkward sentence and don't soften your feedback"</em> gets you something you'll actually learn from. Same request, very different result, because you told it what role to play before asking anything.</p>
+  <p>This is also why the "new chat per topic" habit from above matters: the scene you set stays in effect for that whole thread, which is exactly why switching topics without starting fresh leaves old framing bleeding into a new conversation where it doesn't belong.</p>
+
+  <h2>Prompts worth stealing</h2>
+  <p>A handful of prompts that go beyond "help me with X," with why each one works.</p>
+
+  <div class="callout">
+    <strong>"You're a patient tutor helping someone who's never studied biology. Explain photosynthesis like you would to a smart 12-year-old, then check my understanding with a quick question."</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Sets a role, an audience level, and asks for interaction back — not just a wall of text.</p>
+  </div>
+  <div class="callout">
+    <strong>"Write a two-sentence out-of-office reply. I'm back Monday; for anything urgent they should contact Priya."</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Exact length and the specific details filled in — nothing left for it to guess or invent.</p>
+  </div>
+  <div class="callout">
+    <strong>"Here's a draft email to my landlord about a leaking pipe. Make it firmer without being rude: [paste text]"</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Pairing a real draft with a specific direction of change beats "fix this" every time.</p>
+  </div>
+  <div class="callout">
+    <strong>"I'm deciding between two job offers — one pays more with a longer commute, the other pays less and is remote. Help me think through what actually matters here rather than telling me what to pick."</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Explicitly asks for a thinking partner, not a verdict — a good instinct for anything that's actually your call to make.</p>
+  </div>
+  <div class="callout">
+    <strong>"My printer says 'paper jam' but I don't see paper stuck anywhere. Walk me through what to check, one step at a time — wait for me to tell you what I find before the next step."</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Stops it from dumping ten steps at once when you only need the first one right now.</p>
+  </div>
+  <div class="callout">
+    <strong>"Turn this paragraph into 5 bullet points for a slide, each under 8 words: [paste text]"</strong>
+    <p style="margin-top:8px; margin-bottom:0;">A concrete format and length constraint gives a predictable, usable result instead of a guess at what you meant.</p>
+  </div>
+  <div class="callout">
+    <strong>"I think I should quit my job to start a business. Play devil's advocate and poke holes in my plan."</strong>
+    <p style="margin-top:8px; margin-bottom:0;">Explicitly invites disagreement — useful because left alone, it can default to agreeable rather than critical. Ask it to push back when you actually want that.</p>
+  </div>
+
+  <h2>Start a new chat for a new topic</h2>
+  <p>It's tempting to keep one long-running chat going forever and just keep typing new questions into it — the way you might keep reusing the same search tab. Don't. Everything you've said earlier in that chat is still sitting there influencing what comes next, even once it's irrelevant. Ask about a recipe, then a car problem, then a work email in the same thread, and answers get muddier and less sharp as it drags leftover context along.</p>
+  <p>Starting a new chat is free, instant, and costs you nothing — it's exactly like opening a new browser tab or a new document, not "losing" anything. A good habit: new topic, new chat.</p>
+
+  <h2>What it's good at, and what to double-check</h2>
+  <div class="split">
+    <div class="box good">
+      <h3>Good at</h3>
+      <ul>
+        <li>Drafting and rewriting (emails, messages, resumes)</li>
+        <li>Explaining a topic at whatever level you ask for</li>
+        <li>Brainstorming options</li>
+        <li>Summarizing something long</li>
+        <li>Being a sounding board while you think something through</li>
+      </ul>
+    </div>
+    <div class="box bad">
+      <h3>Verify before trusting</h3>
+      <ul>
+        <li>Specific facts, stats, or dates — it can sound sure and still be wrong</li>
+        <li>Anything about very recent events (unless it says it searched)</li>
+        <li>Legal, medical, or financial specifics that affect you personally</li>
+        <li>Quotes or citations — it can invent plausible-sounding ones</li>
+      </ul>
+    </div>
+  </div>
+  <p>That "sounds right but isn't" failure mode has a name — <strong>hallucination</strong> — and it's the single most important thing to know going in. It's not lying on purpose; it's a side effect of how the system generates text. The fix is simple: for anything where being wrong would actually matter, check it against a real source before you rely on it.</p>
+
+  <h2>Mistakes almost everyone makes at first</h2>
+  <div class="mistake">
+    <span class="x">✕</span>
+    <div><strong>Piling every unrelated topic into one never-ending chat.</strong>
+      <div class="fix">Start a new chat per topic. It's instant and free — think new tab, not lost progress.</div>
+    </div>
+  </div>
+  <div class="mistake">
+    <span class="x">✕</span>
+    <div><strong>Typing terse commands like a search engine.</strong>
+      <div class="fix">You'll get better results describing what you actually want and why, like you would to a person.</div>
+    </div>
+  </div>
+  <div class="mistake">
+    <span class="x">✕</span>
+    <div><strong>Assuming it remembers everything, everywhere.</strong>
+      <div class="fix">A new conversation usually starts fresh unless the tool has a memory feature turned on. If it needs to know something, tell it in that chat.</div>
+    </div>
+  </div>
+  <div class="mistake">
+    <span class="x">✕</span>
+    <div><strong>Accepting the first answer as final.</strong>
+      <div class="fix">Push back, ask for changes, tell it what's wrong. That back-and-forth is normal use, not a sign you're doing it wrong.</div>
+    </div>
+  </div>
+  <div class="mistake">
+    <span class="x">✕</span>
+    <div><strong>Trusting confident-sounding specifics without checking.</strong>
+      <div class="fix">Confidence in tone doesn't mean accuracy. Verify anything with real stakes.</div>
+    </div>
+  </div>
+
+  <h2>A few words worth knowing</h2>
+  <dl class="glossary">
+    <dt>Prompt</dt>
+    <dd>Whatever you type in — your question, request, or instruction.</dd>
+    <dt>Hallucination</dt>
+    <dd>A confident, plausible-sounding answer that's actually wrong or made up.</dd>
+    <dt>Model</dt>
+    <dd>The specific version of the AI you're talking to (e.g. one might be faster, another more capable). Most tools let you pick.</dd>
+    <dt>Context window</dt>
+    <dd>How much of the current conversation the AI can "see" at once. Very long chats can eventually push early parts out of view.</dd>
+  </dl>
+
+  <div class="nextreads">
+    <h3>Next reads</h3>
+    <ul>
+      <li><a href="https://anthropic.skilljar.com/claude-101" target="_blank" rel="noopener">Claude 101</a> — Anthropic's own free course, ~1 hour, does require creating a free account. Good next step once you've got your footing, not a great place to start cold.</li>
+      <li><a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank" rel="noopener">Large language model — Wikipedia</a> — if you want the real mechanics behind the "predicting the next word" explanation above.</li>
+    </ul>
+    <div class="note">This page is deliberately short and login-free — the goal is getting you comfortable enough to try it, not comprehensive mastery.</div>
+  </div>
+
+  <div class="nextreads">
+    <h3>Try it right now</h3>
+    <p style="margin-bottom:10px;">Both run right in a browser, desktop or mobile:</p>
+    <ul>
+      <li><a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com</a> — OpenAI's ChatGPT. Genuinely no account needed for a quick try in most regions — just open it and type. That guest session is temporary and won't save your chat history.</li>
+      <li><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> — Anthropic's Claude. Needs a free account (email + a one-time code, no credit card), so there's a short signup step first.</li>
+    </ul>
+    <div class="callout" style="margin-top:12px;">
+      Stuck on what to type first? Paste this in: <br>
+      <strong>"I've never used an AI chatbot before. Ask me a couple of questions about what I might want help with, then suggest how to get started."</strong>
+      <p style="margin-top:8px; margin-bottom:0;">It'll onboard you interactively instead of you staring at a blank box.</p>
+    </div>
+  </div>
+</div>
+<script src="site-header.js"></script>
+</body>
+</html>
