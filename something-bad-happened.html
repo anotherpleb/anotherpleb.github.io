@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOMETHING BAD HAPPENED</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #16171a;
+    color: #f0f0f0;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100%;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+  h1 {
+    font-size: 30px;
+    letter-spacing: 1px;
+    text-align: center;
+    color: #e0392b;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #a8a8ac;
+    font-size: 15px;
+    margin-bottom: 30px;
+  }
+
+  /* --- Path choice screen --- */
+  #path-screen .choice-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .choice-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #212327;
+    border: 2px solid #33353a;
+    border-radius: 10px;
+    padding: 22px;
+    color: #f0f0f0;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .choice-btn .desc {
+    display: block;
+    font-weight: normal;
+    font-size: 14px;
+    color: #a8a8ac;
+    margin-top: 6px;
+  }
+  #choice-now { border-color: #e0392b; }
+  #choice-now:hover, #choice-now:focus { background: #2a1f1f; }
+  #choice-lookup { border-color: #2b7de0; }
+  #choice-lookup:hover, #choice-lookup:focus { background: #1c2530; }
+  .landing-note {
+    margin-top: 24px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #a8a8ac;
+    text-align: center;
+    padding: 0 6px;
+  }
+
+  /* --- Scenario grid screen --- */
+  #grid-screen { display: none; }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #a8a8ac;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    text-decoration: underline;
+    padding: 6px 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .tile {
+    background: #212327;
+    border: 1px solid #33353a;
+    border-radius: 8px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    color: #f0f0f0;
+  }
+  .tile:hover, .tile:focus {
+    border-color: #e0392b;
+  }
+  .tile svg {
+    width: 42px;
+    height: 42px;
+    display: block;
+    margin: 0 auto 8px;
+  }
+  .tile .label {
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
+  .tile .emoji-icon {
+    display: block;
+    font-size: 32px;
+    line-height: 42px;
+    height: 42px;
+    margin: 0 auto 8px;
+  }
+  .section-heading {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #a8a8ac;
+    margin: 14px 0 2px;
+    border-bottom: 1px solid #33353a;
+    padding-bottom: 4px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+
+  /* --- Placeholder detail screen --- */
+  #detail-screen { display: none; }
+  #detail-screen .detail-box {
+    background: #212327;
+    border: 1px solid #33353a;
+    border-radius: 10px;
+    padding: 24px;
+  }
+  #detail-title {
+    color: #e0392b;
+    font-size: 22px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #detail-title svg { width: 30px; height: 30px; flex-shrink: 0; }
+  #detail-title .emoji-icon {
+    display: inline-block;
+    font-size: 26px;
+    line-height: 1;
+    height: auto;
+    margin: 0;
+  }
+  #detail-mode-note { color: #a8a8ac; font-size: 13px; margin-bottom: 16px; }
+
+  .call-banner {
+    background: #2a1f1f;
+    border: 1px solid #e0392b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    color: #f0f0f0;
+  }
+  .step-text {
+    font-size: 19px;
+    line-height: 1.45;
+    margin-bottom: 22px;
+  }
+  .step-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .step-choice-btn {
+    background: #16171a;
+    border: 2px solid #33353a;
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: #f0f0f0;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .step-choice-btn:hover, .step-choice-btn:focus { border-color: #e0392b; }
+  .step-choice-btn.continue { border-color: #2b7de0; }
+  .end-note {
+    font-size: 13px;
+    color: #a8a8ac;
+    margin-top: 18px;
+  }
+  .restart-btn {
+    margin-top: 14px;
+    background: none;
+    border: 1px solid #33353a;
+    color: #a8a8ac;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .flowchart { font-size: 14px; margin-top: 4px; }
+  .fc-node {
+    background: #16171a;
+    border: 1px solid #33353a;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .fc-node.fc-end { border-color: #e0392b; }
+  .fc-branches {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 18px;
+    border-left: 2px solid #33353a;
+    margin-left: 6px;
+    margin-bottom: 10px;
+  }
+  .fc-edge-label {
+    font-size: 11.5px;
+    color: #a8a8ac;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .fc-loop-note {
+    font-size: 12px;
+    color: #2b7de0;
+    font-style: italic;
+    padding: 2px 0 8px;
+  }
+
+  .references-block {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid #33353a;
+  }
+  .references-heading {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #a8a8ac;
+    margin-bottom: 6px;
+  }
+  .reference-link {
+    font-size: 13.5px;
+    color: #2b7de0;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SOMETHING BAD HAPPENED</h1>
+  <div class="subtitle">Quick help for acute situations. No signup, no internet needed once loaded.</div>
+
+  <!-- Screen 1: path choice -->
+  <div id="path-screen">
+    <div class="choice-row">
+      <button class="choice-btn" id="choice-now">
+        It's happening right now
+        <span class="desc">Step-by-step, one decision at a time. For when you need to act now.</span>
+      </button>
+      <button class="choice-btn" id="choice-lookup">
+        I want to look something up
+        <span class="desc">Browse the full list and read ahead.</span>
+      </button>
+    </div>
+    <div class="landing-note">
+      This is built for someone out of their element in a moment of stress — or anyone who just wants a plain, no-jargon reference for something unfamiliar. Every answer here is explained like you've never done this before: one plain instruction at a time, no assumed knowledge.
+    </div>
+  </div>
+
+  <!-- Screen 2: scenario grid -->
+  <div id="grid-screen">
+    <button class="back-link" id="back-to-path">&larr; back</button>
+    <div class="grid" id="scenario-grid"></div>
+  </div>
+
+  <!-- Screen 3: detail / step-through -->
+  <div id="detail-screen">
+    <button class="back-link" id="back-to-grid">&larr; back to list</button>
+    <div class="detail-box">
+      <div id="detail-title"></div>
+      <div id="detail-mode-note"></div>
+      <div id="call-banner" class="call-banner" style="display:none;">If someone else is nearby, have them call for emergency help now — don't wait for these steps to finish.</div>
+      <div id="view-toggle-container" style="display:none;"></div>
+      <div id="detail-body">Step-through content for this scenario is not built yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Icon library (inline SVG strings, stroke-based, no external assets) ----
+var ICONS = {
+  bleeding: '<svg viewBox="0 0 48 48"><path d="M24 4 C24 4 12 22 12 30 a12 12 0 0 0 24 0 C36 22 24 4 24 4 Z" fill="#e0392b"/></svg>',
+  choking: '<span class="emoji-icon">&#128534;</span>',
+  unconscious: '<span class="emoji-icon">&#128564;</span>',
+  broken_bone: '<svg viewBox="0 0 48 48"><path d="M12 34 L34 12" stroke="#e0392b" stroke-width="8" stroke-linecap="round"/><circle cx="10" cy="36" r="7" fill="#e0392b"/><circle cx="36" cy="10" r="7" fill="#e0392b"/><path d="M18 28 l4 -4 l-2.5 -3 l4.5 -4.5" stroke="#16171a" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  burned: '<svg viewBox="0 0 48 48"><path d="M10 44 C8 34 8 26 14 22 C13 12 24 10 24 18 C24 10 35 12 34 22 C40 26 40 34 38 44 Z" fill="#e0392b"/><path d="M16 22 v6 M24 18 v8 M32 22 v6" stroke="#16171a" stroke-width="2.5" stroke-linecap="round"/><path d="M22 4 C18 10 26 12 22 18 C28 16 28 8 22 4 Z" fill="#f0f0f0"/></svg>',
+  venomous: '<span class="emoji-icon">&#9760;&#65039;</span>',
+  hypothermia: '<svg viewBox="0 0 48 48" fill="none" stroke="#2b7de0" stroke-width="2.5"><rect x="20" y="6" width="8" height="26" rx="4"/><circle cx="24" cy="38" r="6" fill="#2b7de0"/><path d="M24 14 v18" stroke-width="3"/></svg>',
+  heat: '<svg viewBox="0 0 48 48" fill="none" stroke="#e0392b" stroke-width="2.5"><rect x="20" y="6" width="8" height="26" rx="4"/><circle cx="24" cy="38" r="6" fill="#e0392b"/><path d="M24 14 v18" stroke-width="3"/><path d="M10 10 l3 3 M38 10 l-3 3 M8 20 h4 M40 20 h-4" stroke-width="2"/></svg>',
+  ice_water: '<svg viewBox="0 0 48 48" fill="none" stroke="#2b7de0" stroke-width="2.2"><path d="M4 30 h40" /><path d="M14 30 l4 -8 l4 8 l4 -10 l4 10 l4 -6 l4 6" /><path d="M4 36 h40 M4 42 h40" stroke-width="1.5" opacity="0.6"/></svg>',
+  lost: '<svg viewBox="0 0 48 48" fill="none" stroke="#a8a8ac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="26" r="14"/><path d="M18 12 v4 M18 40 v4 M4 26 h4 M28 26 h4" stroke-width="1.6"/><path d="M18 26 l-3.5 -9 l3.5 2.6 l3.5 -2.6 z" fill="#e0392b" stroke="none"/><text x="34" y="16" font-size="15" fill="#e0392b" stroke="none" font-family="Arial">?</text></svg>',
+  stranded_vehicle: '<svg viewBox="0 0 48 48" fill="none" stroke="#a8a8ac" stroke-width="2.2"><path d="M6 30 l3 -8 h20 l5 8 z"/><circle cx="14" cy="32" r="3"/><circle cx="28" cy="32" r="3"/><path d="M30 14 C34 12 36 16 34 18 C38 18 40 22 36 24" stroke="#a8a8ac" stroke-width="1.8" opacity="0.8"/></svg>',
+  stranded_watercraft: '<svg viewBox="0 0 48 48" fill="none" stroke="#a8a8ac" stroke-width="2.2"><path d="M6 30 h36 l-4 8 h-28 z"/><path d="M24 30 v-16" /><path d="M24 14 l10 8 h-10 z"/><path d="M30 8 C34 6 36 10 34 12 C38 12 40 16 36 18" stroke-width="1.8" opacity="0.8"/></svg>',
+  building_fire: '<svg viewBox="0 0 48 48" fill="none" stroke="#e0392b" stroke-width="2.2"><path d="M8 44 v-18 l16 -12 l16 12 v18 z"/><path d="M20 30 C20 26 24 26 22 22 C26 24 26 28 24 30 C26 29 27 27 27 27 C29 30 26 34 22 34 C19 34 18 32 20 30 Z" fill="#e0392b" stroke="none"/></svg>',
+  trapped: '<span class="emoji-icon">&#127384;</span>',
+  no_water: '<svg viewBox="0 0 48 48" fill="none"><path d="M24 6 C24 6 13 22 13 29 a11 11 0 0 0 22 0 C35 22 24 6 24 6 Z" fill="#2b7de0" stroke="none"/><path d="M17 24 l14 14 M31 24 l-14 14" stroke="#e0392b" stroke-width="3"/></svg>',
+  no_shelter: '<svg viewBox="0 0 48 48" fill="none" stroke="#a8a8ac" stroke-width="2.2"><path d="M6 38 l16 -20 l16 20 z"/><path d="M14 38 l8 -10 l8 10" /><circle cx="36" cy="10" r="5" fill="#a8a8ac" stroke="none"/></svg>'
+};
+
+// ---- Scenario data ----
+var SCENARIOS = [
+  { section: "Medical", id: "bleeding", label: "Bleeding heavily" },
+  { section: "Medical", id: "choking", label: "Not breathing / choking" },
+  { section: "Medical", id: "unconscious", label: "Unconscious, won't wake up" },
+  { section: "Medical", id: "broken_bone", label: "Broken bone / can't move a limb" },
+  { section: "Medical", id: "burned", label: "Burned" },
+  { section: "Medical", id: "venomous", label: "Bitten / stung, venomous" },
+  { section: "Environmental", id: "hypothermia", label: "Too cold, can't stop shaking" },
+  { section: "Environmental", id: "heat", label: "Too hot, dizzy / confused" },
+  { section: "Environmental", id: "ice_water", label: "Fell through ice / cold water" },
+  { section: "Situational", id: "lost", label: "Lost, don't know the way back" },
+  { section: "Situational", id: "stranded_vehicle", label: "Stranded vehicle" },
+  { section: "Situational", id: "stranded_watercraft", label: "Stranded watercraft" },
+  { section: "Situational", id: "building_fire", label: "Building on fire" },
+  { section: "Situational", id: "trapped", label: "Trapped (rubble / wreckage)" },
+  { section: "Resources", id: "no_water", label: "No clean water" },
+  { section: "Resources", id: "no_shelter", label: "No shelter, night coming" }
+];
+
+var currentMode = "now"; // "now" or "lookup"
+
+function showScreen(id) {
+  ["path-screen", "grid-screen", "detail-screen"].forEach(function(s) {
+    document.getElementById(s).style.display = (s === id) ? "block" : "none";
+  });
+}
+
+function buildGrid() {
+  var grid = document.getElementById("scenario-grid");
+  grid.innerHTML = "";
+  var lastSection = null;
+  for (var i = 0; i < SCENARIOS.length; i++) {
+    var s = SCENARIOS[i];
+    if (s.section !== lastSection) {
+      var heading = document.createElement("div");
+      heading.className = "section-heading";
+      heading.textContent = s.section;
+      grid.appendChild(heading);
+      lastSection = s.section;
+    }
+    var tile = document.createElement("button");
+    tile.className = "tile";
+    tile.innerHTML = (ICONS[s.id] || "") + '<span class="label">' + s.label + '</span>';
+    tile.addEventListener("click", function(scenario) {
+      return function() { openDetail(scenario); };
+    }(s));
+    grid.appendChild(tile);
+  }
+}
+
+// ---- Step-through decision trees ----
+// Each node: { text, choices: [{label, next}] } for a decision,
+// or { text, next } for a single-continue step, or { text, end: true } for a terminal step.
+var TREES = {
+  choking: {
+    start: "ask_cough",
+    nodes: {
+      ask_cough: {
+        text: "Can they cough, cry, or speak at all?",
+        choices: [
+          { label: "Yes — they can cough or speak", next: "encourage" },
+          { label: "No — no sound, can't breathe", next: "ask_infant" }
+        ]
+      },
+      encourage: {
+        text: "Encourage them to keep coughing. Don't hit their back or intervene further unless they stop being able to cough, cry, or speak.",
+        end: true
+      },
+      ask_infant: {
+        text: "Is this an infant under 1 year old?",
+        choices: [
+          { label: "Yes — infant", next: "infant_backblows" },
+          { label: "No — child or adult", next: "adult_backblows" }
+        ]
+      },
+      adult_backblows: {
+        text: "Give 5 firm back blows: heel of your hand, between the shoulder blades.",
+        next: "adult_heimlich"
+      },
+      adult_heimlich: {
+        text: "Not cleared? Give the Heimlich: fist just above the navel, below the ribs. Quick thrusts inward and upward.",
+        next: "adult_check"
+      },
+      adult_check: {
+        text: "Is the airway clear now?",
+        choices: [
+          { label: "Yes — cleared", next: "cleared_end" },
+          { label: "No — still blocked", next: "adult_unconscious_check" }
+        ]
+      },
+      adult_unconscious_check: {
+        text: "Have they gone unconscious?",
+        choices: [
+          { label: "Yes — unconscious", next: "adult_cpr" },
+          { label: "No — still conscious, still blocked", next: "adult_backblows" }
+        ]
+      },
+      adult_cpr: {
+        text: "Start CPR: heel of your hand, center of the chest, push hard and fast (about 2 inches deep). Don't stop until help arrives or they respond.",
+        end: true
+      },
+      infant_backblows: {
+        text: "Give 5 back blows: heel of your hand, between the shoulder blades. Support the infant face-down along your forearm, head lower than the chest.",
+        next: "infant_thrusts"
+      },
+      infant_thrusts: {
+        text: "Not cleared? Give 5 chest thrusts: two fingers, center of the chest. Support the infant face-up along your forearm.",
+        next: "infant_check"
+      },
+      infant_check: {
+        text: "Is the airway clear now?",
+        choices: [
+          { label: "Yes — cleared", next: "cleared_end" },
+          { label: "No — still blocked", next: "infant_unconscious_check" }
+        ]
+      },
+      infant_unconscious_check: {
+        text: "Has the infant gone unconscious?",
+        choices: [
+          { label: "Yes — unconscious", next: "infant_cpr" },
+          { label: "No — still conscious, still blocked", next: "infant_backblows" }
+        ]
+      },
+      infant_cpr: {
+        text: "Start infant CPR: two fingers, center of the chest, gentler compressions (about 1.5 inches deep). Don't stop until help arrives or they respond.",
+        end: true
+      },
+      cleared_end: {
+        text: "Good — the airway is clear. Have them checked by medical help anyway; forceful back blows or thrusts can cause internal injury.",
+        end: true
+      }
+    }
+  },
+
+  bleeding: {
+    start: "apply_pressure",
+    nodes: {
+      apply_pressure: { text: "Apply direct, firm pressure to the wound — use whatever's available.", next: "check_limb" },
+      check_limb: { text: "Is the bleeding on an arm or leg?", choices: [
+        { label: "Yes", next: "elevate" },
+        { label: "No", next: "check_soak" }
+      ]},
+      elevate: { text: "Raise the limb above heart level while keeping pressure on.", next: "check_soak" },
+      check_soak: { text: "Is blood soaking through the material?", choices: [
+        { label: "Yes", next: "add_layer" },
+        { label: "No", next: "get_help_bleed" }
+      ]},
+      add_layer: { text: "Add more material on top — don't remove the first layer.", next: "get_help_bleed" },
+      get_help_bleed: { text: "Get to help, or call for help now once pressure is applied and someone else can maintain it — or once stable enough to move.", end: true }
+    }
+  },
+
+  unconscious: {
+    start: "check_breathing",
+    nodes: {
+      check_breathing: { text: "Check for breathing — look, listen, feel for 10 seconds. Are they breathing?", choices: [
+        { label: "Yes — breathing", next: "check_injury" },
+        { label: "No — not breathing", next: "start_cpr_u" }
+      ]},
+      check_injury: { text: "Do you suspect an injury (fall, accident)?", choices: [
+        { label: "Yes", next: "injury_note" },
+        { label: "No", next: "recovery_position" }
+      ]},
+      injury_note: { text: "Don't move them unless they're in immediate danger (fire, water, traffic) — moving a spinal injury can cause paralysis.", next: "monitor_u" },
+      recovery_position: { text: "Put them in the recovery position: on their side, head tilted back slightly. This prevents choking on vomit or the tongue.", next: "monitor_u" },
+      monitor_u: { text: "Keep monitoring their breathing until help arrives.", end: true },
+      start_cpr_u: { text: "Start CPR immediately: heel of hand, center of chest, push hard and fast (about 2 inches deep). Call for help.", end: true }
+    }
+  },
+
+  broken_bone: {
+    start: "dont_move",
+    nodes: {
+      dont_move: { text: "Don't move the limb unnecessarily. Is the bone visibly through the skin?", choices: [
+        { label: "Yes", next: "open_fracture" },
+        { label: "No", next: "check_bleeding_bone" }
+      ]},
+      open_fracture: { text: "Don't push it back in. Cover it loosely with clean cloth.", next: "check_bleeding_bone" },
+      check_bleeding_bone: { text: "Is there significant bleeding?", choices: [
+        { label: "Yes", next: "control_bleed_bone" },
+        { label: "No", next: "splint_start" }
+      ]},
+      control_bleed_bone: { text: "Control the bleeding first (see Bleeding heavily) before splinting.", next: "splint_start" },
+      splint_start: { text: "Find something rigid — a stick, board, rolled magazine, or trekking pole.", next: "splint_pad" },
+      splint_pad: { text: "Pad it with cloth between the splint and the skin.", next: "splint_position" },
+      splint_position: { text: "Position it along the limb, extending past the joints above and below the break.", next: "splint_tie" },
+      splint_tie: { text: "Tie it snug at multiple points — not directly over the break.", next: "splint_circulation" },
+      splint_circulation: { text: "Check circulation after tying. Do fingers or toes look numb or change color?", choices: [
+        { label: "Yes — loosen it", next: "loosen_splint" },
+        { label: "No — circulation looks fine", next: "elevate_get_help_bone" }
+      ]},
+      loosen_splint: { text: "Loosen the splint slightly, then recheck circulation.", next: "splint_circulation" },
+      elevate_get_help_bone: { text: "Elevate if possible without forcing movement. Get to help — don't let them walk on it if a leg or foot is involved.", end: true }
+    }
+  },
+
+  burned: {
+    start: "stop_burning",
+    nodes: {
+      stop_burning: { text: "Stop the burning — remove from the heat source, or stop, drop, and roll if there are flames.", next: "cool_burn" },
+      cool_burn: { text: "Cool the burn with cool (not ice-cold) running water or a cloth for 10–20 minutes.", next: "check_severity" },
+      check_severity: { text: "Is the burn large, on the face or hands, or does the skin look deep, white, or charred?", choices: [
+        { label: "Yes — looks severe", next: "severe_burn" },
+        { label: "No — looks minor", next: "minor_burn" }
+      ]},
+      severe_burn: { text: "This is severe. Don't cool large areas with water — hypothermia risk. Get help fast.", end: true },
+      minor_burn: { text: "Remove tight items (rings, jewelry) near the burn before swelling starts — but don't remove clothing stuck to the burn.", next: "no_blister" },
+      no_blister: { text: "Don't pop any blisters.", next: "cover_loosely" },
+      cover_loosely: { text: "Cover loosely with clean, non-fluffy cloth. No ointments, butter, or ice directly on it.", end: true }
+    }
+  },
+
+  venomous: {
+    start: "move_away",
+    nodes: {
+      move_away: { text: "Move away from the source. Don't try to catch or kill it unless completely safe.", next: "keep_still" },
+      keep_still: { text: "Keep the person still and calm — movement speeds venom spread.", next: "below_heart" },
+      below_heart: { text: "Keep the bite or sting below heart level if possible.", next: "remove_tight_v" },
+      remove_tight_v: { text: "Remove tight items (rings, watches) near the area before swelling starts.", next: "dont_do_v" },
+      dont_do_v: { text: "Don't cut, suck, or apply ice or a tourniquet — these can cause more harm.", next: "get_help_venom" },
+      get_help_venom: { text: "Get to help as fast as possible — antivenom and medical care are needed.", end: true }
+    }
+  },
+
+  hypothermia: {
+    start: "get_out_cold",
+    nodes: {
+      get_out_cold: { text: "Get out of wind and wet — find shelter, dry clothing if available.", next: "remove_wet" },
+      remove_wet: { text: "Remove wet clothing. Replace with dry clothing or wrap in something insulating.", next: "warm_core" },
+      warm_core: { text: "Warm the core first — torso, neck, head, groin — not just hands and feet.", next: "check_conscious_cold" },
+      check_conscious_cold: { text: "Are they alert and able to swallow safely?", choices: [
+        { label: "Yes", next: "warm_drinks" },
+        { label: "No", next: "check_stage_cold" }
+      ]},
+      warm_drinks: { text: "Give warm, sweet drinks. No alcohol, no caffeine.", next: "dont_rub" },
+      dont_rub: { text: "Don't rub or massage the limbs — it can drive cold blood back to the core too fast.", next: "check_stage_cold" },
+      check_stage_cold: { text: "Has shivering stopped, or is there confusion or slurred speech?", choices: [
+        { label: "Yes — one of those", next: "severe_stage_cold" },
+        { label: "No — still just shivering", next: "continue_warming" }
+      ]},
+      continue_warming: { text: "Continue warming and monitoring.", end: true },
+      severe_stage_cold: { text: "This is a more severe stage — treat as an emergency. Handle them gently; rough movement can trigger cardiac arrest in severe hypothermia. Get help.", end: true }
+    }
+  },
+
+  heat: {
+    start: "shade",
+    nodes: {
+      shade: { text: "Get to shade or a cool area immediately.", next: "remove_clothing_heat" },
+      remove_clothing_heat: { text: "Remove excess clothing.", next: "cool_body" },
+      cool_body: { text: "Cool the body — water on the skin, fan, cool (not ice) water. Ice packs at neck, armpits, groin if severe.", next: "check_conscious_heat" },
+      check_conscious_heat: { text: "Are they conscious and able to swallow safely?", choices: [
+        { label: "Yes", next: "sip_water" },
+        { label: "No", next: "check_severe_heat" }
+      ]},
+      sip_water: { text: "Give small sips of water — not large amounts fast.", next: "lie_down" },
+      lie_down: { text: "Have them lie down with legs slightly elevated.", next: "check_severe_heat" },
+      check_severe_heat: { text: "Is there confusion, no sweating despite the heat, or unconsciousness?", choices: [
+        { label: "Yes", next: "heat_stroke_emergency" },
+        { label: "No", next: "monitor_heat" }
+      ]},
+      monitor_heat: { text: "Continue cooling and monitoring.", end: true },
+      heat_stroke_emergency: { text: "This is heat stroke — a medical emergency. Cool aggressively and get help fast.", end: true }
+    }
+  },
+
+  ice_water: {
+    start: "no_panic",
+    nodes: {
+      no_panic: { text: "Don't panic-swim. Wait out the first ~60 seconds of gasping — it's the cold shock response, not a sign you can't breathe.", next: "turn_back" },
+      turn_back: { text: "Turn back toward the way you came in — the ice there already held your weight once.", next: "kick_pull" },
+      kick_pull: { text: "Kick your legs to get horizontal, use your arms to pull onto unbroken ice. Don't try to stand up on it.", next: "roll_away" },
+      roll_away: { text: "Once out, roll away from the hole. Don't stand until you're on solid footing.", next: "dry_warm" },
+      dry_warm: { text: "Get dry and warm immediately — wet clothing in cold air is worse than the water was.", next: "watch_delayed" },
+      watch_delayed: { text: "Watch for delayed hypothermia symptoms for hours after, even once warmed up.", end: true }
+    }
+  },
+
+  lost: {
+    start: "stop_moving",
+    nodes: {
+      stop_moving: { text: "Stop moving — stay where you are.", next: "stop_think" },
+      stop_think: { text: "S.T.O.P. — Stop, Think, Observe, Plan. Assess before acting.", next: "signal_lost" },
+      signal_lost: { text: "Signal — bright clothing, a whistle, a mirror flash, or a fire if you're able.", next: "stay_near" },
+      stay_near: { text: "Stay near where you realized you were lost — it's easier for searchers to backtrack your route.", next: "shelter_conserve" },
+      shelter_conserve: { text: "Find shelter and conserve energy while you wait.", next: "mark_location" },
+      mark_location: { text: "If you must move, mark your location (broken branches, stacked rocks) so your path is trackable.", end: true }
+    }
+  },
+
+  stranded_vehicle: {
+    start: "stay_with_vehicle",
+    nodes: {
+      stay_with_vehicle: { text: "Stay with the vehicle — it's more visible than you are on foot.", next: "signal_vehicle" },
+      signal_vehicle: { text: "Signal — turn on the hazard lights.", next: "check_engine_use" },
+      check_engine_use: { text: "Do you need the engine for heat or cooling?", choices: [
+        { label: "Yes", next: "engine_caution" },
+        { label: "No", next: "ration_vehicle" }
+      ]},
+      engine_caution: { text: "Run it only briefly. Check that snow or debris isn't blocking the exhaust — carbon monoxide risk.", next: "ration_vehicle" },
+      ration_vehicle: { text: "Ration your water, food, and phone battery.", next: "check_leave_vehicle" },
+      check_leave_vehicle: { text: "Do you know exactly where help is, and do conditions clearly allow travel?", choices: [
+        { label: "Yes", next: "leave_vehicle" },
+        { label: "No", next: "wait_vehicle" }
+      ]},
+      leave_vehicle: { text: "You may leave to seek help — but only with clear knowledge of the route and safe conditions.", end: true },
+      wait_vehicle: { text: "Stay put and wait for help.", end: true }
+    }
+  },
+
+  stranded_watercraft: {
+    start: "stay_with_vessel",
+    nodes: {
+      stay_with_vessel: { text: "Stay with the vessel — it's more visible than you are in open water.", next: "check_sinking" },
+      check_sinking: { text: "Is the vessel taking on water or sinking?", choices: [
+        { label: "Yes", next: "stay_with_flotation" },
+        { label: "No", next: "signal_watercraft" }
+      ]},
+      stay_with_flotation: { text: "Stay with debris or flotation rather than swimming for shore — unless shore is very close and clearly safe to reach.", next: "signal_watercraft" },
+      signal_watercraft: { text: "Signal — flares or bright cloth, visible from a distance.", next: "ration_watercraft" },
+      ration_watercraft: { text: "Ration your water, food, and phone battery.", next: "check_leave_watercraft" },
+      check_leave_watercraft: { text: "Do you know exactly where help is, and do conditions clearly allow it?", choices: [
+        { label: "Yes", next: "leave_watercraft" },
+        { label: "No", next: "wait_watercraft" }
+      ]},
+      leave_watercraft: { text: "You may attempt to reach help — but only with clear knowledge of the route and safe conditions.", end: true },
+      wait_watercraft: { text: "Stay put and wait for help.", end: true }
+    }
+  },
+
+  building_fire: {
+    start: "get_out_fire",
+    nodes: {
+      get_out_fire: { text: "Get out — don't stop for belongings.", next: "check_smoke" },
+      check_smoke: { text: "Is there smoke?", choices: [
+        { label: "Yes", next: "stay_low" },
+        { label: "No", next: "check_doors" }
+      ]},
+      stay_low: { text: "Stay low — the air is cleaner near the floor.", next: "check_doors" },
+      check_doors: { text: "Feel doors before opening them. Is the door hot?", choices: [
+        { label: "Yes", next: "find_other_way" },
+        { label: "No", next: "close_behind" }
+      ]},
+      find_other_way: { text: "A hot door means fire is on the other side — find another way out.", next: "check_trapped_fire" },
+      close_behind: { text: "Close doors behind you as you go — it slows the fire's spread.", next: "check_trapped_fire" },
+      check_trapped_fire: { text: "Are you trapped, with no way out?", choices: [
+        { label: "Yes", next: "trapped_fire" },
+        { label: "No", next: "stay_out" }
+      ]},
+      trapped_fire: { text: "Seal gaps under doors with cloth. Signal from a window. Call for help. Don't hide in a closet or bathroom unless it's truly the only option.", end: true },
+      stay_out: { text: "Once out, stay out — don't go back in. Tell responders if anyone might still be inside.", end: true }
+    }
+  },
+
+  trapped: {
+    start: "assess_self",
+    nodes: {
+      assess_self: { text: "Stop and assess. Check yourself for injuries before attempting to move.", next: "check_debris" },
+      check_debris: { text: "Is the debris around you unstable?", choices: [
+        { label: "Yes", next: "dont_move_debris" },
+        { label: "No", next: "check_danger" }
+      ]},
+      dont_move_debris: { text: "Don't move unstable debris around you — it can cause further collapse.", next: "check_danger" },
+      check_danger: { text: "Is there immediate danger nearby — fire, or rising water?", choices: [
+        { label: "Yes", next: "move_if_danger" },
+        { label: "No", next: "stay_put_trapped" }
+      ]},
+      move_if_danger: { text: "Only move if staying means immediate danger. Otherwise, stay put.", end: true },
+      stay_put_trapped: { text: "Stay put. Conserve energy and air — don't shout continuously, save your voice for when you hear rescuers.", next: "signal_trapped" },
+      signal_trapped: { text: "Signal by tapping on hard surfaces in bursts of three — a recognized distress signal.", next: "cover_dust" },
+      cover_dust: { text: "Cover your mouth and nose with cloth if there's dust.", end: true }
+    }
+  },
+
+  no_water: {
+    start: "check_treat_option",
+    nodes: {
+      check_treat_option: { text: "Is there any way to treat the water — fire, tablets, or a filter?", choices: [
+        { label: "Yes", next: "has_option" },
+        { label: "No", next: "last_resort" }
+      ]},
+      has_option: { text: "Don't drink untreated water while any treatment option exists.", next: "check_fire_water" },
+      check_fire_water: { text: "Can you build a fire?", choices: [
+        { label: "Yes", next: "boil_water" },
+        { label: "No", next: "check_tablets" }
+      ]},
+      boil_water: { text: "Boil the water — a rolling boil for 1 minute (3 minutes above 6,500 ft elevation).", next: "collect_water" },
+      check_tablets: { text: "Do you have purification tablets or drops?", choices: [
+        { label: "Yes", next: "use_tablets" },
+        { label: "No", next: "filter_water" }
+      ]},
+      use_tablets: { text: "Use the purification tablets or drops as directed.", next: "collect_water" },
+      filter_water: { text: "Filter through cloth, sand, or charcoal. This only reduces sediment — it does not remove pathogens — and should only buy time until a real method is available.", next: "collect_water" },
+      collect_water: { text: "Collect what you can — dew, rain, plant transpiration bags — while you work toward a better source.", end: true },
+      last_resort: { text: "As a last resort under short-term stress, muddy or questionable water is a lesser risk than certain rapid dehydration over 1–2 days. This is a genuine trade-off, not a safe recommendation — use only if truly no other option exists and time is critical.", end: true }
+    }
+  },
+
+  no_shelter: {
+    start: "pick_location",
+    nodes: {
+      pick_location: { text: "Prioritize your location — off the ground, out of the wind, away from flood-prone low ground or dead branches overhead.", next: "insulate_under" },
+      insulate_under: { text: "Insulation under you matters as much as a roof over you — use leaves, brush, or your pack.", next: "build_small" },
+      build_small: { text: "Build small and tight — a shelter just big enough for your body traps heat better than a large one.", next: "use_available" },
+      use_available: { text: "Use what's available — natural windbreaks, a debris hut, a tarp or poncho if you're carrying one.", next: "fire_nearby" },
+      fire_nearby: { text: "If possible, build a fire nearby, positioned to reflect heat into the shelter, with a barrier behind it.", next: "dont_wait" },
+      dont_wait: { text: "Don't wait until dark to start building — begin well before last light.", end: true }
+    }
+  }
+};
+
+var REFERENCES = {
+  bleeding: { source: "Mayo Clinic", title: "Severe bleeding: First aid", url: "https://www.mayoclinic.org/first-aid/first-aid-severe-bleeding/basics/art-20056661" },
+  choking: { source: "Mayo Clinic", title: "Choking: First aid", url: "https://www.mayoclinic.org/first-aid/first-aid-choking/basics/art-20056637" },
+  unconscious: { source: "Mayo Clinic", title: "First aid guide", url: "https://www.mayoclinic.org/first-aid" },
+  broken_bone: { source: "Mayo Clinic", title: "First aid guide", url: "https://www.mayoclinic.org/first-aid" },
+  burned: { source: "Mayo Clinic", title: "First aid guide", url: "https://www.mayoclinic.org/first-aid" },
+  venomous: { source: "Mayo Clinic", title: "First aid guide", url: "https://www.mayoclinic.org/first-aid" },
+  hypothermia: { source: "CDC", title: "Hypothermia and frostbite", url: "https://www.cdc.gov/disasters/psa/hypothermia-frostbite.html" },
+  heat: { source: "CDC", title: "Warning signs of heat-related illness", url: "https://www.cdc.gov/disasters/extremeheat/warning.html" },
+  ice_water: { source: "National Center for Cold Water Safety", title: "Cold water safety", url: "https://www.coldwatersafety.org/cold-water" },
+  lost: { source: "Wikipedia", title: "Survival skills", url: "https://en.wikipedia.org/wiki/Survival_skills" },
+  stranded_vehicle: { source: "Ready.gov", title: "Winter Ready", url: "https://www.ready.gov/winter-ready" },
+  stranded_watercraft: { source: "Wikipedia", title: "Survival skills", url: "https://en.wikipedia.org/wiki/Survival_skills" },
+  building_fire: { source: "Ready.gov", title: "Home fire escape plan", url: "https://www.ready.gov/home-fire-escape-plan" },
+  trapped: { source: "Ready.gov", title: "Earthquakes (trapped under debris)", url: "https://www.ready.gov/earthquakes" },
+  no_water: { source: "CDC", title: "Making water safe in an emergency", url: "https://www.cdc.gov/healthywater/emergency/making-water-safe.html" },
+  no_shelter: { source: "Wikipedia", title: "Survival skills", url: "https://en.wikipedia.org/wiki/Survival_skills" }
+};
+
+function renderReferencesHTML(scenarioId) {
+  var ref = REFERENCES[scenarioId];
+  if (!ref) return "";
+  return '<div class="references-block"><div class="references-heading">Next reads</div>' +
+    '<a class="reference-link" href="' + ref.url + '" target="_blank" rel="noopener">' +
+    ref.title + ' — ' + ref.source + '</a></div>';
+}
+
+var stepHistory = [];
+var currentScenario = null;
+var viewMode = "step";
+
+function renderStep(scenarioId, nodeId) {
+  var tree = TREES[scenarioId];
+  var node = tree.nodes[nodeId];
+  var body = document.getElementById("detail-body");
+  var html = '<div class="step-text">' + node.text + '</div>';
+
+  if (node.choices) {
+    html += '<div class="step-choices">';
+    for (var i = 0; i < node.choices.length; i++) {
+      html += '<button class="step-choice-btn" data-next="' + node.choices[i].next + '">' + node.choices[i].label + '</button>';
+    }
+    html += '</div>';
+  } else if (node.next) {
+    html += '<div class="step-choices"><button class="step-choice-btn continue" data-next="' + node.next + '">Continue</button></div>';
+  } else if (node.end) {
+    html += '<div class="end-note">End of this sequence.</div>';
+    html += '<button class="restart-btn" id="restart-step">Start over</button>';
+  }
+
+  body.innerHTML = html;
+
+  var buttons = body.querySelectorAll(".step-choice-btn");
+  for (var j = 0; j < buttons.length; j++) {
+    buttons[j].addEventListener("click", function(e) {
+      var next = e.currentTarget.getAttribute("data-next");
+      stepHistory.push(nodeId);
+      renderStep(scenarioId, next);
+    });
+  }
+  var restart = document.getElementById("restart-step");
+  if (restart) {
+    restart.addEventListener("click", function() {
+      stepHistory = [];
+      renderStep(scenarioId, tree.start);
+    });
+  }
+}
+
+// Recursive, loop-safe flowchart renderer. `visited` tracks node ids already
+// shown on the current path so a loop-back edge renders as a note instead of
+// recursing forever.
+function renderFlowchartNode(tree, nodeId, visited) {
+  var node = tree.nodes[nodeId];
+  var html = '<div class="fc-node' + (node.end ? ' fc-end' : '') + '">' + node.text + '</div>';
+  var newVisited = visited.concat([nodeId]);
+
+  if (node.choices) {
+    html += '<div class="fc-branches">';
+    for (var i = 0; i < node.choices.length; i++) {
+      var c = node.choices[i];
+      html += '<div class="fc-branch"><div class="fc-edge-label">' + c.label + '</div>';
+      if (newVisited.indexOf(c.next) !== -1) {
+        html += '<div class="fc-loop-note">&#8635; repeats: "' + tree.nodes[c.next].text.substring(0, 50) + '..."</div>';
+      } else {
+        html += renderFlowchartNode(tree, c.next, newVisited);
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  } else if (node.next) {
+    if (newVisited.indexOf(node.next) !== -1) {
+      html += '<div class="fc-loop-note">&#8635; repeats: "' + tree.nodes[node.next].text.substring(0, 50) + '..."</div>';
+    } else {
+      html += renderFlowchartNode(tree, node.next, newVisited);
+    }
+  }
+  return html;
+}
+
+function renderFlowchart(scenarioId) {
+  var tree = TREES[scenarioId];
+  return '<div class="flowchart">' + renderFlowchartNode(tree, tree.start, []) + '</div>';
+}
+
+function toggleView() {
+  var toggleBtn = document.getElementById("toggle-view-btn");
+  if (viewMode === "step") {
+    viewMode = "flow";
+    document.getElementById("detail-body").innerHTML = renderFlowchart(currentScenario.id);
+    toggleBtn.textContent = "Back to step-by-step";
+  } else {
+    viewMode = "step";
+    stepHistory = [];
+    renderStep(currentScenario.id, TREES[currentScenario.id].start);
+    toggleBtn.textContent = "View as flowchart";
+  }
+}
+
+function openDetail(scenario) {
+  currentScenario = scenario;
+  document.getElementById("detail-title").innerHTML = (ICONS[scenario.id] || "") + "<span>" + scenario.label + "</span>";
+  document.getElementById("detail-mode-note").textContent =
+    currentMode === "now" ? "Step-by-step mode" : "Reference mode";
+
+  var callBanner = document.getElementById("call-banner");
+  var toggleContainer = document.getElementById("view-toggle-container");
+  var hasTree = !!TREES[scenario.id];
+
+  if (hasTree && currentMode === "now") {
+    callBanner.style.display = "block";
+    toggleContainer.style.display = "block";
+    toggleContainer.innerHTML = '<button class="restart-btn" id="toggle-view-btn">View as flowchart</button>';
+    document.getElementById("toggle-view-btn").addEventListener("click", toggleView);
+    viewMode = "step";
+    stepHistory = [];
+    renderStep(scenario.id, TREES[scenario.id].start);
+  } else if (hasTree && currentMode === "lookup") {
+    callBanner.style.display = "none";
+    toggleContainer.style.display = "none";
+    viewMode = "flow";
+    document.getElementById("detail-body").innerHTML = renderFlowchart(scenario.id) + renderReferencesHTML(scenario.id);
+  } else {
+    callBanner.style.display = "none";
+    toggleContainer.style.display = "none";
+    document.getElementById("detail-body").innerHTML =
+      "Step-through content for this scenario is not built yet.";
+  }
+  showScreen("detail-screen");
+}
+
+document.getElementById("choice-now").addEventListener("click", function() {
+  currentMode = "now";
+  buildGrid();
+  showScreen("grid-screen");
+});
+document.getElementById("choice-lookup").addEventListener("click", function() {
+  currentMode = "lookup";
+  buildGrid();
+  showScreen("grid-screen");
+});
+document.getElementById("back-to-path").addEventListener("click", function() {
+  showScreen("path-screen");
+});
+document.getElementById("back-to-grid").addEventListener("click", function() {
+  showScreen("grid-screen");
+});
+</script>
+</body>
+</html>
