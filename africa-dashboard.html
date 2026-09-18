@@ -99,6 +99,71 @@
     font-weight: 600; color: #fff;
   }
 
+  .map-panel { position: relative; overflow: hidden; }
+  #africaSvg { cursor: grab; touch-action: none; }
+  #africaSvg.grabbing { cursor: grabbing; }
+  .zoom-controls { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 5px; z-index: 15; }
+  .zoom-btn {
+    width: 32px; height: 32px; border-radius: 6px; border: 1px solid #b9b2a0; background: #fff;
+    color: #2a2a28; font-size: 1.1rem; line-height: 1; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .zoom-btn:hover { background: #f4f1ea; }
+  .pan-hint {
+    position: absolute; bottom: 18px; left: 18px; font-size: 0.7rem; color: #7a756a;
+    background: rgba(255,255,255,0.85); padding: 3px 8px; border-radius: 10px; pointer-events: none; z-index: 15;
+  }
+
+  .quiz-bar { margin: 0 0 10px 0; display: flex; align-items: center; gap: 10px; }
+  .quiz-launch-btn {
+    border: none; background: #b5651d; color: #fff; padding: 9px 16px; border-radius: 20px;
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  }
+  .quiz-launch-btn:hover { background: #9c5518; }
+  .quiz-exit-btn {
+    border: 1px solid #b9b2a0; background: #fff; color: #55524a; padding: 4px 10px;
+    border-radius: 14px; font-size: 0.76rem; cursor: pointer; float: right;
+  }
+  .quiz-type-option {
+    display: block; width: 100%; text-align: left; border: 1px solid #ddd7c6; background: #fff;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 0.88rem;
+  }
+  .quiz-type-option:hover { background: #f4f1ea; }
+  .quiz-type-option strong { display: block; font-size: 0.92rem; color: #2a2a28; }
+  .quiz-type-option span { color: #7a756a; font-size: 0.78rem; }
+  .quiz-slider-row { margin: 16px 0; }
+  .quiz-slider-row input[type="range"] { width: 100%; }
+  .quiz-slider-label { font-size: 0.85rem; color: #444; margin-bottom: 4px; }
+  .quiz-primary-btn {
+    border: none; background: #2a2a28; color: #fff; padding: 9px 16px; border-radius: 20px;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer; width: 100%; margin-top: 6px;
+  }
+  .quiz-secondary-btn {
+    border: 1px solid #b9b2a0; background: #fff; color: #55524a; padding: 8px 16px; border-radius: 20px;
+    font-size: 0.85rem; cursor: pointer; width: 100%; margin-top: 8px;
+  }
+  .quiz-progress { font-size: 0.78rem; color: #8a8578; margin-bottom: 4px; }
+  .quiz-progress-bar { height: 5px; background: #eee7d8; border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .quiz-progress-fill { height: 100%; background: #b5651d; transition: width 0.2s; }
+  .quiz-prompt-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: #8a8578; }
+  .quiz-prompt { font-size: 1.3rem; font-weight: 700; color: #2a2a28; margin: 4px 0 16px 0; }
+  .quiz-answer {
+    display: block; width: 100%; text-align: left; border: 1px solid #ddd7c6; background: #fff;
+    padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 0.9rem; color: #2a2a28;
+  }
+  .quiz-answer:hover:not(:disabled) { background: #f4f1ea; }
+  .quiz-answer:disabled { cursor: default; }
+  .quiz-answer.correct { background: #2f855a; color: #fff; border-color: #2f855a; }
+  .quiz-answer.incorrect { background: #b23a2e; color: #fff; border-color: #b23a2e; }
+  .quiz-sound-toggle {
+    border: none; background: none; color: #8a8578; font-size: 0.85rem; cursor: pointer;
+    float: right; padding: 2px 4px;
+  }
+  .quiz-score-big { font-size: 2.4rem; font-weight: 700; color: #2a2a28; text-align: center; margin: 6px 0; }
+  .quiz-score-sub { text-align: center; color: #7a756a; font-size: 0.85rem; margin-bottom: 18px; }
+  .quiz-review-item { border-top: 1px solid #eee7d8; padding: 8px 0; font-size: 0.82rem; }
+  .quiz-review-item .q { color: #55524a; }
+  .quiz-review-item .a { color: #2f855a; font-weight: 600; }
+
   .methodology {
     margin-top: 26px; background: #fff; border: 1px solid #ddd7c6; border-radius: 10px;
     padding: 14px 16px; font-size: 0.86rem; color: #444;
@@ -135,17 +200,22 @@
 <div class="wrap">
 
   <header class="page">
-    <h1>Africa: Population, Economy, Military &amp; Great-Power Alignment</h1>
-    <div class="sub">A layer-by-layer look at how the continent's 54 countries compare. Tap or click a country for details.</div>
+    <h1>Africa: Terrain, Population, Economy, Religion, Military &amp; Great-Power Alignment</h1>
+    <div class="sub">A layer-by-layer look at how the continent's 54 countries compare. Tap or click a country for details, or take a quiz.</div>
   </header>
 
   <div class="layer-bar" id="layerBar">
     <button class="layer-btn active" data-layer="terrain">Satellite / Terrain</button>
-    <button class="layer-btn" data-layer="pop">Population</button>
-    <button class="layer-btn" data-layer="gdp">Economy</button>
+    <button class="layer-btn" data-layer="pop">Population density</button>
+    <button class="layer-btn" data-layer="gdp">GDP per capita</button>
     <button class="layer-btn" data-layer="mil">Military</button>
     <button class="layer-btn" data-layer="rel">Religion</button>
     <button class="layer-btn" data-layer="align">Great-power alignment</button>
+    <button class="layer-btn" data-layer="minerals">Critical minerals</button>
+  </div>
+
+  <div class="quiz-bar">
+    <button class="quiz-launch-btn" id="quizLaunchBtn" type="button">Take a Quiz</button>
   </div>
 
   <div class="main-area">
@@ -217,18 +287,24 @@
           </g>
           <rect id="terrainOverlay" x="343" y="428" width="209" height="200" filter="url(#terrainNoise)" style="pointer-events:none;mix-blend-mode:overlay;opacity:0.5;display:none;"></rect>
         </svg>
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoomInBtn" aria-label="Zoom in" title="Zoom in" type="button">+</button>
+          <button class="zoom-btn" id="zoomOutBtn" aria-label="Zoom out" title="Zoom out" type="button">&minus;</button>
+          <button class="zoom-btn" id="zoomResetBtn" aria-label="Reset view" title="Reset view" type="button">&#8634;</button>
+        </div>
+        <div class="pan-hint" id="panHint">Drag to pan &middot; scroll or pinch to zoom</div>
       </div>
       <div class="legend" id="legend"></div>
       <div id="terrainCredit" style="display:none;font-size:0.72rem;color:#999;margin-top:4px;">Stylized terrain shading by dominant biome &mdash; not real satellite imagery (this file has no live map data).</div>
       <noscript>
-        <p class="placeholder-text" style="margin-top:10px;">This map is interactive and needs JavaScript to shade countries and show details. With JavaScript off you're seeing a plain, unshaded outline map of Africa's 54 countries.</p>
+        <p class="placeholder-text" style="margin-top:10px;">This map is interactive and needs JavaScript to shade countries, show details, and run the quiz. With JavaScript off you're seeing a plain, unshaded outline map of Africa's 54 countries.</p>
       </noscript>
     </div>
 
     <div class="side-col" id="sideCol">
       <button class="close-btn" id="closeDetail" aria-label="Close">&times;</button>
       <div id="detailContent">
-        <p class="placeholder-text">Click or tap a country on the map to see its population, economy, military, religious makeup, and great-power alignment.</p>
+        <p class="placeholder-text">Click or tap a country on the map to see its population, economy, military, religious makeup, and great-power alignment. Or take a quiz using the button above the map.</p>
       </div>
     </div>
   </div>
@@ -237,7 +313,8 @@
     <summary>Where this data comes from, and its limits</summary>
     <ul>
       <li><strong>Satellite / Terrain:</strong> not real satellite imagery (this is a single static file with no live map data) &mdash; it's a stylized shading of each country's single dominant biome (Sahara desert, Sahel semi-arid belt, savanna/grassland, Congo Basin and coastal rainforest, East African highlands, Mediterranean coastal scrub), based on standard African biogeography. Large countries that straddle several biomes (e.g. Nigeria, Angola, Ethiopia) are simplified to one.</li>
-      <li><strong>Population &amp; GDP:</strong> current UN/World Bank population estimates and IMF nominal GDP estimates, via Wikipedia's compiled country lists.</li>
+      <li><strong>Population &amp; GDP:</strong> current UN/World Bank population estimates, land area, and IMF nominal GDP estimates, via Wikipedia's compiled country lists. Shown here as population <em>density</em> (people per km&sup2;) and GDP <em>per capita</em> rather than raw totals &mdash; raw totals mostly just show which countries are big; density and per-capita reveal patterns totals hide.</li>
+      <li><strong>Critical minerals:</strong> USGS 2023 global production-share data. Only countries with a genuinely dominant share of a specific mineral are colored (the Democratic Republic of the Congo's cobalt is the standout case, at roughly 70% of world mining); everyone else is neutral, not zero.</li>
       <li><strong>Religion:</strong> Pew Research Center's 2020 religious-composition estimates. Shown here as a simplified three-way split (Christian / Muslim / other) &mdash; several countries have a much larger "traditional African religion" or unaffiliated component than that split alone suggests; where that matters, it's called out in the country panel.</li>
       <li><strong>Military:</strong> defense expenditure and active-personnel figures are from SIPRI and the IISS/Global Firepower index where publicly reported &mdash; mostly the larger militaries. Roughly half of the continent's smaller states have no reliable public figures; those are shown as "limited data" rather than an invented number, with a relative 1&ndash;5 tier based on the best available evidence.</li>
       <li><strong>Great-power alignment:</strong> based on concrete, documented things &mdash; foreign troop/base presence (US/AFRICOM, France, Russia's Africa Corps/Wagner, China's Djibouti base), each country's dominant arms supplier (SIPRI Arms Transfers Database), and, for China specifically, dominant-supplier equipment data and the Boston University Chinese Loans to Africa database for defense-sector lending. China's continent-wide role is overwhelmingly economic rather than military, so it's only shown as the "aligned" power for the handful of countries (Zimbabwe, Zambia, Tanzania) where it is clearly the dominant military patron with no serious competing supplier &mdash; not as a general marker of Chinese trade or infrastructure ties, which run far wider than this layer shows. Countries with no dominant single patron by any of these measures are labeled "non-aligned / mixed" rather than forced into a bloc. France's own African basing has shrunk sharply since 2023 &mdash; it now holds only Djibouti and Gabon.</li>
@@ -270,7 +347,27 @@
 (function () {
   "use strict";
 
-  var countries = {"dz":{"n":"Algeria","c":"Algiers","p":48028334,"g":317173,"ch":1,"mu":98,"b":"$21.8B (2024, SIPRI)","pn":325000,"t":5,"mn":"Africa's largest defense budget; ~325,000 active personnel plus large reserve/paramilitary force.","a":"russia","an":"Russia has long been Algeria's dominant arms supplier (~48% of imports 2020-24, Soviet-era relationship); no foreign bases hosted.","tr":"desert"},"eg":{"n":"Egypt","c":"Cairo","p":120101175,"g":429645,"ch":11,"mu":89,"b":"~$9-10B (est., varies by source)","pn":438500,"t":5,"mn":"Largest active-duty force on the continent (~440,000) plus ~480,000 reserves; ranked Africa's top military by Global Firepower.","a":"us","an":"Major US non-NATO ally since 1989; largest recipient of US military aid in Africa/Middle East region, though has diversified with French and Russian purchases since 2013.","tr":"desert"},"ly":{"n":"Libya","c":"Tripoli","p":7539851,"g":52453,"ch":3,"mu":97,"b":"Not centrally reported (fragmented state)","pn":null,"t":3,"mn":"Military remains split between rival governments; no single reliable national budget figure since 2014 civil conflict.","a":"russia","an":"Eastern Libya (Haftar's LNA) hosts Russian Africa Corps personnel and receives Russian equipment; western Libya (GNU) has Turkish backing instead — a genuinely split alignment.","tr":"desert"},"ma":{"n":"Morocco","c":"Rabat","p":38762441,"g":194333,"ch":0,"mu":99,"b":"$5.5B (2024, SIPRI)","pn":195800,"t":4,"mn":"~196,000 active personnel; second-largest defense budget in Africa, concentrated on countering Algeria and controlling Western Sahara.","a":"us","an":"Major US non-NATO ally; ~64% of arms imports from the US, plus France and Israel. Hosts the continent's largest annual US joint exercise (African Lion).","tr":"mediterranean"},"sd":{"n":"Sudan","c":"Khartoum","p":53282719,"g":44688,"ch":5,"mu":91,"b":"Not reliably reported (civil war since 2023)","pn":null,"t":3,"mn":"Military split between the Sudanese Armed Forces and the paramilitary RSF since the 2023 civil war; no reliable unified budget.","a":"mixed","an":"Both sides in the civil war have drawn on different foreign backers (reported Gulf, Russian and other involvement on various sides); too fragmented to assign a single patron.","tr":"desert"},"tn":{"n":"Tunisia","c":"Tunis","p":12415138,"g":60745,"ch":0,"mu":100,"b":"$1.2B (2023, SIPRI)","pn":48000,"t":3,"mn":"Small professional force; primary role is border/counter-terrorism security rather than power projection.","a":"us","an":"Long-standing US security-assistance partner (major non-NATO ally since 2015); AFRICOM engagement continues.","tr":"mediterranean"},"bj":{"n":"Benin","c":"Porto-Novo","p":15170419,"g":27786,"ch":48,"mu":28,"b":"Limited public data","pn":4750,"t":2,"mn":"Small force (~4,750 active) focused on internal security and the Gulf of Guinea/Sahel spillover threat.","a":"mixed","an":"No dominant single foreign patron; receives Western and some French-legacy security assistance.","tr":"savanna"},"bf":{"n":"Burkina Faso","c":"Ouagadougou","p":24601700,"g":32513,"ch":26,"mu":64,"b":"~$0.6-1B (junta has sharply increased spending since 2022 coup)","pn":null,"t":3,"mn":"Military junta government fighting a large jihadist insurgency; spending up sharply since the 2022 coup.","a":"russia","an":"Ended military cooperation with France in 2023; hosts Russian Africa Corps personnel; part of the Mali-Burkina Faso-Niger 'Alliance of Sahel States'.","tr":"semiarid"},"cv":{"n":"Cape Verde","c":"Praia","p":529630,"g":3448,"ch":89,"mu":2,"b":"Minimal","pn":null,"t":1,"mn":"Tiny coast-guard-scale force; no significant standing military capacity.","a":"mixed","an":"Small island state with no major-power military presence; Western-oriented but not a basing partner.","tr":"semiarid"},"ci":{"n":"Côte d'Ivoire","c":"Yamoussoukro","p":33494346,"g":112115,"ch":40,"mu":42,"b":"~$657M (est., Global Firepower)","pn":27500,"t":3,"mn":"Regionally significant force by West African standards; France handed back its last base (Port Bouët) in 2025.","a":"mixed","an":"France's formal base presence ended in 2025; retains Western security ties (hosts AFRICOM's Flintlock exercise) without a single dominant patron.","tr":"rainforest"},"gm":{"n":"Gambia","c":"Banjul","p":2884079,"g":2792,"ch":5,"mu":95,"b":"Minimal","pn":null,"t":1,"mn":"Very small force; limited independent capability.","a":"mixed","an":"No major foreign military presence; historically Western-oriented.","tr":"savanna"},"gh":{"n":"Ghana","c":"Accra","p":35697557,"g":118293,"ch":71,"mu":20,"b":"Limited public data","pn":null,"t":3,"mn":"Regionally respected for peacekeeping contributions rather than raw firepower.","a":"us","an":"Long-time AFRICOM partner and regular host of the Flintlock special-operations exercise; Western-oriented defense relationship.","tr":"savanna"},"gn":{"n":"Guinea","c":"Conakry","p":15441993,"g":29930,"ch":11,"mu":84,"b":"Limited public data","pn":null,"t":2,"mn":"Small force; limited independent operational reach.","a":"mixed","an":"No single dominant foreign military patron; some historic Russian/Soviet-era equipment ties persist.","tr":"savanna"},"gw":{"n":"Guinea-Bissau","c":"Bissau","p":2297808,"g":2985,"ch":20,"mu":45,"b":"Minimal","pn":null,"t":1,"mn":"Very small force with limited capability.","a":"mixed","an":"No major foreign military presence.","tr":"savanna"},"lr":{"n":"Liberia","c":"Monrovia","p":5853949,"g":5642,"ch":81,"mu":19,"b":"Minimal","pn":1500,"t":1,"mn":"Smallest active-duty force in Africa (~1,500); rebuilt with heavy US assistance after its civil wars.","a":"us","an":"Force rebuilt and trained largely by the United States since the 2003 civil war settlement.","tr":"rainforest"},"ml":{"n":"Mali","c":"Bamako","p":25932275,"g":33847,"ch":3,"mu":95,"b":"~$555M (est., Global Firepower); junta has raised spending sharply since 2020/21 coups","pn":44800,"t":3,"mn":"Military junta fighting a long-running jihadist insurgency across the north and center of the country.","a":"russia","an":"Ended its defense relationship with France in 2022; Wagner/Africa Corps has been the primary foreign security partner since 2021, though Wagner itself withdrew in mid-2025 with Africa Corps remaining.","tr":"desert"},"mr":{"n":"Mauritania","c":"Nouakchott","p":5461319,"g":14352,"ch":0,"mu":100,"b":"Limited public data","pn":null,"t":2,"mn":"Small force focused on Sahara/Sahel border security.","a":"mixed","an":"Maintains security cooperation with both Western partners and neighbors; no single dominant patron.","tr":"desert"},"ne":{"n":"Niger","c":"Niamey","p":28814878,"g":24813,"ch":1,"mu":98,"b":"~$400-600M range (junta-era increase)","pn":null,"t":3,"mn":"Military junta (since 2023 coup) expelled French and then US forces; spending has risen under the new government.","a":"russia","an":"Expelled French troops in 2023 and US forces in 2024; Russian Africa Corps personnel now present at Niamey airport; part of the Sahel States Alliance with Mali and Burkina Faso.","tr":"desert"},"ng":{"n":"Nigeria","c":"Abuja","p":242431832,"g":377365,"ch":49,"mu":49,"b":"~$3.2-4B (SIPRI, recent years)","pn":230000,"t":4,"mn":"Largest active-duty force in West Africa (~230,000); heavily engaged against Boko Haram/ISWAP in the northeast.","a":"mixed","an":"Diversified arms sourcing across the US, Russia, Turkey and China — no single dominant supplier or foreign base presence.","tr":"savanna"},"sn":{"n":"Senegal","c":"Dakar","p":19366548,"g":40469,"ch":5,"mu":92,"b":"Among the larger sub-Saharan importers (SIPRI top-3 sub-Saharan importer 2019-23)","pn":null,"t":3,"mn":"One of the larger and more professional West African forces; regular contributor to UN peacekeeping.","a":"mixed","an":"France's last two bases were handed over in July 2025 ending 65 years of French presence; President Faye has pledged to treat all foreign partners, including France, as equals rather than a patron.","tr":"semiarid"},"sl":{"n":"Sierra Leone","c":"Freetown","p":8996745,"g":8270,"ch":21,"mu":78,"b":"Minimal","pn":null,"t":1,"mn":"Small force with limited independent capability, still rebuilding since its civil war.","a":"mixed","an":"No major foreign military presence.","tr":"rainforest"},"tg":{"n":"Togo","c":"Lomé","p":9930918,"g":13437,"ch":44,"mu":20,"b":"Minimal","pn":null,"t":2,"mn":"Small force; increasingly drawn into Sahel jihadist spillover from the north.","a":"mixed","an":"Unconfirmed, lower-confidence reports of a small Russian Africa Corps liaison presence; no confirmed base.","tr":"savanna"},"ao":{"n":"Angola","c":"Luanda","p":40215179,"g":152354,"ch":93,"mu":1,"b":"$1.27B (2023, SIPRI)","pn":null,"t":4,"mn":"One of the larger sub-Saharan militaries by spending, built on oil revenue and a long-standing Russian arms relationship dating to the civil-war era.","a":"russia","an":"Russia has historically been Angola's dominant arms supplier since the civil war (MPLA-Soviet alignment); no foreign bases hosted today.","tr":"savanna"},"cm":{"n":"Cameroon","c":"Yaoundé","p":30640817,"g":65135,"ch":60,"mu":20,"b":"~$398M (est., Global Firepower)","pn":52500,"t":3,"mn":"Engaged on two fronts: Boko Haram/ISWAP in the Far North and Anglophone separatists in the west.","a":"mixed","an":"Receives security assistance from France, the US and others without one dominant single patron.","tr":"rainforest"},"cf":{"n":"Central African Republic","c":"Bangui","p":5698984,"g":3492,"ch":86,"mu":14,"b":"Not publicly reported","pn":10000,"t":2,"mn":"Small national army historically unable to control most of its own territory without outside forces.","a":"russia","an":"One of Russia's longest-running African security partnerships — Wagner arrived in 2018 and Africa Corps has since taken over; Russian personnel effectively underpin the government's security.","tr":"savanna"},"td":{"n":"Chad","c":"N’Djamena","p":21560380,"g":25628,"ch":41,"mu":58,"b":"~$558M (2024, up 43% y/y — highest % increase in Africa)","pn":null,"t":3,"mn":"Sharp recent spending increase (military burden reached ~3.0% of GDP in 2024, the continent's largest such rise).","a":"mixed","an":"Ended its French defense cooperation agreement in early 2025 (France's last Sahel base, at N'Djamena, closed) while also fielding Russian outreach; balancing rather than fully realigning.","tr":"desert"},"cg":{"n":"Congo","c":"Brazzaville","p":6637785,"g":17028,"ch":86,"mu":2,"b":"~$130-300M range (limited public detail)","pn":8500,"t":2,"mn":"Small force (~8,500 active); modest independent capability.","a":"mixed","an":"No dominant single foreign military patron; historic French ties have faded.","tr":"rainforest"},"cd":{"n":"DR Congo","c":"Kinshasa","p":116452162,"g":123406,"ch":96,"mu":2,"b":"~$300M-1B range depending on source/year","pn":166580,"t":3,"mn":"Large nominal personnel count (~167,000+ active) but chronically under-resourced relative to the conflict it faces in the mineral-rich east (M23 insurgency).","a":"mixed","an":"UN peacekeeping mission (MONUSCO) plus various bilateral partners; no single dominant foreign military patron.","tr":"rainforest"},"gq":{"n":"Equatorial Guinea","c":"Malabo","p":1984468,"g":13722,"ch":89,"mu":10,"b":"Minimal, oil-funded","pn":null,"t":1,"mn":"Small force; disproportionate oil wealth has not translated into major military capacity.","a":"russia","an":"Reported (2025) to be hosting a new, small Russian Africa Corps deployment — the first in Central Africa's Gulf of Guinea coast.","tr":"rainforest"},"ga":{"n":"Gabon","c":"Libreville","p":2647399,"g":23363,"ch":77,"mu":11,"b":"Minimal","pn":4800,"t":1,"mn":"Very small force (~4,800 active).","a":"mixed","an":"Hosts a small shared French military camp — one of only two countries (with Djibouti) where France retains a permanent presence after its 2023-25 withdrawal from the rest of the continent.","tr":"rainforest"},"st":{"n":"São Tomé and Príncipe","c":"São Tomé","p":244994,"g":1161,"ch":82,"mu":3,"b":"Minimal","pn":null,"t":1,"mn":"Essentially a coast-guard-scale force; no meaningful independent military capacity.","a":"mixed","an":"Microstate with no major-power military presence.","tr":"rainforest"},"bi":{"n":"Burundi","c":"Gitega","p":14729157,"g":8137,"ch":93,"mu":3,"b":"Minimal, limited public data","pn":null,"t":2,"mn":"Small force still recovering capacity after years of internal conflict.","a":"mixed","an":"No dominant foreign military patron.","tr":"highland"},"km":{"n":"Comoros","c":"Moroni","p":899010,"g":1814,"ch":0,"mu":100,"b":"Minimal","pn":null,"t":1,"mn":"Effectively a police-scale force; no significant independent military capacity.","a":"mixed","an":"Microstate with no major-power military presence.","tr":"rainforest"},"dj":{"n":"Djibouti","c":"Djibouti City","p":1199459,"g":4725,"ch":2,"mu":97,"b":"Revenue from basing rights rather than a large national force","pn":null,"t":2,"mn":"Small national force, but the country hosts an unusually dense concentration of *foreign* bases relative to its size.","a":"mixed","an":"Uniquely hosts permanent bases for the US (Camp Lemonnier, AFRICOM's largest base in Africa), France, China (Beijing's only overseas base), Japan and Italy simultaneously — a genuine multi-power hub rather than one patron's client.","tr":"desert"},"er":{"n":"Eritrea","c":"Asmara","p":3682669,"g":1982,"ch":50,"mu":48,"b":"Not published; large conscript-based force relative to population","pn":null,"t":3,"mn":"Maintains one of Africa's largest forces relative to population size via indefinite national service; details are opaque.","a":"mixed","an":"Historically isolated from all major-power blocs; recent, limited rapprochement with Gulf states more than with any single great power.","tr":"desert"},"et":{"n":"Ethiopia","c":"Addis Ababa","p":138902185,"g":121527,"ch":67,"mu":31,"b":"~$1.2B (2023, SIPRI) — likely understated given scale of internal conflict spending","pn":null,"t":4,"mn":"One of Africa's largest active-duty forces by population base; has been engaged in major internal conflicts (Tigray war 2020-22, ongoing Amhara unrest).","a":"russia","an":"A major buyer of Russian arms historically (aircraft, armored vehicles); no foreign bases, but arms relationship tilts toward Russia over the West.","tr":"highland"},"ke":{"n":"Kenya","c":"Nairobi","p":58636412,"g":147265,"ch":86,"mu":11,"b":"~$999M (2023, SIPRI)","pn":null,"t":3,"mn":"Regionally active force, notably in the African Union mission against al-Shabaab in Somalia.","a":"us","an":"Designated a US Major Non-NATO Ally in 2024; hosts long-standing AFRICOM 'enduring locations' (Manda Bay, Mombasa) and is a leading US security partner in East Africa.","tr":"savanna"},"mg":{"n":"Madagascar","c":"Antananarivo","p":33522052,"g":21185,"ch":85,"mu":3,"b":"Minimal","pn":null,"t":2,"mn":"Small force with limited capability, focused on internal stability.","a":"mixed","an":"Island state with no major-power military presence.","tr":"savanna"},"mw":{"n":"Malawi","c":"Lilongwe","p":22785535,"g":18152,"ch":77,"mu":14,"b":"Minimal","pn":null,"t":2,"mn":"Small force with limited independent capability.","a":"mixed","an":"No dominant foreign military patron.","tr":"savanna"},"mu":{"n":"Mauritius","c":"Port Louis","p":1265059,"g":17119,"ch":25,"mu":17,"b":"Minimal (no standing army; police-run security force)","pn":null,"t":1,"mn":"Has no standing army at all — internal security is handled by a police-run special mobile force and coast guard.","a":"mixed","an":"Non-aligned; longstanding sovereignty dispute with the UK over the Chagos Archipelago (site of the US/UK Diego Garcia base) rather than any alignment of its own.","tr":"rainforest"},"mz":{"n":"Mozambique","c":"Maputo","p":36639851,"g":23275,"ch":62,"mu":19,"b":"~$200-400M range","pn":11200,"t":3,"mn":"Has drawn on foreign support (Rwandan and SADC troops, plus earlier a short-lived, unsuccessful Wagner deployment in 2019) to fight an Islamic State-linked insurgency in Cabo Delgado since 2017.","a":"mixed","an":"Rwanda and the Southern African Development Community, not a single great power, have been the decisive foreign military actors in its current insurgency.","tr":"savanna"},"rw":{"n":"Rwanda","c":"Kigali","p":14889693,"g":17336,"ch":94,"mu":2,"b":"Limited public data, but well-regarded as capable and well-organized","pn":null,"t":3,"mn":"Small but highly capable and well-organized force by regional standards; active well beyond its own borders (eastern DRC, Mozambique, CAR).","a":"mixed","an":"No single dominant great-power patron; acts as a regional military actor in its own right.","tr":"highland"},"sc":{"n":"Seychelles","c":"Victoria","p":134959,"g":2251,"ch":94,"mu":1,"b":"Minimal","pn":null,"t":1,"mn":"Coast-guard-scale force only.","a":"mixed","an":"Microstate; hosts no major foreign bases, though courted by multiple powers for its strategic Indian Ocean location.","tr":"rainforest"},"so":{"n":"Somalia","c":"Mogadishu","p":20305907,"g":14174,"ch":0,"mu":100,"b":"Externally funded (African Union/international partners fund most operations)","pn":null,"t":2,"mn":"National army still being rebuilt with heavy international support while fighting al-Shabaab alongside the AU mission (AUSSOM, formerly ATMIS/AMISOM).","a":"us","an":"Hosts US and other AFRICOM-linked counterterrorism operations against al-Shabaab; the northern self-declared Somaliland region is treated separately from the rest of the country on this map.","tr":"semiarid"},"ss":{"n":"South Sudan","c":"Juba","p":12436037,"g":6069,"ch":61,"mu":6,"b":"$1.0B (2023, SIPRI) — grew 78% in a single year","pn":185000,"t":3,"mn":"Large active-duty personnel count (~185,000) relative to its small economy; spending spiked amid internal conflict and spillover from Sudan's civil war.","a":"mixed","an":"No single dominant foreign military patron; various regional and international actors are involved via peacekeeping and mediation.","tr":"savanna"},"tz":{"n":"Tanzania","c":"Dodoma","p":72563780,"g":94889,"ch":63,"mu":34,"b":"~$1.87B (est., Global Firepower)","pn":113500,"t":3,"mn":"One of the larger East African forces by personnel (~113,500).","a":"china","an":"One of China's oldest and deepest African defense relationships (dating to 1970): roughly half of Tanzania's military equipment inventory is Chinese, alongside PLA-built training centers, regular joint exercises, and PLA Navy port calls.","tr":"savanna"},"ug":{"n":"Uganda","c":"Kampala","p":52761469,"g":73370,"ch":84,"mu":14,"b":"$977M (2023, SIPRI)","pn":null,"t":3,"mn":"Regionally assertive force, active in Somalia (AU mission), eastern DRC and South Sudan.","a":"us","an":"Hosts a long-standing AFRICOM 'enduring location' at Entebbe; historically close US security partner, though it has also purchased Russian equipment (e.g., Su-30 jets).","tr":"savanna"},"zm":{"n":"Zambia","c":"Lusaka","p":22521915,"g":41243,"ch":98,"mu":1,"b":"Limited public data","pn":null,"t":2,"mn":"Small force with limited independent power-projection capability.","a":"china","an":"Zambia is the single largest recipient of Chinese defense loans in Africa (~60% of all such lending continent-wide since 2000), a relationship rooted in China's backing of Zambia against Rhodesian threats in the 1960s-70s when Western support was lukewarm.","tr":"savanna"},"zw":{"n":"Zimbabwe","c":"Harare","p":17273580,"g":56713,"ch":88,"mu":1,"b":"~$142M (est., Global Firepower)","pn":null,"t":2,"mn":"Modest force by regional standards; historically maintained Chinese equipment ties.","a":"china","an":"China has been Zimbabwe's dominant military supplier since Western sanctions cut off other sources in the 2000s — fighter jets, tanks, armored vehicles, and a China-financed National Defence College; ties trace back to Chinese support for ZANU's guerrillas in the 1960s-70s liberation war.","tr":"savanna"},"bw":{"n":"Botswana","c":"Gaborone","p":2603388,"g":21937,"ch":72,"mu":0,"b":"Notably high per-capita defense spending for the region","pn":null,"t":3,"mn":"Small population but comparatively high, diamond-revenue-funded per-capita defense spending.","a":"us","an":"Long-standing US security partner (International Law Enforcement Academy, regular joint exercises); no foreign bases.","tr":"desert"},"ls":{"n":"Lesotho","c":"Maseru","p":2389336,"g":2972,"ch":97,"mu":0,"b":"Minimal","pn":null,"t":1,"mn":"Very small force; occasionally reinforced by South African/SADC troops during internal crises.","a":"mixed","an":"Security guarantor role effectively filled by South Africa/SADC rather than any external great power.","tr":"highland"},"na":{"n":"Namibia","c":"Windhoek","p":3153246,"g":17314,"ch":98,"mu":0,"b":"Limited public data","pn":null,"t":2,"mn":"Small force with modest independent capability.","a":"mixed","an":"No dominant foreign military patron; longstanding but modest Chinese and Russian equipment ties.","tr":"desert"},"za":{"n":"South Africa","c":"Pretoria","p":65453084,"g":479964,"ch":81,"mu":2,"b":"$2.8B (2024, SIPRI) — cut for a 4th straight year","pn":null,"t":4,"mn":"The continent's most industrially self-sufficient defense sector (domestic arms industry via Denel), even as the government has repeatedly cut the defense budget to fund social spending.","a":"mixed","an":"Deliberately non-aligned in great-power terms; a founding BRICS member with growing China/Russia diplomatic ties but no foreign bases and continued Western defense-industry links.","tr":"savanna"},"sz":{"n":"Eswatini","c":"Mbabane","p":1269859,"g":5792,"ch":88,"mu":2,"b":"Minimal","pn":null,"t":1,"mn":"Very small force, mainly for internal security.","a":"mixed","an":"No dominant foreign military patron.","tr":"savanna"}};
+  var countries = {"dz":{"n":"Algeria","c":"Algiers","p":48028334,"g":317173,"ar":2381740,"ch":1,"mu":98,"b":"$21.8B (2024, SIPRI)","pn":325000,"t":5,"mn2":"Africa's largest defense budget; ~325,000 active personnel plus large reserve/paramilitary force.","a":"russia","an":"Russia has long been Algeria's dominant arms supplier (~48% of imports 2020-24, Soviet-era relationship); no foreign bases hosted.","tr":"desert","sb":"Also has a Mediterranean coastal strip in the far north (where most of the population actually lives) and highland in the Atlas Mountains -- the Sahara desert dominates by land area but not by where people are."},"eg":{"n":"Egypt","c":"Cairo","p":120101175,"g":429645,"ar":995450,"ch":11,"mu":89,"b":"~$9-10B (est., varies by source)","pn":438500,"t":5,"mn2":"Largest active-duty force on the continent (~440,000) plus ~480,000 reserves; ranked Africa's top military by Global Firepower.","a":"us","an":"Major US non-NATO ally since 1989; largest recipient of US military aid in Africa/Middle East region, though has diversified with French and Russian purchases since 2013.","tr":"desert"},"ly":{"n":"Libya","c":"Tripoli","p":7539851,"g":52453,"ar":1759540,"ch":3,"mu":97,"b":"Not centrally reported (fragmented state)","pn":null,"t":3,"mn2":"Military remains split between rival governments; no single reliable national budget figure since 2014 civil conflict.","a":"russia","an":"Eastern Libya (Haftar's LNA) hosts Russian Africa Corps personnel and receives Russian equipment; western Libya (GNU) has Turkish backing instead — a genuinely split alignment.","tr":"desert"},"ma":{"n":"Morocco","c":"Rabat","p":38762441,"g":194333,"ar":446300,"ch":0,"mu":99,"b":"$5.5B (2024, SIPRI)","pn":195800,"t":4,"mn2":"~196,000 active personnel; second-largest defense budget in Africa, concentrated on countering Algeria and controlling Western Sahara.","a":"us","an":"Major US non-NATO ally; ~64% of arms imports from the US, plus France and Israel. Hosts the continent's largest annual US joint exercise (African Lion).","tr":"mediterranean","mn":["phosphate","Holds roughly 70% of the world's known phosphate rock reserves, essential for fertilizer."]},"sd":{"n":"Sudan","c":"Khartoum","p":53282719,"g":44688,"ar":1765048,"ch":5,"mu":91,"b":"Not reliably reported (civil war since 2023)","pn":null,"t":3,"mn2":"Military split between the Sudanese Armed Forces and the paramilitary RSF since the 2023 civil war; no reliable unified budget.","a":"mixed","an":"Both sides in the civil war have drawn on different foreign backers (reported Gulf, Russian and other involvement on various sides); too fragmented to assign a single patron.","tr":"desert","sb":"Also has semi-arid Sahel steppe across its center; the wetter savanna zone that once extended further south became part of South Sudan after the 2011 split."},"tn":{"n":"Tunisia","c":"Tunis","p":12415138,"g":60745,"ar":155360,"ch":0,"mu":100,"b":"$1.2B (2023, SIPRI)","pn":48000,"t":3,"mn2":"Small professional force; primary role is border/counter-terrorism security rather than power projection.","a":"us","an":"Long-standing US security-assistance partner (major non-NATO ally since 2015); AFRICOM engagement continues.","tr":"mediterranean"},"bj":{"n":"Benin","c":"Porto-Novo","p":15170419,"g":27786,"ar":112760,"ch":48,"mu":28,"b":"Limited public data","pn":4750,"t":2,"mn2":"Small force (~4,750 active) focused on internal security and the Gulf of Guinea/Sahel spillover threat.","a":"mixed","an":"No dominant single foreign patron; receives Western and some French-legacy security assistance.","tr":"savanna"},"bf":{"n":"Burkina Faso","c":"Ouagadougou","p":24601700,"g":32513,"ar":273600,"ch":26,"mu":64,"b":"~$0.6-1B (junta has sharply increased spending since 2022 coup)","pn":null,"t":3,"mn2":"Military junta government fighting a large jihadist insurgency; spending up sharply since the 2022 coup.","a":"russia","an":"Ended military cooperation with France in 2023; hosts Russian Africa Corps personnel; part of the Mali-Burkina Faso-Niger 'Alliance of Sahel States'.","tr":"semiarid"},"cv":{"n":"Cape Verde","c":"Praia","p":529630,"g":3448,"ar":4030,"ch":89,"mu":2,"b":"Minimal","pn":null,"t":1,"mn2":"Tiny coast-guard-scale force; no significant standing military capacity.","a":"mixed","an":"Small island state with no major-power military presence; Western-oriented but not a basing partner.","tr":"semiarid"},"ci":{"n":"Côte d'Ivoire","c":"Yamoussoukro","p":33494346,"g":112115,"ar":318000,"ch":40,"mu":42,"b":"~$657M (est., Global Firepower)","pn":27500,"t":3,"mn2":"Regionally significant force by West African standards; France handed back its last base (Port Bouët) in 2025.","a":"mixed","an":"France's formal base presence ended in 2025; retains Western security ties (hosts AFRICOM's Flintlock exercise) without a single dominant patron.","tr":"rainforest"},"gm":{"n":"Gambia","c":"Banjul","p":2884079,"g":2792,"ar":10120,"ch":5,"mu":95,"b":"Minimal","pn":null,"t":1,"mn2":"Very small force; limited independent capability.","a":"mixed","an":"No major foreign military presence; historically Western-oriented.","tr":"savanna"},"gh":{"n":"Ghana","c":"Accra","p":35697557,"g":118293,"ar":227540,"ch":71,"mu":20,"b":"Limited public data","pn":null,"t":3,"mn2":"Regionally respected for peacekeeping contributions rather than raw firepower.","a":"us","an":"Long-time AFRICOM partner and regular host of the Flintlock special-operations exercise; Western-oriented defense relationship.","tr":"savanna","mn":["gold","Africa's largest gold producer."]},"gn":{"n":"Guinea","c":"Conakry","p":15441993,"g":29930,"ar":245720,"ch":11,"mu":84,"b":"Limited public data","pn":null,"t":2,"mn2":"Small force; limited independent operational reach.","a":"mixed","an":"No single dominant foreign military patron; some historic Russian/Soviet-era equipment ties persist.","tr":"savanna","mn":["bauxite","The world's largest bauxite (aluminum ore) exporter."]},"gw":{"n":"Guinea-Bissau","c":"Bissau","p":2297808,"g":2985,"ar":28120,"ch":20,"mu":45,"b":"Minimal","pn":null,"t":1,"mn2":"Very small force with limited capability.","a":"mixed","an":"No major foreign military presence.","tr":"savanna"},"lr":{"n":"Liberia","c":"Monrovia","p":5853949,"g":5642,"ar":96320,"ch":81,"mu":19,"b":"Minimal","pn":1500,"t":1,"mn2":"Smallest active-duty force in Africa (~1,500); rebuilt with heavy US assistance after its civil wars.","a":"us","an":"Force rebuilt and trained largely by the United States since the 2003 civil war settlement.","tr":"rainforest"},"ml":{"n":"Mali","c":"Bamako","p":25932275,"g":33847,"ar":1220190,"ch":3,"mu":95,"b":"~$555M (est., Global Firepower); junta has raised spending sharply since 2020/21 coups","pn":44800,"t":3,"mn2":"Military junta fighting a long-running jihadist insurgency across the north and center of the country.","a":"russia","an":"Ended its defense relationship with France in 2022; Wagner/Africa Corps has been the primary foreign security partner since 2021, though Wagner itself withdrew in mid-2025 with Africa Corps remaining.","tr":"desert"},"mr":{"n":"Mauritania","c":"Nouakchott","p":5461319,"g":14352,"ar":1030700,"ch":0,"mu":100,"b":"Limited public data","pn":null,"t":2,"mn2":"Small force focused on Sahara/Sahel border security.","a":"mixed","an":"Maintains security cooperation with both Western partners and neighbors; no single dominant patron.","tr":"desert"},"ne":{"n":"Niger","c":"Niamey","p":28814878,"g":24813,"ar":1266700,"ch":1,"mu":98,"b":"~$400-600M range (junta-era increase)","pn":null,"t":3,"mn2":"Military junta (since 2023 coup) expelled French and then US forces; spending has risen under the new government.","a":"russia","an":"Expelled French troops in 2023 and US forces in 2024; Russian Africa Corps personnel now present at Niamey airport; part of the Sahel States Alliance with Mali and Burkina Faso.","tr":"desert","mn":["uranium","A historically significant uranium producer, long tied to France's nuclear fuel supply."]},"ng":{"n":"Nigeria","c":"Abuja","p":242431832,"g":377365,"ar":910770,"ch":49,"mu":49,"b":"~$3.2-4B (SIPRI, recent years)","pn":230000,"t":4,"mn2":"Largest active-duty force in West Africa (~230,000); heavily engaged against Boko Haram/ISWAP in the northeast.","a":"mixed","an":"Diversified arms sourcing across the US, Russia, Turkey and China — no single dominant supplier or foreign base presence.","tr":"savanna"},"sn":{"n":"Senegal","c":"Dakar","p":19366548,"g":40469,"ar":192530,"ch":5,"mu":92,"b":"Among the larger sub-Saharan importers (SIPRI top-3 sub-Saharan importer 2019-23)","pn":null,"t":3,"mn2":"One of the larger and more professional West African forces; regular contributor to UN peacekeeping.","a":"mixed","an":"France's last two bases were handed over in July 2025 ending 65 years of French presence; President Faye has pledged to treat all foreign partners, including France, as equals rather than a patron.","tr":"semiarid"},"sl":{"n":"Sierra Leone","c":"Freetown","p":8996745,"g":8270,"ar":72180,"ch":21,"mu":78,"b":"Minimal","pn":null,"t":1,"mn2":"Small force with limited independent capability, still rebuilding since its civil war.","a":"mixed","an":"No major foreign military presence.","tr":"rainforest"},"tg":{"n":"Togo","c":"Lomé","p":9930918,"g":13437,"ar":54390,"ch":44,"mu":20,"b":"Minimal","pn":null,"t":2,"mn2":"Small force; increasingly drawn into Sahel jihadist spillover from the north.","a":"mixed","an":"Unconfirmed, lower-confidence reports of a small Russian Africa Corps liaison presence; no confirmed base.","tr":"savanna"},"ao":{"n":"Angola","c":"Luanda","p":40215179,"g":152354,"ar":1246700,"ch":93,"mu":1,"b":"$1.27B (2023, SIPRI)","pn":null,"t":4,"mn2":"One of the larger sub-Saharan militaries by spending, built on oil revenue and a long-standing Russian arms relationship dating to the civil-war era.","a":"russia","an":"Russia has historically been Angola's dominant arms supplier since the civil war (MPLA-Soviet alignment); no foreign bases hosted today.","tr":"savanna","sb":"Also has true desert (the Namib fringe, south) and rainforest (the Cabinda exclave, north)."},"cm":{"n":"Cameroon","c":"Yaoundé","p":30640817,"g":65135,"ar":472710,"ch":60,"mu":20,"b":"~$398M (est., Global Firepower)","pn":52500,"t":3,"mn2":"Engaged on two fronts: Boko Haram/ISWAP in the Far North and Anglophone separatists in the west.","a":"mixed","an":"Receives security assistance from France, the US and others without one dominant single patron.","tr":"rainforest"},"cf":{"n":"Central African Republic","c":"Bangui","p":5698984,"g":3492,"ar":622980,"ch":86,"mu":14,"b":"Not publicly reported","pn":10000,"t":2,"mn2":"Small national army historically unable to control most of its own territory without outside forces.","a":"russia","an":"One of Russia's longest-running African security partnerships — Wagner arrived in 2018 and Africa Corps has since taken over; Russian personnel effectively underpin the government's security.","tr":"savanna"},"td":{"n":"Chad","c":"N’Djamena","p":21560380,"g":25628,"ar":1259200,"ch":41,"mu":58,"b":"~$558M (2024, up 43% y/y — highest % increase in Africa)","pn":null,"t":3,"mn2":"Sharp recent spending increase (military burden reached ~3.0% of GDP in 2024, the continent's largest such rise).","a":"mixed","an":"Ended its French defense cooperation agreement in early 2025 (France's last Sahel base, at N'Djamena, closed) while also fielding Russian outreach; balancing rather than fully realigning.","tr":"desert"},"cg":{"n":"Congo","c":"Brazzaville","p":6637785,"g":17028,"ar":341500,"ch":86,"mu":2,"b":"~$130-300M range (limited public detail)","pn":8500,"t":2,"mn2":"Small force (~8,500 active); modest independent capability.","a":"mixed","an":"No dominant single foreign military patron; historic French ties have faded.","tr":"rainforest"},"cd":{"n":"DR Congo","c":"Kinshasa","p":116452162,"g":123406,"ar":2267050,"ch":96,"mu":2,"b":"~$300M-1B range depending on source/year","pn":166580,"t":3,"mn2":"Large nominal personnel count (~167,000+ active) but chronically under-resourced relative to the conflict it faces in the mineral-rich east (M23 insurgency).","a":"mixed","an":"UN peacekeeping mission (MONUSCO) plus various bilateral partners; no single dominant foreign military patron.","tr":"rainforest","sb":"Also has savanna (the southern Katanga region, well outside the Congo Basin rainforest core).","mn":["cobalt","Mines roughly 70% of the world's cobalt and processes about 80% of it -- the single most concentrated critical-mineral supply chain on Earth."]},"gq":{"n":"Equatorial Guinea","c":"Malabo","p":1984468,"g":13722,"ar":28050,"ch":89,"mu":10,"b":"Minimal, oil-funded","pn":null,"t":1,"mn2":"Small force; disproportionate oil wealth has not translated into major military capacity.","a":"russia","an":"Reported (2025) to be hosting a new, small Russian Africa Corps deployment — the first in Central Africa's Gulf of Guinea coast.","tr":"rainforest"},"ga":{"n":"Gabon","c":"Libreville","p":2647399,"g":23363,"ar":257670,"ch":77,"mu":11,"b":"Minimal","pn":4800,"t":1,"mn2":"Very small force (~4,800 active).","a":"mixed","an":"Hosts a small shared French military camp — one of only two countries (with Djibouti) where France retains a permanent presence after its 2023-25 withdrawal from the rest of the continent.","tr":"rainforest","mn":["manganese","One of the world's leading manganese ore exporters."]},"st":{"n":"São Tomé and Príncipe","c":"São Tomé","p":244994,"g":1161,"ar":960,"ch":82,"mu":3,"b":"Minimal","pn":null,"t":1,"mn2":"Essentially a coast-guard-scale force; no meaningful independent military capacity.","a":"mixed","an":"Microstate with no major-power military presence.","tr":"rainforest"},"bi":{"n":"Burundi","c":"Gitega","p":14729157,"g":8137,"ar":25680,"ch":93,"mu":3,"b":"Minimal, limited public data","pn":null,"t":2,"mn2":"Small force still recovering capacity after years of internal conflict.","a":"mixed","an":"No dominant foreign military patron.","tr":"highland"},"km":{"n":"Comoros","c":"Moroni","p":899010,"g":1814,"ar":1861,"ch":0,"mu":100,"b":"Minimal","pn":null,"t":1,"mn2":"Effectively a police-scale force; no significant independent military capacity.","a":"mixed","an":"Microstate with no major-power military presence.","tr":"rainforest"},"dj":{"n":"Djibouti","c":"Djibouti City","p":1199459,"g":4725,"ar":23180,"ch":2,"mu":97,"b":"Revenue from basing rights rather than a large national force","pn":null,"t":2,"mn2":"Small national force, but the country hosts an unusually dense concentration of *foreign* bases relative to its size.","a":"mixed","an":"Uniquely hosts permanent bases for the US (Camp Lemonnier, AFRICOM's largest base in Africa), France, China (Beijing's only overseas base), Japan and Italy simultaneously — a genuine multi-power hub rather than one patron's client.","tr":"desert"},"er":{"n":"Eritrea","c":"Asmara","p":3682669,"g":1982,"ar":101000,"ch":50,"mu":48,"b":"Not published; large conscript-based force relative to population","pn":null,"t":3,"mn2":"Maintains one of Africa's largest forces relative to population size via indefinite national service; details are opaque.","a":"mixed","an":"Historically isolated from all major-power blocs; recent, limited rapprochement with Gulf states more than with any single great power.","tr":"desert"},"et":{"n":"Ethiopia","c":"Addis Ababa","p":138902185,"g":121527,"ar":1000000,"ch":67,"mu":31,"b":"~$1.2B (2023, SIPRI) — likely understated given scale of internal conflict spending","pn":null,"t":4,"mn2":"One of Africa's largest active-duty forces by population base; has been engaged in major internal conflicts (Tigray war 2020-22, ongoing Amhara unrest).","a":"russia","an":"A major buyer of Russian arms historically (aircraft, armored vehicles); no foreign bases, but arms relationship tilts toward Russia over the West.","tr":"highland","sb":"Also has true desert (the Danakil Depression, one of the hottest places on Earth) and savanna (south/southwest)."},"ke":{"n":"Kenya","c":"Nairobi","p":58636412,"g":147265,"ar":569140,"ch":86,"mu":11,"b":"~$999M (2023, SIPRI)","pn":null,"t":3,"mn2":"Regionally active force, notably in the African Union mission against al-Shabaab in Somalia.","a":"us","an":"Designated a US Major Non-NATO Ally in 2024; hosts long-standing AFRICOM 'enduring locations' (Manda Bay, Mombasa) and is a leading US security partner in East Africa.","tr":"savanna"},"mg":{"n":"Madagascar","c":"Antananarivo","p":33522052,"g":21185,"ar":581795,"ch":85,"mu":3,"b":"Minimal","pn":null,"t":2,"mn2":"Small force with limited capability, focused on internal stability.","a":"mixed","an":"Island state with no major-power military presence.","tr":"savanna","sb":"Also has rainforest (the eastern escarpment) and semi-arid spiny forest (the south/southwest) -- Madagascar's isolation makes it one of the most ecologically distinct countries on Earth."},"mw":{"n":"Malawi","c":"Lilongwe","p":22785535,"g":18152,"ar":94280,"ch":77,"mu":14,"b":"Minimal","pn":null,"t":2,"mn2":"Small force with limited independent capability.","a":"mixed","an":"No dominant foreign military patron.","tr":"savanna"},"mu":{"n":"Mauritius","c":"Port Louis","p":1265059,"g":17119,"ar":2030,"ch":25,"mu":17,"b":"Minimal (no standing army; police-run security force)","pn":null,"t":1,"mn2":"Has no standing army at all — internal security is handled by a police-run special mobile force and coast guard.","a":"mixed","an":"Non-aligned; longstanding sovereignty dispute with the UK over the Chagos Archipelago (site of the US/UK Diego Garcia base) rather than any alignment of its own.","tr":"rainforest"},"mz":{"n":"Mozambique","c":"Maputo","p":36639851,"g":23275,"ar":786380,"ch":62,"mu":19,"b":"~$200-400M range","pn":11200,"t":3,"mn2":"Has drawn on foreign support (Rwandan and SADC troops, plus earlier a short-lived, unsuccessful Wagner deployment in 2019) to fight an Islamic State-linked insurgency in Cabo Delgado since 2017.","a":"mixed","an":"Rwanda and the Southern African Development Community, not a single great power, have been the decisive foreign military actors in its current insurgency.","tr":"savanna","mn":["graphite","A fast-growing major graphite producer, key to battery anodes."]},"rw":{"n":"Rwanda","c":"Kigali","p":14889693,"g":17336,"ar":24670,"ch":94,"mu":2,"b":"Limited public data, but well-regarded as capable and well-organized","pn":null,"t":3,"mn2":"Small but highly capable and well-organized force by regional standards; active well beyond its own borders (eastern DRC, Mozambique, CAR).","a":"mixed","an":"No single dominant great-power patron; acts as a regional military actor in its own right.","tr":"highland","mn":["tantalum","One of the world's leading tantalum (coltan) producers."]},"sc":{"n":"Seychelles","c":"Victoria","p":134959,"g":2251,"ar":460,"ch":94,"mu":1,"b":"Minimal","pn":null,"t":1,"mn2":"Coast-guard-scale force only.","a":"mixed","an":"Microstate; hosts no major foreign bases, though courted by multiple powers for its strategic Indian Ocean location.","tr":"rainforest"},"so":{"n":"Somalia","c":"Mogadishu","p":20305907,"g":14174,"ar":627340,"ch":0,"mu":100,"b":"Externally funded (African Union/international partners fund most operations)","pn":null,"t":2,"mn2":"National army still being rebuilt with heavy international support while fighting al-Shabaab alongside the AU mission (AUSSOM, formerly ATMIS/AMISOM).","a":"us","an":"Hosts US and other AFRICOM-linked counterterrorism operations against al-Shabaab; the northern self-declared Somaliland region is treated separately from the rest of the country on this map.","tr":"semiarid"},"ss":{"n":"South Sudan","c":"Juba","p":12436037,"g":6069,"ar":610952,"ch":61,"mu":6,"b":"$1.0B (2023, SIPRI) — grew 78% in a single year","pn":185000,"t":3,"mn2":"Large active-duty personnel count (~185,000) relative to its small economy; spending spiked amid internal conflict and spillover from Sudan's civil war.","a":"mixed","an":"No single dominant foreign military patron; various regional and international actors are involved via peacekeeping and mediation.","tr":"savanna"},"tz":{"n":"Tanzania","c":"Dodoma","p":72563780,"g":94889,"ar":885800,"ch":63,"mu":34,"b":"~$1.87B (est., Global Firepower)","pn":113500,"t":3,"mn2":"One of the larger East African forces by personnel (~113,500).","a":"china","an":"One of China's oldest and deepest African defense relationships (dating to 1970): roughly half of Tanzania's military equipment inventory is Chinese, alongside PLA-built training centers, regular joint exercises, and PLA Navy port calls.","tr":"savanna"},"ug":{"n":"Uganda","c":"Kampala","p":52761469,"g":73370,"ar":199810,"ch":84,"mu":14,"b":"$977M (2023, SIPRI)","pn":null,"t":3,"mn2":"Regionally assertive force, active in Somalia (AU mission), eastern DRC and South Sudan.","a":"us","an":"Hosts a long-standing AFRICOM 'enduring location' at Entebbe; historically close US security partner, though it has also purchased Russian equipment (e.g., Su-30 jets).","tr":"savanna"},"zm":{"n":"Zambia","c":"Lusaka","p":22521915,"g":41243,"ar":743390,"ch":98,"mu":1,"b":"Limited public data","pn":null,"t":2,"mn2":"Small force with limited independent power-projection capability.","a":"china","an":"Zambia is the single largest recipient of Chinese defense loans in Africa (~60% of all such lending continent-wide since 2000), a relationship rooted in China's backing of Zambia against Rhodesian threats in the 1960s-70s when Western support was lukewarm.","tr":"savanna","mn":["copper","Africa's second-largest copper producer, the historic heart of the 'Copperbelt'."]},"zw":{"n":"Zimbabwe","c":"Harare","p":17273580,"g":56713,"ar":386850,"ch":88,"mu":1,"b":"~$142M (est., Global Firepower)","pn":null,"t":2,"mn2":"Modest force by regional standards; historically maintained Chinese equipment ties.","a":"china","an":"China has been Zimbabwe's dominant military supplier since Western sanctions cut off other sources in the 2000s — fighter jets, tanks, armored vehicles, and a China-financed National Defence College; ties trace back to Chinese support for ZANU's guerrillas in the 1960s-70s liberation war.","tr":"savanna","mn":["lithium","A fast-growing lithium source amid a recent mining boom, alongside platinum-group metals."]},"bw":{"n":"Botswana","c":"Gaborone","p":2603388,"g":21937,"ar":566730,"ch":72,"mu":0,"b":"Notably high per-capita defense spending for the region","pn":null,"t":3,"mn2":"Small population but comparatively high, diamond-revenue-funded per-capita defense spending.","a":"us","an":"Long-standing US security partner (International Law Enforcement Academy, regular joint exercises); no foreign bases.","tr":"desert"},"ls":{"n":"Lesotho","c":"Maseru","p":2389336,"g":2972,"ar":30360,"ch":97,"mu":0,"b":"Minimal","pn":null,"t":1,"mn2":"Very small force; occasionally reinforced by South African/SADC troops during internal crises.","a":"mixed","an":"Security guarantor role effectively filled by South Africa/SADC rather than any external great power.","tr":"highland"},"na":{"n":"Namibia","c":"Windhoek","p":3153246,"g":17314,"ar":823290,"ch":98,"mu":0,"b":"Limited public data","pn":null,"t":2,"mn2":"Small force with modest independent capability.","a":"mixed","an":"No dominant foreign military patron; longstanding but modest Chinese and Russian equipment ties.","tr":"desert","mn":["uranium","A top-5 global uranium producer."]},"za":{"n":"South Africa","c":"Pretoria","p":65453084,"g":479964,"ar":1213090,"ch":81,"mu":2,"b":"$2.8B (2024, SIPRI) — cut for a 4th straight year","pn":null,"t":4,"mn2":"The continent's most industrially self-sufficient defense sector (domestic arms industry via Denel), even as the government has repeatedly cut the defense budget to fund social spending.","a":"mixed","an":"Deliberately non-aligned in great-power terms; a founding BRICS member with growing China/Russia diplomatic ties but no foreign bases and continued Western defense-industry links.","tr":"savanna","sb":"Also has true desert/semi-desert (the Karoo, interior), a Mediterranean climate (the Cape Fynbos region), and temperate highland forest (the Drakensberg).","mn":["pgm","Dominates global platinum (~70%), rhodium (~85%) and chromium mining -- the world's platinum-group-metal supplier of last resort."]},"sz":{"n":"Eswatini","c":"Mbabane","p":1269859,"g":5792,"ar":17200,"ch":88,"mu":2,"b":"Minimal","pn":null,"t":1,"mn2":"Very small force, mainly for internal security.","a":"mixed","an":"No dominant foreign military patron.","tr":"savanna"}};
+  for (var _cid in countries) {
+    var _c = countries[_cid];
+    _c.dens = _c.p / _c.ar;
+    _c.pc = _c.g * 1000000 / _c.p;
+  }
+
+  var WIKI_OVERRIDE = {
+    "DR Congo": "Democratic_Republic_of_the_Congo",
+    "Congo": "Republic_of_the_Congo",
+    "Gambia": "The_Gambia",
+    "C\u00f4te d'Ivoire": "Ivory_Coast",
+    "N\u2019Djamena": "N'Djamena"
+  };
+  function wikiUrl(name) {
+    var slug = WIKI_OVERRIDE[name] || name.replace(/ /g, "_");
+    return "https://en.wikipedia.org/wiki/" + encodeURIComponent(slug).replace(/%2C/g, ",");
+  }
+  function wikiLink(name) {
+    return '<a href="' + wikiUrl(name) + '" target="_blank" rel="noopener">' + name + '</a>';
+  }
 
   var religionNotes = {
     mu: "Majority Hindu (about 56%) \u2014 the only Hindu-majority country in Africa; not Christian or Muslim.",
@@ -309,15 +406,24 @@
   // Order matters for the legend (roughly dry -> wet)
   var TERRAIN_ORDER = ["desert", "semiarid", "savanna", "mediterranean", "highland", "rainforest"];
 
+  var MINERAL_LABELS = {
+    cobalt: "Cobalt", copper: "Copper", bauxite: "Bauxite (aluminum ore)", pgm: "Platinum-group metals",
+    manganese: "Manganese", phosphate: "Phosphate", graphite: "Graphite", tantalum: "Tantalum",
+    lithium: "Lithium", uranium: "Uranium", gold: "Gold"
+  };
+  var MINERAL_COLORS = {
+    cobalt: "#5b6ee1", copper: "#d4915a", bauxite: "#b5651d", pgm: "#d1c9a8",
+    manganese: "#8b5a2b", phosphate: "#e8c07d", graphite: "#4a4a4a", tantalum: "#5a7a9a",
+    lithium: "#a3d977", uranium: "#7fd13b", gold: "#d4af37"
+  };
+
   var LAYERS = {
     terrain: { label: "Satellite / Terrain", type: "terrain", colors: TERRAIN_COLORS,
            get: null, fmt: null },
-    pop: { label: "Population", type: "seq", lo: GRAD_LO, mid: GRAD_MID, hi: GRAD_HI,
-           tickFmt: fmtPop,
-           get: function (d) { return d.p; }, fmt: fmtPop },
-    gdp: { label: "Economy (GDP)", type: "seq", lo: GRAD_LO, mid: GRAD_MID, hi: GRAD_HI,
-           tickFmt: fmtGDP,
-           get: function (d) { return d.g; }, fmt: fmtGDP },
+    pop: { label: "Population density", type: "seq", lo: GRAD_LO, mid: GRAD_MID, hi: GRAD_HI,
+           get: null, fmt: null },
+    gdp: { label: "GDP per capita", type: "seq", lo: GRAD_LO, mid: GRAD_MID, hi: GRAD_HI,
+           get: null, fmt: null },
     mil: { label: "Military", type: "tier",
            ramp: [lerpColor3(0, GRAD_LO, GRAD_MID, GRAD_HI), lerpColor3(0.25, GRAD_LO, GRAD_MID, GRAD_HI),
                   lerpColor3(0.5, GRAD_LO, GRAD_MID, GRAD_HI), lerpColor3(0.75, GRAD_LO, GRAD_MID, GRAD_HI),
@@ -327,12 +433,13 @@
            get: null, fmt: null },
     align: { label: "Great-power alignment", type: "align",
            colors: { us: "#2b6cb0", russia: "#b23a2e", china: "#d69e2e", mixed: "#a9a49a" },
-           get: null, fmt: null }
+           get: null, fmt: null },
+    minerals: { label: "Critical minerals", type: "minerals", get: null, fmt: null }
   };
 
   var activeLayer = "terrain";
-  var popRank = rankScale("p");
-  var gdpRank = rankScale("g");
+  var densRank = rankScale("dens");
+  var pcRank = rankScale("pc");
 
   function valuesOf(key) {
     var out = [];
@@ -395,6 +502,8 @@
   function fmtNum(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
+  function fmtDens(o) { var v = o.dens; return (v >= 100 ? v.toFixed(0) : v.toFixed(1)) + "/km\u00b2"; }
+  function fmtPC(o) { var v = o.pc; if (v >= 1000) { return "$" + (v / 1000).toFixed(1) + "K"; } return "$" + v.toFixed(0); }
 
   function flagEmoji(code) {
     if (!code || code.length !== 2) { return ""; }
@@ -412,10 +521,10 @@
       return TERRAIN_COLORS[d.tr] || "#cfcabb";
     }
     if (activeLayer === "pop") {
-      return lerpColor3(popRank.tById[realId], LAYERS.pop.lo, LAYERS.pop.mid, LAYERS.pop.hi);
+      return lerpColor3(densRank.tById[realId], LAYERS.pop.lo, LAYERS.pop.mid, LAYERS.pop.hi);
     }
     if (activeLayer === "gdp") {
-      return lerpColor3(gdpRank.tById[realId], LAYERS.gdp.lo, LAYERS.gdp.mid, LAYERS.gdp.hi);
+      return lerpColor3(pcRank.tById[realId], LAYERS.gdp.lo, LAYERS.gdp.mid, LAYERS.gdp.hi);
     }
     if (activeLayer === "mil") {
       return LAYERS.mil.ramp[d.t - 1];
@@ -425,6 +534,9 @@
     }
     if (activeLayer === "align") {
       return LAYERS.align.colors[d.a];
+    }
+    if (activeLayer === "minerals") {
+      return d.mn ? MINERAL_COLORS[d.mn[0]] : "#e8e4d8";
     }
     return "#cfcabb";
   }
@@ -449,16 +561,17 @@
       }
     } else if (activeLayer === "pop" || activeLayer === "gdp") {
       var L = LAYERS[activeLayer];
-      var rank = activeLayer === "pop" ? popRank : gdpRank;
+      var rank = activeLayer === "pop" ? densRank : pcRank;
+      var fmt = activeLayer === "pop" ? fmtDens : fmtPC;
       html += '<div style="position:relative;width:100%;max-width:460px;height:36px;margin-top:2px;">';
       html += '<div style="height:14px;border-radius:4px;border:1px solid rgba(0,0,0,0.15);background:linear-gradient(to right,' + L.lo + ',' + L.mid + ',' + L.hi + ');"></div>';
       for (var i = 0; i < rank.ticks.length; i++) {
         var tick = rank.ticks[i];
         var pct = Math.max(1, Math.min(99, tick.t * 100));
-        html += '<div style="position:absolute;left:' + pct + '%;top:17px;transform:translateX(-50%);font-size:0.72rem;color:#666;white-space:nowrap;">' + L.tickFmt({ p: tick.v, g: tick.v }) + '</div>';
+        html += '<div style="position:absolute;left:' + pct + '%;top:17px;transform:translateX(-50%);font-size:0.72rem;color:#666;white-space:nowrap;">' + fmt(activeLayer === "pop" ? { dens: tick.v } : { pc: tick.v }) + '</div>';
       }
       html += '</div>';
-      html += '<div style="font-size:0.72rem;color:#999;margin-top:2px;width:100%;">Ranked by ' + (activeLayer === "pop" ? "population" : "GDP") + " (lowest to highest of all 54) \u2014 evenly spread so close values stay distinguishable.</div>";
+      html += '<div style="font-size:0.72rem;color:#999;margin-top:2px;width:100%;">Ranked by ' + (activeLayer === "pop" ? "population density (people per km\u00b2)" : "GDP per capita") + " (lowest to highest of all 54) \u2014 evenly spread so close values stay distinguishable.</div>";
     } else if (activeLayer === "mil") {
       var ramp = LAYERS.mil.ramp;
       var labels = ["1 \u2013 minimal", "2 \u2013 small", "3 \u2013 moderate", "4 \u2013 major regional", "5 \u2013 continental top-tier"];
@@ -476,6 +589,16 @@
       html += '<span class="legend-item"><span class="swatch" style="background:#b23a2e"></span>Russia-aligned (Africa Corps / arms)</span>';
       html += '<span class="legend-item"><span class="swatch" style="background:#d69e2e"></span>China-aligned (dominant arms/defense-loan patron)</span>';
       html += '<span class="legend-item"><span class="swatch" style="background:#a9a49a"></span>Non-aligned / mixed</span>';
+    } else if (activeLayer === "minerals") {
+      var seen = {};
+      for (var mid in countries) {
+        var mc = countries[mid];
+        if (mc.mn && !seen[mc.mn[0]]) {
+          seen[mc.mn[0]] = true;
+          html += '<span class="legend-item"><span class="swatch" style="background:' + MINERAL_COLORS[mc.mn[0]] + '"></span>' + MINERAL_LABELS[mc.mn[0]] + '</span>';
+        }
+      }
+      html += '<div style="font-size:0.72rem;color:#999;margin-top:4px;width:100%;">Only countries with a genuinely dominant global share of a mineral are colored (USGS 2023 production data); everyone else is neutral, not zero.</div>';
     }
     el.innerHTML = html;
   }
@@ -498,6 +621,8 @@
     var overlay = document.getElementById("terrainOverlay");
     var credit = document.getElementById("terrainCredit");
     var showTerrainFx = activeLayer === "terrain";
+    overlay.setAttribute("x", vb.x); overlay.setAttribute("y", vb.y);
+    overlay.setAttribute("width", vb.w); overlay.setAttribute("height", vb.h);
     overlay.style.display = showTerrainFx ? "block" : "none";
     credit.style.display = showTerrainFx ? "block" : "none";
   }
@@ -513,6 +638,7 @@
   }
 
   function showDetail(id) {
+    if (quiz) { return; }
     var realId = aliasOf[id] || id;
     var d = countries[realId];
     if (!d) { return; }
@@ -521,14 +647,16 @@
     var relNote = religionNotes[realId];
 
     var html = "";
-    html += '<h2><span class="flag">' + flag + '</span>' + d.n + '</h2>';
+    html += '<h2><span class="flag">' + flag + '</span>' + wikiLink(d.n) + '</h2>';
     if (id === "_somaliland") {
       html += '<p class="note" style="margin-top:-4px;">Somaliland is shown as a separate shape on this base map, but it is not internationally recognized as independent from Somalia and is not treated as a separate country in this data \u2014 figures below are Somalia\u2019s national figures.</p>';
     }
-    html += '<div class="row"><div class="label">Capital</div><div class="value" style="font-size:0.95rem;">' + d.c + '</div></div>';
-    html += '<div class="row"><div class="label">Dominant terrain</div><div class="value" style="font-size:0.95rem;"><span class="swatch" style="background:' + TERRAIN_COLORS[d.tr] + ';margin-right:6px;vertical-align:-2px;"></span>' + TERRAIN_LABELS[d.tr] + '</div></div>';
+    html += '<div class="row"><div class="label">Capital</div><div class="value" style="font-size:0.95rem;">' + wikiLink(d.c) + '</div></div>';
+    html += '<div class="row"><div class="label">Dominant terrain</div><div class="value" style="font-size:0.95rem;"><span class="swatch" style="background:' + TERRAIN_COLORS[d.tr] + ';margin-right:6px;vertical-align:-2px;"></span>' + TERRAIN_LABELS[d.tr] + '</div>';
+    if (d.sb) { html += '<div class="note">' + d.sb + '</div>'; }
+    html += '</div>';
 
-    html += '<div class="row"><div class="label">Population</div><div class="value">' + fmtNum(d.p) + '</div></div>';
+    html += '<div class="row"><div class="label">Population</div><div class="value">' + fmtNum(d.p) + '</div><div class="note">Density: ' + fmtDens(d) + '</div></div>';
 
     html += '<div class="row"><div class="label">GDP (nominal)</div><div class="value">' + fmtGDP(d) + '</div><div class="note">Per capita: $' + fmtNum(Math.round(d.g * 1000000 / d.p)) + '</div></div>';
 
@@ -542,13 +670,19 @@
     html += '<div class="value" style="font-size:0.95rem;">Tier ' + d.t + ' of 5</div>';
     if (d.b) { html += '<div class="note"><strong>Budget:</strong> ' + d.b + '</div>'; }
     if (d.pn) { html += '<div class="note"><strong>Active personnel:</strong> ~' + fmtNum(d.pn) + '</div>'; }
-    html += '<div class="note">' + d.mn + '</div>';
+    html += '<div class="note">' + d.mn2 + '</div>';
     html += '</div>';
 
     html += '<div class="row"><div class="label">Great-power alignment</div>';
     html += '<div><span class="align-pill" style="background:' + alignColor(d.a) + '">' + alignLabel(d.a) + '</span></div>';
     html += '<div class="note">' + d.an + '</div>';
     html += '</div>';
+
+    if (d.mn) {
+      html += '<div class="row"><div class="label">Critical minerals</div>';
+      html += '<div><span class="align-pill" style="background:' + MINERAL_COLORS[d.mn[0]] + ';color:#2a2a28;">' + MINERAL_LABELS[d.mn[0]] + '</span></div>';
+      html += '<div class="note">' + d.mn[1] + '</div></div>';
+    }
 
     document.getElementById("detailContent").innerHTML = html;
 
@@ -562,6 +696,400 @@
       if (elReal === realId) { allCountries[i].setAttribute("class", "country selected"); }
       else { allCountries[i].setAttribute("class", "country"); }
     }
+  }
+
+  // ---------- Pan / zoom ----------
+  var VB0 = { x: 343, y: 428, w: 209, h: 200 };
+  var ASPECT = VB0.w / VB0.h;
+  var vb = { x: VB0.x, y: VB0.y, w: VB0.w, h: VB0.h };
+  var svgEl = null;
+  var justDragged = false;
+  var hintShown = false;
+
+  function applyViewBox() {
+    svgEl.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+    var overlay = document.getElementById("terrainOverlay");
+    overlay.setAttribute("x", vb.x); overlay.setAttribute("y", vb.y);
+    overlay.setAttribute("width", vb.w); overlay.setAttribute("height", vb.h);
+  }
+  function clampViewBox() {
+    if (vb.w > VB0.w) { vb.w = VB0.w; vb.h = VB0.h; }
+    var minW = VB0.w / 25;
+    if (vb.w < minW) { vb.w = minW; vb.h = minW / ASPECT; }
+    var slackX = vb.w * 0.6, slackY = vb.h * 0.6;
+    var minX = VB0.x - slackX, maxX = VB0.x + VB0.w - vb.w + slackX;
+    var minY = VB0.y - slackY, maxY = VB0.y + VB0.h - vb.h + slackY;
+    if (vb.x < minX) { vb.x = minX; } if (vb.x > maxX) { vb.x = maxX; }
+    if (vb.y < minY) { vb.y = minY; } if (vb.y > maxY) { vb.y = maxY; }
+  }
+  function zoomByAt(factor, cx, cy) {
+    var fx = (cx - vb.x) / vb.w, fy = (cy - vb.y) / vb.h;
+    var newW = vb.w / factor, newH = newW / ASPECT;
+    vb = { x: cx - fx * newW, y: cy - fy * newH, w: newW, h: newH };
+    clampViewBox();
+    applyViewBox();
+  }
+  function resetView() {
+    vb = { x: VB0.x, y: VB0.y, w: VB0.w, h: VB0.h };
+    applyViewBox();
+  }
+  function screenToSvg(clientX, clientY) {
+    var rect = svgEl.getBoundingClientRect();
+    return {
+      x: vb.x + ((clientX - rect.left) / rect.width) * vb.w,
+      y: vb.y + ((clientY - rect.top) / rect.height) * vb.h
+    };
+  }
+  function dismissHint() {
+    if (!hintShown) { return; }
+    hintShown = false;
+    var h = document.getElementById("panHint");
+    if (h) { h.style.display = "none"; }
+  }
+
+  function initPanZoom() {
+    svgEl = document.getElementById("africaSvg");
+    hintShown = true;
+
+    svgEl.addEventListener("click", function (e) {
+      if (justDragged) { e.stopPropagation(); justDragged = false; }
+    }, true);
+
+    var drag = null;
+    var DRAG_PX = 4;
+    svgEl.addEventListener("mousedown", function (e) {
+      if (e.button !== 0) { return; }
+      drag = { x: e.clientX, y: e.clientY, vb: { x: vb.x, y: vb.y, w: vb.w, h: vb.h }, moved: false };
+      svgEl.classList.add("grabbing");
+      e.preventDefault();
+    });
+    document.addEventListener("mousemove", function (e) {
+      if (!drag) { return; }
+      var dxPix = e.clientX - drag.x, dyPix = e.clientY - drag.y;
+      if (!drag.moved && Math.sqrt(dxPix * dxPix + dyPix * dyPix) > DRAG_PX) { drag.moved = true; dismissHint(); }
+      if (drag.moved) {
+        var rect = svgEl.getBoundingClientRect();
+        vb.x = drag.vb.x - (dxPix * drag.vb.w) / rect.width;
+        vb.y = drag.vb.y - (dyPix * drag.vb.h) / rect.height;
+        clampViewBox();
+        applyViewBox();
+      }
+    });
+    document.addEventListener("mouseup", function () {
+      if (drag && drag.moved) { justDragged = true; setTimeout(function () { justDragged = false; }, 400); }
+      drag = null;
+      svgEl.classList.remove("grabbing");
+    });
+
+    svgEl.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      dismissHint();
+      var pt = screenToSvg(e.clientX, e.clientY);
+      zoomByAt(e.deltaY < 0 ? 1.25 : 1 / 1.25, pt.x, pt.y);
+    }, false);
+
+    var touch1 = null;
+    var pinch = null;
+    function touchDist(a, b) { var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY; return Math.sqrt(dx * dx + dy * dy); }
+
+    svgEl.addEventListener("touchstart", function (e) {
+      dismissHint();
+      if (e.touches.length === 1) {
+        touch1 = { x: e.touches[0].clientX, y: e.touches[0].clientY, vb: { x: vb.x, y: vb.y, w: vb.w, h: vb.h }, moved: false };
+        pinch = null;
+      } else if (e.touches.length === 2) {
+        touch1 = null;
+        var rect = svgEl.getBoundingClientRect();
+        pinch = {
+          startDist: touchDist(e.touches[0], e.touches[1]),
+          startVb: { x: vb.x, y: vb.y, w: vb.w, h: vb.h },
+          rect: rect,
+          startMidX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          startMidY: (e.touches[0].clientY + e.touches[1].clientY) / 2
+        };
+      }
+    }, false);
+
+    svgEl.addEventListener("touchmove", function (e) {
+      if (e.touches.length === 1 && touch1) {
+        e.preventDefault();
+        var dxPix = e.touches[0].clientX - touch1.x, dyPix = e.touches[0].clientY - touch1.y;
+        if (!touch1.moved && Math.sqrt(dxPix * dxPix + dyPix * dyPix) > DRAG_PX) { touch1.moved = true; }
+        if (touch1.moved) {
+          var rect = svgEl.getBoundingClientRect();
+          vb.x = touch1.vb.x - (dxPix * touch1.vb.w) / rect.width;
+          vb.y = touch1.vb.y - (dyPix * touch1.vb.h) / rect.height;
+          clampViewBox();
+          applyViewBox();
+        }
+      } else if (e.touches.length === 2 && pinch) {
+        e.preventDefault();
+        var newDist = touchDist(e.touches[0], e.touches[1]);
+        var factor = newDist / pinch.startDist;
+        var newW = pinch.startVb.w / factor, newH = newW / ASPECT;
+        var anchorX = pinch.startVb.x + ((pinch.startMidX - pinch.rect.left) / pinch.rect.width) * pinch.startVb.w;
+        var anchorY = pinch.startVb.y + ((pinch.startMidY - pinch.rect.top) / pinch.rect.height) * pinch.startVb.h;
+        var curMidX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        var curMidY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        var fx = (curMidX - pinch.rect.left) / pinch.rect.width;
+        var fy = (curMidY - pinch.rect.top) / pinch.rect.height;
+        vb = { x: anchorX - fx * newW, y: anchorY - fy * newH, w: newW, h: newH };
+        clampViewBox();
+        applyViewBox();
+      }
+    }, false);
+
+    svgEl.addEventListener("touchend", function (e) {
+      if (touch1 && touch1.moved) { justDragged = true; setTimeout(function () { justDragged = false; }, 400); }
+      if (pinch) { justDragged = true; setTimeout(function () { justDragged = false; }, 400); }
+      if (e.touches.length === 0) { touch1 = null; pinch = null; }
+      else if (e.touches.length === 1) {
+        touch1 = { x: e.touches[0].clientX, y: e.touches[0].clientY, vb: { x: vb.x, y: vb.y, w: vb.w, h: vb.h }, moved: false };
+        pinch = null;
+      }
+    }, false);
+
+    document.getElementById("zoomInBtn").addEventListener("click", function () {
+      dismissHint();
+      zoomByAt(1.6, vb.x + vb.w / 2, vb.y + vb.h / 2);
+    });
+    document.getElementById("zoomOutBtn").addEventListener("click", function () {
+      dismissHint();
+      zoomByAt(1 / 1.6, vb.x + vb.w / 2, vb.y + vb.h / 2);
+    });
+    document.getElementById("zoomResetBtn").addEventListener("click", function () {
+      dismissHint();
+      resetView();
+    });
+  }
+
+  // ---------- Quiz ----------
+  var QUIZ_EXCLUDE = ["_somaliland"];
+  var quizPool = null;
+  var quiz = null;
+  var soundOn = true;
+  var audioCtx = null;
+  var PLACEHOLDER_HTML = '<p class="placeholder-text">Click or tap a country on the map to see its population, economy, military, religious makeup, and great-power alignment. Or take a quiz using the button above the map.</p>';
+
+  function getQuizPool() {
+    if (quizPool) { return quizPool; }
+    quizPool = [];
+    for (var id in countries) { if (QUIZ_EXCLUDE.indexOf(id) === -1) { quizPool.push(id); } }
+    return quizPool;
+  }
+  function shuffleArr(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function pickRandomOthers(excludeId, n, pool) {
+    var others = [];
+    for (var i = 0; i < pool.length; i++) { if (pool[i] !== excludeId) { others.push(pool[i]); } }
+    return shuffleArr(others).slice(0, n);
+  }
+
+  function getAudioCtx() {
+    if (audioCtx) { return audioCtx; }
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) { return null; }
+    try { audioCtx = new Ctor(); } catch (e) { return null; }
+    return audioCtx;
+  }
+  function playTone(freqs, dur, type) {
+    if (!soundOn) { return; }
+    var ctx = getAudioCtx();
+    if (!ctx) { return; }
+    try {
+      var t0 = ctx.currentTime;
+      for (var i = 0; i < freqs.length; i++) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = type || "sine";
+        osc.frequency.value = freqs[i];
+        gain.gain.setValueAtTime(0.16, t0 + i * dur);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * dur + dur * 0.9);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t0 + i * dur);
+        osc.stop(t0 + i * dur + dur);
+      }
+    } catch (e) {}
+  }
+  function playCorrectSound() { playTone([523.25, 659.25], 0.11, "sine"); }
+  function playWrongSound() { playTone([160], 0.22, "sawtooth"); }
+
+  function hideMapChromeForQuiz(hide) {
+    document.getElementById("layerBar").style.display = hide ? "none" : "flex";
+    document.getElementById("legend").style.display = hide ? "none" : "flex";
+  }
+
+  function highlightGeoTarget(id) {
+    var paths = document.querySelectorAll("#countryLayer [id]");
+    for (var i = 0; i < paths.length; i++) {
+      var el = paths[i];
+      var target = el.tagName.toLowerCase() === "g" ? el.querySelectorAll("path") : [el];
+      var isTarget = el.getAttribute("id") === id;
+      var color = isTarget ? "#e8541e" : "#d8d3c4";
+      for (var c = 0; c < target.length; c++) { target[c].style.fill = color; }
+      el.setAttribute("class", "country");
+    }
+    var el2 = document.getElementById(id);
+    var bbox = el2.getBBox();
+    var pad = 1.4;
+    var w = bbox.width * (1 + pad * 2), h = bbox.height * (1 + pad * 2);
+    if (w / h < ASPECT) { w = h * ASPECT; } else { h = w / ASPECT; }
+    if (w > VB0.w) { w = VB0.w; h = VB0.h; }
+    vb = { x: bbox.x + bbox.width / 2 - w / 2, y: bbox.y + bbox.height / 2 - h / 2, w: w, h: h };
+    clampViewBox();
+    applyViewBox();
+    document.getElementById("terrainOverlay").style.display = "none";
+  }
+
+  function startQuizSetup() {
+    quiz = null;
+    hideMapChromeForQuiz(true);
+    renderQuizSetup();
+    var sc = document.getElementById("sideCol");
+    if (window.innerWidth <= 820) { sc.className = "side-col open"; }
+  }
+
+  function exitQuiz() {
+    quiz = null;
+    hideMapChromeForQuiz(false);
+    resetView();
+    repaint();
+    document.getElementById("detailContent").innerHTML = PLACEHOLDER_HTML;
+  }
+
+  function renderQuizSetup() {
+    var html = "";
+    html += '<button class="quiz-exit-btn" id="quizExitBtn1" type="button">Exit quiz</button>';
+    html += '<h2 style="margin-top:0;">Quiz setup</h2>';
+    html += '<button class="quiz-type-option" data-qtype="capital2country"><strong>Guess the Country</strong><span>See a capital city, pick its country</span></button>';
+    html += '<button class="quiz-type-option" data-qtype="country2capital"><strong>Guess the Capital</strong><span>See a country, pick its capital</span></button>';
+    html += '<button class="quiz-type-option" data-qtype="geo"><strong>Name That Country</strong><span>See a highlighted spot on the map, pick the country</span></button>';
+    html += '<div class="quiz-slider-row"><div class="quiz-slider-label">Number of questions: <strong id="quizLenVal">10</strong></div>';
+    html += '<input type="range" id="quizLenSlider" min="5" max="50" value="10" step="1"></div>';
+    document.getElementById("detailContent").innerHTML = html;
+
+    var slider = document.getElementById("quizLenSlider");
+    slider.addEventListener("input", function () { document.getElementById("quizLenVal").innerText = slider.value; });
+    var opts = document.querySelectorAll(".quiz-type-option");
+    for (var i = 0; i < opts.length; i++) {
+      opts[i].addEventListener("click", function (e) {
+        var qtype = e.currentTarget.getAttribute("data-qtype");
+        var n = parseInt(document.getElementById("quizLenSlider").value, 10);
+        beginQuiz(qtype, n);
+      });
+    }
+    document.getElementById("quizExitBtn1").addEventListener("click", exitQuiz);
+  }
+
+  function beginQuiz(qtype, n) {
+    var pool = getQuizPool();
+    var order = shuffleArr(pool).slice(0, Math.min(n, pool.length));
+    quiz = { type: qtype, total: order.length, index: 0, order: order, results: [] };
+    renderQuizQuestion();
+  }
+
+  function renderQuizQuestion() {
+    var id = quiz.order[quiz.index];
+    var d = countries[id];
+    var pool = getQuizPool();
+    var wrongIds = pickRandomOthers(id, 3, pool);
+    var optionIds = shuffleArr([id].concat(wrongIds));
+
+    var html = "";
+    html += '<button class="quiz-exit-btn" id="quizExitBtn2" type="button">Exit quiz</button>';
+    html += '<button class="quiz-sound-toggle" id="quizSoundBtn" type="button">' + (soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07") + '</button>';
+    html += '<div class="quiz-progress">Question ' + (quiz.index + 1) + ' of ' + quiz.total + '</div>';
+    html += '<div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:' + (100 * quiz.index / quiz.total) + '%;"></div></div>';
+
+    if (quiz.type === "capital2country") {
+      html += '<div class="quiz-prompt-label">Which country has this capital?</div>';
+      html += '<div class="quiz-prompt">' + d.c + '</div>';
+      for (var i = 0; i < optionIds.length; i++) { html += '<button class="quiz-answer" data-id="' + optionIds[i] + '">' + countries[optionIds[i]].n + '</button>'; }
+    } else if (quiz.type === "country2capital") {
+      html += '<div class="quiz-prompt-label">What is the capital of...</div>';
+      html += '<div class="quiz-prompt">' + d.n + '</div>';
+      for (var i = 0; i < optionIds.length; i++) { html += '<button class="quiz-answer" data-id="' + optionIds[i] + '">' + countries[optionIds[i]].c + '</button>'; }
+    } else {
+      html += '<div class="quiz-prompt-label">Which country is highlighted on the map?</div>';
+      html += '<div class="quiz-prompt">Look at the map &rarr;</div>';
+      for (var i = 0; i < optionIds.length; i++) { html += '<button class="quiz-answer" data-id="' + optionIds[i] + '">' + countries[optionIds[i]].n + '</button>'; }
+    }
+
+    document.getElementById("detailContent").innerHTML = html;
+    if (quiz.type === "geo") { highlightGeoTarget(id); }
+
+    document.getElementById("quizExitBtn2").addEventListener("click", exitQuiz);
+    document.getElementById("quizSoundBtn").addEventListener("click", function () {
+      soundOn = !soundOn;
+      document.getElementById("quizSoundBtn").innerHTML = soundOn ? "\uD83D\uDD0A" : "\uD83D\uDD07";
+    });
+    var answerBtns = document.querySelectorAll(".quiz-answer");
+    for (var j = 0; j < answerBtns.length; j++) {
+      answerBtns[j].addEventListener("click", function (e) { onQuizAnswer(e.currentTarget, id); });
+    }
+  }
+
+  function onQuizAnswer(btn, correctId) {
+    var pickedId = btn.getAttribute("data-id");
+    var correct = pickedId === correctId;
+    var allBtns = document.querySelectorAll(".quiz-answer");
+    for (var i = 0; i < allBtns.length; i++) { allBtns[i].disabled = true; }
+    if (correct) {
+      btn.className = "quiz-answer correct";
+      playCorrectSound();
+    } else {
+      btn.className = "quiz-answer incorrect";
+      playWrongSound();
+      for (var i = 0; i < allBtns.length; i++) {
+        if (allBtns[i].getAttribute("data-id") === correctId) { allBtns[i].className = "quiz-answer correct"; }
+      }
+    }
+    quiz.results.push({ id: correctId, correct: correct });
+    setTimeout(function () {
+      if (!quiz) { return; }
+      quiz.index++;
+      if (quiz.index >= quiz.total) { renderQuizComplete(); } else { renderQuizQuestion(); }
+    }, 1100);
+  }
+
+  function renderQuizComplete() {
+    hideMapChromeForQuiz(false);
+    resetView();
+    repaint();
+    var score = 0;
+    for (var i = 0; i < quiz.results.length; i++) { if (quiz.results[i].correct) { score++; } }
+    var pct = Math.round(100 * score / quiz.total);
+    var html = "";
+    html += '<button class="quiz-exit-btn" id="quizExitBtn3" type="button">Back to map</button>';
+    html += '<h2 style="margin-top:0;">Quiz complete</h2>';
+    html += '<div class="quiz-score-big">' + score + ' / ' + quiz.total + '</div>';
+    html += '<div class="quiz-score-sub">' + pct + '% correct</div>';
+    var missed = [];
+    for (var i = 0; i < quiz.results.length; i++) { if (!quiz.results[i].correct) { missed.push(quiz.results[i].id); } }
+    if (missed.length) {
+      html += '<div style="font-size:0.85rem;color:#55524a;margin-bottom:4px;"><strong>Review missed questions:</strong></div>';
+      for (var i = 0; i < missed.length; i++) {
+        var d = countries[missed[i]]; var qLabel, aLabel;
+        if (quiz.type === "capital2country") { qLabel = d.c; aLabel = d.n; }
+        else if (quiz.type === "country2capital") { qLabel = d.n; aLabel = d.c; }
+        else { qLabel = "(highlighted country)"; aLabel = d.n; }
+        html += '<div class="quiz-review-item"><span class="q">' + qLabel + '</span> &rarr; <span class="a">' + aLabel + '</span></div>';
+      }
+    } else {
+      html += '<div style="text-align:center;color:#2f855a;font-weight:600;">Perfect score!</div>';
+    }
+    html += '<button class="quiz-primary-btn" id="quizAgainBtn" type="button">New quiz</button>';
+    html += '<button class="quiz-secondary-btn" id="quizDoneBtn" type="button">Back to map</button>';
+    document.getElementById("detailContent").innerHTML = html;
+    document.getElementById("quizExitBtn3").addEventListener("click", exitQuiz);
+    document.getElementById("quizAgainBtn").addEventListener("click", startQuizSetup);
+    document.getElementById("quizDoneBtn").addEventListener("click", exitQuiz);
   }
 
   function init() {
@@ -584,6 +1112,7 @@
           showDetail(el.getAttribute("id"));
         });
         el.addEventListener("mousemove", function (ev) {
+          if (quiz) { tooltip.style.display = "none"; return; }
           var id = el.getAttribute("id");
           var realId = aliasOf[id] || id;
           var d = countries[realId];
@@ -601,7 +1130,10 @@
 
     document.getElementById("closeDetail").addEventListener("click", function () {
       document.getElementById("sideCol").className = "side-col";
+      if (quiz) { exitQuiz(); }
     });
+    document.getElementById("quizLaunchBtn").addEventListener("click", startQuizSetup);
+    initPanZoom();
 
     repaint();
   }
