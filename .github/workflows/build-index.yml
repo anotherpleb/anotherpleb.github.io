@@ -31,6 +31,7 @@ jobs:
             li { margin: 10px 0; }
             a { text-decoration: none; color: #0366d6; font-size: 1.1em; }
             a:hover { text-decoration: underline; }
+            .compat-warn { cursor: help; margin-left: 6px; }
           </style>
           </head>
           <body>
@@ -59,7 +60,15 @@ jobs:
               echo "<h2>$month</h2><ul>" >> index.html
               current_month="$month"
             fi
-            echo "<li><a href=\"$f\">$name</a></li>" >> index.html
+
+            # look for a compat-note meta tag inside the page itself
+            note=$(grep -o '<meta name="compat-note" content="[^"]*"' "$f" | sed -E 's/.*content="([^"]*)".*/\1/')
+            icon=""
+            if [ -n "$note" ]; then
+              icon="<span class=\"compat-warn\" title=\"$note\">⚠️</span>"
+            fi
+
+            echo "<li><a href=\"$f\">$name</a>$icon</li>" >> index.html
           done
           echo "</ul></body></html>" >> index.html
 
