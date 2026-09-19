@@ -34,6 +34,7 @@
     border: 1px solid rgba(0,0,0,0.08);
   }
   .el:hover { outline: 2px solid var(--border-strong); }
+  .el.selected { outline: 3px solid var(--text); outline-offset: -3px; }
   .el .num { position: absolute; top: 2px; left: 3px; font-size: 9px; opacity: .75; }
   .el .sym { font-weight: 600; }
   .el .mass { font-size: 9px; margin-top: 1px; opacity: .85; }
@@ -42,11 +43,12 @@
     border: 1px solid var(--border); font-size: 13px; color: var(--text-secondary);
   }
   #detail .name { font-size: 15px; font-weight: 600; color: var(--text); }
-  #detail a {
-    margin-left: auto; padding: 6px 12px; font-size: 13px; border-radius: 6px;
+  #detail .links { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  #detail .links a {
+    padding: 6px 12px; font-size: 13px; border-radius: 6px;
     border: 1px solid var(--border-strong); color: var(--text); text-decoration: none; white-space: nowrap;
   }
-  #detail a:hover { background: var(--border); }
+  #detail .links a:hover { background: var(--border); }
   #detail .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   #legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 16px 0 0; font-size: 12px; color: var(--text-secondary); }
   #legend span.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
@@ -212,7 +214,15 @@ function pos(e, mode) {
 }
 
 let mode = "standard";
+let selectedSymbol = null;
 const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+function highlightSelected() {
+  const cells = document.getElementsByClassName("el");
+  for (let i = 0; i < cells.length; i++) {
+    cells[i].classList.toggle("selected", cells[i].dataset.sym === selectedSymbol);
+  }
+}
 
 function render() {
   const grid = document.getElementById("grid");
@@ -229,6 +239,7 @@ function render() {
     const [bgL, bgD, txL, txD] = CAT[cat];
     const d = document.createElement("div");
     d.className = "el";
+    d.dataset.sym = sym;
     d.style.gridRow = row; d.style.gridColumn = col;
     d.style.background = dark ? bgD : bgL;
     d.style.color = dark ? txD : txL;
@@ -236,6 +247,7 @@ function render() {
     d.onclick = () => select(e);
     grid.appendChild(d);
   });
+  if (selectedSymbol) highlightSelected();
 }
 
 function setMode(m) {
@@ -247,13 +259,18 @@ function setMode(m) {
 
 function select(e) {
   const [n, sym, name, , , cat, mass] = e;
+  selectedSymbol = sym;
+  highlightSelected();
   const label = CAT[cat][4];
   const blurb = BLURB[sym] || "";
   document.getElementById("detail").innerHTML = `
     <div class="row">
       <div><span class="name">${name}</span>
       <span> &middot; ${sym} &middot; #${n} &middot; ${mass} u &middot; ${label}</span></div>
-      <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener">View on Wikipedia</a>
+      <div class="links">
+        <a href="compounds.html?element=${encodeURIComponent(sym)}">Common compounds</a>
+        <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(name)}" target="_blank" rel="noopener">View on Wikipedia</a>
+      </div>
     </div>
     <p style="margin:8px 0 0;line-height:1.5">${blurb}</p>`;
 }
@@ -267,6 +284,23 @@ function renderLegend() {
 
 render();
 renderLegend();
+
+function getQueryParam(name) {
+  const params = window.location.search.substring(1).split('&');
+  for (let i = 0; i < params.length; i++) {
+    const pair = params[i].split('=');
+    if (decodeURIComponent(pair[0]) === name) {
+      return pair.length > 1 ? decodeURIComponent(pair[1]) : '';
+    }
+  }
+  return null;
+}
+
+const initialSymbol = getQueryParam('element');
+if (initialSymbol) {
+  const match = EL.find(e => e[1] === initialSymbol);
+  if (match) select(match);
+}
 </script>
 <script src="site-header.js"></script>
 </body>
