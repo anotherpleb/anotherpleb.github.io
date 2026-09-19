@@ -158,6 +158,54 @@
 
   .note { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin-top: 4px; }
 
+  .math-toggle {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--ink);
+    background: var(--panel);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .math-toggle.open { background: var(--ink); color: #fff; }
+
+  .math-panel {
+    display: none;
+    margin-top: 18px;
+    border: 1px solid var(--line);
+    background: #fff;
+  }
+  .math-panel.open { display: block; }
+  .math-panel .math-inner { padding: 20px 24px; max-width: 900px; }
+  .math-panel h2 { font-size: 16px; margin: 26px 0 8px; }
+  .math-panel h2:first-child { margin-top: 0; }
+  .math-panel p { font-size: 14px; line-height: 1.6; margin: 0 0 10px; color: var(--ink); }
+  .eq {
+    display: block;
+    font-family: "STIX Two Text", "Cambria Math", Georgia, serif;
+    font-size: 16px;
+    font-style: italic;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    margin: 8px 0 12px;
+  }
+  .math-panel .live {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 10px 0 20px;
+  }
+  .math-panel .live div { background: var(--panel); padding: 8px 10px; }
+  .math-panel .live .k { display: block; font-size: 10px; letter-spacing: 0.04em; color: var(--ink-soft); text-transform: uppercase; }
+  .math-panel .live .v { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 14px; }
+  .math-panel ul.assumptions { font-size: 13.5px; line-height: 1.6; color: var(--ink-soft); margin: 8px 0 0; padding-left: 20px; }
+  .math-panel ul.assumptions li { margin-bottom: 5px; }
+
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; }
     .side { order: -1; }
@@ -169,7 +217,51 @@
   <header>
     <h1>Trajectory Simulator</h1>
     <p class="sub">Move the shooter and target to see why aiming at elevated targets is counterintuitive: gravity acts on horizontal distance, not slant distance, so uphill and downhill shots both need <em>less</em> holdover than the slant range alone suggests.</p>
+    <button class="math-toggle" id="mathToggle">Show the math ▾</button>
   </header>
+
+  <div class="math-panel" id="mathPanel">
+    <div class="math-inner">
+      <h2>Current shot, in numbers</h2>
+      <div class="live" id="mathLive"></div>
+
+      <h2>The drag model</h2>
+      <p>Two forces act on the bullet: gravity (constant, straight down) and aerodynamic drag (opposes velocity, grows with speed squared). Drag force from the standard quadratic drag law:</p>
+      <span class="eq">F<sub>drag</sub> = ½ ρ C<sub>d</sub> A v²,  direction opposite <strong>v</strong></span>
+      <p>Dividing by mass and folding the constants into one bullet-specific coefficient <em>k</em> (units 1/ft) makes the deceleration just <em>k</em> times speed squared:</p>
+      <span class="eq">k = (ρ C<sub>d</sub> A) / (2m)  →  |a<sub>drag</sub>| = k v²</span>
+      <p>ρ = 0.0023769 slug/ft³ (sea-level standard air density), C<sub>d</sub> ≈ 0.45 (assumed constant — see limitations below), A and m come from the selected bullet's diameter and weight. Splitting into x/y components, with v = √(v<sub>x</sub>² + v<sub>y</sub>²):</p>
+      <span class="eq">a<sub>x</sub> = −k v v<sub>x</sub>&nbsp;&nbsp;&nbsp;&nbsp;a<sub>y</sub> = −k v v<sub>y</sub> − g</span>
+
+      <h2>Why numerical integration</h2>
+      <p>Without drag (k = 0), projectile motion has a closed-form solution — the launch angle to hit a target at horizontal/vertical offset (Δx, Δy) comes straight out of the quadratic range equation:</p>
+      <span class="eq">tan θ = [v² ± √(v⁴ − g(gΔx² + 2Δy v²))] / (gΔx)</span>
+      <p>That equation doesn't exist once drag depends on the bullet's own changing speed — there's no algebraic way to solve for θ directly anymore. So the trajectory is stepped forward numerically instead, using semi-implicit (symplectic) Euler integration: update velocity from the current acceleration, then update position from the new velocity, repeated in small time steps Δt:</p>
+      <span class="eq">v<sub>x</sub> ← v<sub>x</sub> + a<sub>x</sub>Δt&nbsp;&nbsp; v<sub>y</sub> ← v<sub>y</sub> + a<sub>y</sub>Δt&nbsp;&nbsp; x ← x + v<sub>x</sub>Δt&nbsp;&nbsp; y ← y + v<sub>y</sub>Δt</span>
+      <p>This runs with Δt = 0.002 s, for up to 8 simulated seconds or until the bullet crosses the target's horizontal distance or falls below a ground floor — whichever comes first.</p>
+
+      <h2>Finding the launch angle: bisection</h2>
+      <p>With no closed form available, the "corrected" launch angle is found by search instead of algebra. Define a miss function — simulate a shot at angle θ and see how far above or below the target it lands at the target's range:</p>
+      <span class="eq">f(θ) = y<sub>sim</sub>(θ) − y<sub>target</sub></span>
+      <p>Increasing θ (more elevation) increases where the bullet lands, so f is monotonic over the range that matters — which means bisection works: find a bracket [lo, hi] where f(lo) &lt; 0 &lt; f(hi), then repeatedly test the midpoint and keep whichever half still brackets the root. Each bisection halves the uncertainty; after 28 iterations the angle is pinned down to a small fraction of a degree.</p>
+
+      <h2>Holdover geometry</h2>
+      <p>Two angles, and the gap between them, are what the diagram is actually showing:</p>
+      <span class="eq">θ<sub>LOS</sub> = atan2(Δy, Δx)&nbsp;&nbsp;&nbsp;&nbsp;holdover = θ<sub>corrected</sub> − θ<sub>LOS</sub></span>
+      <p>The gold "aim point vs. target" distance on the diagram is that same holdover angle converted into a physical distance: extend the corrected barrel's straight-line direction (ignoring gravity) out to the target's horizontal range, and measure the gap to the target itself:</p>
+      <span class="eq">y<sub>aim</sub> = y<sub>shooter</sub> + tan(θ<sub>corrected</sub>) · Δx&nbsp;&nbsp;&nbsp;&nbsp;gap = y<sub>aim</sub> − y<sub>target</sub></span>
+
+      <h2>Assumptions and limitations</h2>
+      <ul class="assumptions">
+        <li>Flat, non-rotating Earth — no Coriolis effect (real, but only matters at very long range)</li>
+        <li>No spin-drift or gyroscopic (Magnus) effects from the bullet's own spin</li>
+        <li>Constant drag coefficient (C<sub>d</sub> ≈ 0.45) rather than the real Mach-number-dependent G1/G7 drag curve</li>
+        <li>Constant sea-level air density — no altitude, temperature, or humidity effects</li>
+        <li>Crosswind is a bolted-on constant lateral push (wind speed × time of flight), not integrated into the actual drag physics</li>
+        <li>Point-mass bullet: no yaw, wobble, or deformation</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="layout">
     <div>
@@ -493,6 +585,18 @@ function render() {
 
   document.getElementById('distValue').textContent = dxYd.toFixed(0) + " yd";
   document.getElementById('elevValue').textContent = (dy>=0?"+":"") + dy.toFixed(0) + " ft";
+
+  // live math panel values
+  const mathLive = document.getElementById('mathLive');
+  const liveCells = [
+    ["k (drag coeff.)", k.toExponential(3) + " /ft"],
+    ["θ_LOS", (thetaLOS*180/Math.PI).toFixed(2) + "°"],
+    ["θ_corrected", unreachable ? "—" : (thetaCorrected*180/Math.PI).toFixed(2) + "°"],
+    ["Holdover (θc − θLOS)", unreachable ? "—" : holdoverDeg.toFixed(3) + "°"],
+    ["Time of flight", tHit ? tHit.toFixed(3) + " s" : "—"],
+    ["Δt (integration step)", "0.002 s"]
+  ];
+  mathLive.innerHTML = liveCells.map(([label,val]) => `<div><span class="k">${label}</span><span class="v">${val}</span></div>`).join('');
 }
 
 function feetInches(ft) {
@@ -594,6 +698,14 @@ renderChips();
 renderScenarios();
 updateSelectButtons();
 render();
+
+document.getElementById('mathToggle').addEventListener('click', () => {
+  const panel = document.getElementById('mathPanel');
+  const btn = document.getElementById('mathToggle');
+  const open = panel.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  btn.textContent = open ? "Hide the math ▴" : "Show the math ▾";
+});
 </script>
 <script src="site-header.js"></script>
 </body>
