@@ -63,6 +63,7 @@
     color: #555;
     font-size: 0.95em;
   }
+  .compound .formula sub { font-size: 0.72em; }
   .badge {
     display: inline-block;
     font-size: 0.72em;
@@ -107,7 +108,7 @@
 <body>
 <script src="site-header.js"></script>
 
-<p><a id="back-link" href="periodic-table.html">&larr; Back to periodic table</a></p>
+<p id="back-link-row"><a id="back-link" href="periodic-table.html">&larr; Back to periodic table</a></p>
 <h1>Common Chemicals Reference</h1>
 <p class="intro">
   Practical identification for 200 household, food, medical, garden, hardware,
@@ -189,6 +190,13 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function formatFormula(str) {
+  var escaped = escapeHtml(str);
+  return escaped.replace(/([A-Za-z\)])(\d+)/g, function (match, pre, digits) {
+    return pre + '<sub>' + digits + '</sub>';
+  });
+}
+
 var state = {
   search: '',
   category: '',
@@ -256,9 +264,13 @@ function render() {
     banner.style.display = 'none';
   }
 
-  document.getElementById('back-link').href = state.element
-    ? 'periodic-table.html?element=' + encodeURIComponent(state.element)
-    : 'periodic-table.html';
+  var backRow = document.getElementById('back-link-row');
+  if (state.element) {
+    backRow.style.display = 'block';
+    document.getElementById('back-link').href = 'periodic-table.html?element=' + encodeURIComponent(state.element);
+  } else {
+    backRow.style.display = 'none';
+  }
 
   document.getElementById('count-line').textContent =
     results.length + ' of ' + CHEMICALS.length + ' compounds shown';
@@ -270,7 +282,7 @@ function render() {
     var catLabel = CATEGORY_LABELS[c.category] || c.category;
     html += '<div class="compound">';
     html += '<h2>' + escapeHtml(c.name) + '<span class="badge">' + escapeHtml(catLabel) + '</span></h2>';
-    html += '<div class="formula">' + escapeHtml(c.formula) + '</div>';
+    html += '<div class="formula">' + formatFormula(c.formula) + '</div>';
     html += '<div class="elements">' + elementChips(c.elements) + '</div>';
     html += '<dl>';
     html += fieldRow('Summary', c.summary);
