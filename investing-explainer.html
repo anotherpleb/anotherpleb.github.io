@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investing, Explained for Complete Beginners</title>
+<meta name="description" content="A plain-English starter guide to stocks, bonds, inflation, the Fed, mutual and index funds, options, and compound interest, with simulators and real market case studies.">
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #f6f4ef; color: #1e2832; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 17px; line-height: 1.6; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 22px 18px 70px; }
+  h1 { font-size: 34px; line-height: 1.15; margin: 10px 0 6px; letter-spacing: -0.5px; }
+  h2 { font-size: 27px; line-height: 1.2; margin: 6px 0 12px; letter-spacing: -0.3px; }
+  h3 { font-size: 20px; margin: 28px 0 8px; }
+  h4 { font-size: 16px; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.6px; color: #5a6672; }
+  p { margin: 0 0 14px; }
+  a { color: #0b6e6e; }
+  .lede { font-size: 19px; color: #44505c; margin-bottom: 18px; }
+  .muted { color: #66717c; font-size: 14px; }
+  .small { font-size: 14px; }
+  .disclaimer { background: #fff7e0; border: 1px solid #ecd9a0; border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #5c4a12; margin: 10px 0 18px; }
+
+  /* Tab navigation */
+  .tabs { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -4px 22px; padding: 0; list-style: none; }
+  .tabs li { margin: 4px; }
+  .tabs a { display: block; padding: 7px 13px; border-radius: 999px; background: #fff; border: 1px solid #d9d4c8; color: #24313d; text-decoration: none; font-size: 15px; white-space: nowrap; }
+  .tabs a:hover { border-color: #0b6e6e; }
+  .tabs a.on { background: #0b6e6e; color: #fff; border-color: #0b6e6e; }
+  .tabs .num { opacity: 0.6; margin-right: 4px; font-size: 13px; }
+
+  .tab { background: #fff; border: 1px solid #e3ded2; border-radius: 12px; padding: 26px 26px 20px; margin-bottom: 26px; }
+  .js .tab { display: none; }
+  .js .tab.active { display: block; }
+
+  .callout { border-left: 4px solid #0b6e6e; background: #eef6f5; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .callout.warn { border-left-color: #c0392b; background: #fbeeec; }
+  .callout.idea { border-left-color: #b7791f; background: #fbf4e6; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 18px; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e6e1d6; vertical-align: top; }
+  th { background: #f3f0e8; font-weight: 600; }
+
+  /* Simulator panels */
+  .sim { background: #f9f8f4; border: 1px solid #e3ded2; border-radius: 10px; padding: 16px 16px 12px; margin: 16px 0 22px; }
+  .sim-title { font-weight: 700; margin-bottom: 10px; font-size: 17px; }
+  .controls { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; margin: 0 -8px; }
+  .ctl { -webkit-box-flex: 1; -ms-flex: 1 1 200px; flex: 1 1 200px; margin: 0 8px 12px; min-width: 170px; }
+  .ctl label { display: block; font-size: 14px; color: #4a5560; margin-bottom: 3px; }
+  .ctl input[type=number], .ctl select { width: 100%; padding: 7px 8px; border: 1px solid #cfc9bc; border-radius: 6px; font-size: 16px; background: #fff; color: #1e2832; }
+  .ctl input[type=range] { width: 100%; }
+  .ctl .val { font-weight: 700; color: #0b6e6e; }
+  .btnrow { margin: 2px 0 10px; }
+  button.b { font-size: 15px; padding: 7px 13px; margin: 0 6px 6px 0; border-radius: 6px; border: 1px solid #0b6e6e; background: #fff; color: #0b6e6e; cursor: pointer; }
+  button.b:hover { background: #eef6f5; }
+  button.b.on { background: #0b6e6e; color: #fff; }
+  canvas.chart { display: block; width: 100%; height: 260px; background: #fff; border: 1px solid #ebe6db; border-radius: 6px; }
+  .legend { font-size: 14px; color: #4a5560; margin: 6px 0 4px; }
+  .legend span { display: inline-block; margin-right: 14px; }
+  .legend i { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+  .results { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; margin: 6px -6px 4px; }
+  .stat { -webkit-box-flex: 1; -ms-flex: 1 1 160px; flex: 1 1 160px; margin: 6px; background: #fff; border: 1px solid #e6e1d6; border-radius: 8px; padding: 9px 12px; }
+  .stat .k { font-size: 13px; color: #66717c; }
+  .stat .v { font-size: 21px; font-weight: 700; }
+  .good { color: #1e7b45; }
+  .bad { color: #b3322a; }
+  .noscript { color: #b3322a; font-size: 14px; }
+
+  /* Fed diagram */
+  .flow { margin: 10px 0; }
+  .flow .row { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; margin: 7px 0; }
+  .flow .arrow { width: 34px; text-align: center; font-size: 22px; font-weight: 700; -ms-flex-negative: 0; flex-shrink: 0; }
+  .flow .box { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; background: #fff; border: 1px solid #e0dbcf; border-radius: 8px; padding: 8px 12px; font-size: 15px; }
+  .flow .box b { display: block; font-size: 16px; }
+  .up { color: #1e7b45; }
+  .down { color: #b3322a; }
+
+  /* Case studies */
+  .case { border: 1px solid #e3ded2; border-radius: 10px; padding: 18px 18px 8px; margin: 20px 0 26px; background: #fcfbf8; }
+  .case h3 { margin-top: 0; }
+  .case .tag { display: inline-block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; background: #e8e3d6; color: #4a4232; border-radius: 4px; padding: 2px 7px; margin-right: 6px; }
+  .timeline { margin: 10px 0 14px; padding: 0; list-style: none; border-left: 3px solid #d9d4c8; }
+  .timeline li { position: relative; padding: 2px 0 8px 16px; font-size: 15px; }
+  .timeline li:before { content: ""; position: absolute; left: -7px; top: 9px; width: 11px; height: 11px; border-radius: 50%; background: #0b6e6e; }
+  .timeline b { color: #24313d; }
+  .people { display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; margin: 8px -6px 10px; }
+  .person { -webkit-box-flex: 1; -ms-flex: 1 1 200px; flex: 1 1 200px; margin: 6px; background: #fff; border: 1px solid #e6e1d6; border-radius: 8px; padding: 10px 12px; font-size: 15px; }
+  .person .who { font-weight: 700; }
+  .person .amt { font-size: 20px; font-weight: 700; margin: 2px 0; }
+  .lesson { background: #eef6f5; border-radius: 8px; padding: 10px 14px; margin: 8px 0 12px; font-size: 15px; }
+  .src { font-size: 13px; color: #66717c; margin: 6px 0 10px; }
+  .src a { color: #4d6f7a; }
+
+  .eq { font-family: "Cambria Math", Cambria, Georgia, "Times New Roman", serif; font-size: 19px; background: #f7f5ef; border: 1px solid #e6e1d6; border-radius: 6px; padding: 10px 14px; margin: 8px 0 14px; overflow-x: auto; line-height: 1.7; }
+  .eq sup, .eq sub { font-size: 70%; }
+  .pager { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; margin-top: 22px; padding-top: 14px; border-top: 1px solid #ece7dc; font-size: 15px; }
+  .no-js-hide { display: none; }
+  .js .no-js-hide { display: inline; }
+  ul.reads li { margin-bottom: 8px; }
+  footer { font-size: 13px; color: #6d7680; margin-top: 10px; }
+
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 23px; }
+    .tab { padding: 18px 14px 14px; }
+    .tabs a { font-size: 14px; padding: 6px 10px; }
+  }
+</style>
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Investing, explained for complete beginners</h1>
+  <p class="lede">The basics in plain English: stocks, bonds, inflation, the Fed, funds, options, and how interest compounds over time. Each section has a simulator you can try, and the last section looks at real people who made or lost money during recent market panics.</p>
+  <div class="disclaimer"><b>Educational only. Not financial advice.</b> Simulators use simple math and assumptions you can edit; real markets are messier. US-centric. The final tab covers the math for anyone curious. The core ideas are summarized in my own words from Burton Malkiel's <i>A Random Walk Down Wall Street</i> (first published 1973; 50th-anniversary 13th edition, 2023). Go read the book.</div>
+</header>
+
+<nav>
+<ul class="tabs" id="tabs">
+  <li><a href="#start"><span class="num">1</span>Start here</a></li>
+  <li><a href="#interest"><span class="num">2</span>The power of interest</a></li>
+  <li><a href="#inflation"><span class="num">3</span>Inflation</a></li>
+  <li><a href="#stocks"><span class="num">4</span>Stocks</a></li>
+  <li><a href="#bonds"><span class="num">5</span>Bonds</a></li>
+  <li><a href="#fed"><span class="num">6</span>The Fed</a></li>
+  <li><a href="#funds"><span class="num">7</span>Mutual vs. index funds</a></li>
+  <li><a href="#options"><span class="num">8</span>Calls &amp; puts</a></li>
+  <li><a href="#cases"><span class="num">9</span>Real-world drama</a></li>
+  <li><a href="#math"><span class="num">10</span>The math</a></li>
+  <li><a href="#reads"><span class="num">11</span>Next reads</a></li>
+</ul>
+</nav>
+
+<noscript><p class="noscript">JavaScript is off: all sections are shown below in order, but the simulators and charts need JavaScript to work.</p></noscript>
+
+<!-- ============ 1. START HERE ============ -->
+<section class="tab" id="start">
+  <h2>1. Start here</h2>
+  <p><b>Investing means giving your money a job.</b> You buy something, like a slice of a company or a loan to a government, because you expect it to pay you back more than you put in. Money sitting in a drawer has no job, and inflation (section 3) slowly eats it.</p>
+
+  <h3>The one trade-off that explains everything: risk vs. return</h3>
+  <p>Nobody pays you extra for taking no risk. The investments with higher long-run returns are the ones whose value bounces around more along the way. That bouncing is the "price" you pay for the higher return.</p>
+  <table>
+    <tr><th>Where the money goes</th><th>How bumpy</th><th>Rough long-run return</th></tr>
+    <tr><td>Savings account / Treasury bills (cash)</td><td>Very smooth</td><td>Lowest, often just around inflation</td></tr>
+    <tr><td>Bonds (loans to governments and companies)</td><td>Some bumps</td><td>Middle</td></tr>
+    <tr><td>Stocks (owning pieces of companies)</td><td>Big bumps, sometimes −30% or worse in a year</td><td>Highest over long periods. The US market has averaged roughly 10% a year before inflation over the past century</td></tr>
+  </table>
+  <p class="muted">These rankings hold over decades, not any given year. The figure for stocks is a widely cited historical average, not a promise.</p>
+
+  <h3>The big idea from the book: prices take a "random walk"</h3>
+  <p>Malkiel's central argument is that short-term stock moves are close to unpredictable. Prices react to <i>news</i>, and news is surprising by definition. Once something is known, millions of traders have already priced it in. So the next move depends on the next surprise, which nobody can forecast reliably.</p>
+  <p>This has a practical consequence. If professionals can't reliably predict prices, then paying them high fees to pick stocks or time the market is usually a losing deal. The book famously suggests that a blindfolded monkey throwing darts at the stock listings would pick a portfolio about as good as the experts'. Its alternative: buy the whole market cheaply through an index fund (section 7) and hold it for a long time.</p>
+  <p>The book tells of a classroom experiment where students built "stock charts" from coin flips, and an expert chart-reader saw real trading signals in them. Try it yourself below.</p>
+
+  <div class="sim">
+    <div class="sim-title">Coin-flip stock chart</div>
+    <p class="small">Each trading day the "stock" moves up or down by a random amount. Nothing real is driving it. See how often you spot "trends," "support levels," or "breakouts" anyway.</p>
+    <div class="btnrow"><button class="b" id="rwFlip">Flip a new year of prices</button></div>
+    <canvas class="chart" id="rwChart"></canvas>
+    <div class="results" id="rwStats"></div>
+  </div>
+
+  <h3>Ground rules before investing a dollar</h3>
+  <table>
+    <tr><th>Rule</th><th>Why</th></tr>
+    <tr><td>Build an emergency fund first (a few months of expenses in savings)</td><td>So a car repair never forces you to sell stocks during a crash.</td></tr>
+    <tr><td>Pay off high-interest debt</td><td>Paying off a 22% credit card is a guaranteed 22% "return." No investment reliably beats that.</td></tr>
+    <tr><td>Start early, add regularly</td><td>Time does the heavy lifting (section 2).</td></tr>
+    <tr><td>Diversify</td><td>Owning hundreds of companies means no single disaster ruins you (section 4).</td></tr>
+    <tr><td>Keep costs low</td><td>Fees compound against you just like returns compound for you (section 7).</td></tr>
+    <tr><td>Don't panic-sell</td><td>The best days often come right after the worst ones (section 9).</td></tr>
+  </table>
+  <div class="pager"><span></span><a href="#interest">Next: The power of interest →</a></div>
+</section>
+
+<!-- ============ 2. INTEREST ============ -->
+<section class="tab" id="interest">
+  <h2>2. The power of interest</h2>
+  <p><b>Simple interest</b> pays you only on the money you put in. <b>Compound interest</b> also pays you on the interest you've already earned, so your earnings start earning too. Early on the difference is tiny. After a few decades, the interest-on-interest becomes most of the pile.</p>
+
+  <div class="sim">
+    <div class="sim-title">Compound growth simulator</div>
+    <div class="controls">
+      <div class="ctl"><label for="ciStart">Starting amount ($)</label><input type="number" id="ciStart" value="1000" min="0" step="100"></div>
+      <div class="ctl"><label for="ciMonthly">Added every month ($)</label><input type="number" id="ciMonthly" value="200" min="0" step="25"></div>
+      <div class="ctl"><label for="ciRate">Annual return: <span class="val" id="ciRateV"></span></label><input type="range" id="ciRate" min="0" max="15" step="0.5" value="7"></div>
+      <div class="ctl"><label for="ciYears">Years: <span class="val" id="ciYearsV"></span></label><input type="range" id="ciYears" min="1" max="50" step="1" value="40"></div>
+      <div class="ctl"><label for="ciComp">Compounding</label>
+        <select id="ciComp"><option value="1">Yearly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+    </div>
+    <canvas class="chart" id="ciChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Total balance</span><span><i style="background:#c9a227"></i>Money you put in</span></div>
+    <div class="results" id="ciStats"></div>
+    <p class="muted">Assumes the same return every single year and deposits at the end of each month. Real returns jump around (7% is a common inflation-adjusted assumption for stocks), but the long-run math works the same way. No taxes or fees.</p>
+  </div>
+
+  <h3>Early Emma vs. Late Larry</h3>
+  <p>Both invest the same monthly amount at the same return as the simulator above. Emma invests from age 25 to 35, then stops and never adds another dollar. Larry waits, then invests from 35 all the way to 65. Who has more at 65?</p>
+  <div class="sim">
+    <canvas class="chart" id="elChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Emma (10 years of deposits)</span><span><i style="background:#b3322a"></i>Larry (30 years of deposits)</span></div>
+    <div class="results" id="elStats"></div>
+  </div>
+
+  <h3>The Rule of 72</h3>
+  <p>A quick mental shortcut: divide 72 by the yearly return to get roughly how many years it takes to double your money.</p>
+  <div class="sim">
+    <div class="controls">
+      <div class="ctl"><label for="r72">Yearly return: <span class="val" id="r72V"></span></label><input type="range" id="r72" min="1" max="25" step="0.5" value="8"></div>
+    </div>
+    <div class="results" id="r72Stats"></div>
+  </div>
+  <div class="callout warn"><p><b>Compounding works against you too.</b> At a 22% credit card rate, an unpaid balance roughly doubles in about 3½ years. That is the same math in reverse.</p></div>
+  <div class="pager"><a href="#start">← Start here</a><a href="#inflation">Next: Inflation →</a></div>
+</section>
+
+<!-- ============ 3. INFLATION ============ -->
+<section class="tab" id="inflation">
+  <h2>3. Inflation</h2>
+  <p><b>Inflation is prices rising over time</b>, so each dollar buys a little less every year. It's usually measured by the Consumer Price Index (CPI), which tracks the cost of a typical basket of goods and services. The Federal Reserve aims for about 2% a year (section 6).</p>
+  <p>Inflation typically comes from too much money chasing too few goods: strong demand, supply shocks (energy, shipping), or both. In the 2021–2023 surge, US CPI inflation peaked at about 9.1% year over year in June 2022.</p>
+
+  <div class="sim">
+    <div class="sim-title">What happens to cash under the mattress?</div>
+    <div class="btnrow">
+      <button class="b" data-infl="2">Fed target (2%)</button>
+      <button class="b" data-infl="3">Long-run US average (~3%)</button>
+      <button class="b" data-infl="7">1970s-style (7%)</button>
+      <button class="b" data-infl="9.1">2022 peak (9.1%) every year</button>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label for="inAmt">Cash today ($)</label><input type="number" id="inAmt" value="10000" min="0" step="500"></div>
+      <div class="ctl"><label for="inRate">Inflation per year: <span class="val" id="inRateV"></span></label><input type="range" id="inRate" min="0" max="12" step="0.1" value="3"></div>
+      <div class="ctl"><label for="inYears">Years: <span class="val" id="inYearsV"></span></label><input type="range" id="inYears" min="1" max="50" step="1" value="30"></div>
+      <div class="ctl"><label for="inItem">Price of something today ($)</label><input type="number" id="inItem" value="5" min="0" step="0.5"></div>
+    </div>
+    <canvas class="chart" id="inChart"></canvas>
+    <div class="legend"><span><i style="background:#b3322a"></i>What your cash can buy, in today's dollars</span></div>
+    <div class="results" id="inStats"></div>
+  </div>
+
+  <h3>Nominal vs. real returns</h3>
+  <p>The <b>nominal</b> return is the number on your statement. The <b>real</b> return is what's left after inflation, meaning how much more stuff you can actually buy. A savings account paying 4% during 3% inflation only grows your buying power by about 1%.</p>
+  <div class="sim">
+    <div class="sim-title">Real return calculator</div>
+    <div class="controls">
+      <div class="ctl"><label for="rrNom">What your investment pays: <span class="val" id="rrNomV"></span></label><input type="range" id="rrNom" min="0" max="15" step="0.25" value="4"></div>
+      <div class="ctl"><label for="rrInf">Inflation: <span class="val" id="rrInfV"></span></label><input type="range" id="rrInf" min="0" max="12" step="0.25" value="3"></div>
+    </div>
+    <div class="results" id="rrStats"></div>
+    <p class="muted">Exact formula: (1 + nominal) ÷ (1 + inflation) − 1. "Nominal minus inflation" is the quick approximation.</p>
+  </div>
+  <div class="callout idea"><p><b>Takeaway:</b> "Safe" cash isn't risk-free. Its risk is slow and invisible: losing buying power. That's why long-term money usually needs at least some stocks.</p></div>
+  <div class="pager"><a href="#interest">← The power of interest</a><a href="#stocks">Next: Stocks →</a></div>
+</section>
+
+<!-- ============ 4. STOCKS ============ -->
+<section class="tab" id="stocks">
+  <h2>4. Stocks</h2>
+  <p><b>A share of stock is a tiny slice of ownership in a company.</b> If a company has 1 billion shares and you own 100, you own one ten-millionth of it, including that slice of its future profits.</p>
+
+  <h3>Where stock returns come from</h3>
+  <table>
+    <tr><th>Source</th><th>What it means</th></tr>
+    <tr><td>Dividends</td><td>Cash the company pays shareholders out of profits.</td></tr>
+    <tr><td>Earnings growth</td><td>The company gets bigger and more profitable, so each slice is worth more.</td></tr>
+    <tr><td>Change in mood (valuation)</td><td>What investors are willing to pay for each dollar of profit, called the price-to-earnings (P/E) ratio. This is the jumpy part. It can double in a boom and halve in a panic.</td></tr>
+  </table>
+  <p>The first two are driven by the business. The third is driven by people. Malkiel describes two ways of thinking about prices:</p>
+  <ul>
+    <li><b>"Firm foundation" theory:</b> a stock has a real underlying value based on the cash it will produce in the future. Prices eventually return to it.</li>
+    <li><b>"Castle in the air" theory:</b> a stock is worth whatever the next buyer will pay. Crowd psychology drives prices, and bubbles happen when everyone expects someone else to pay more.</li>
+  </ul>
+  <p>Real markets show both. Over years, profits matter. Over days and weeks, mood swings dominate (see the GameStop and NVIDIA cases in section 9).</p>
+
+  <h3>Stock indexes</h3>
+  <p>An <b>index</b> is a scorecard for a group of stocks. The <b>S&amp;P 500</b> tracks about 500 large US companies, weighted by size (market value). Bigger companies count for more. By late 2026, NVIDIA alone made up more than 6% of the index, so drama at one company moved millions of "diversified" portfolios.</p>
+
+  <h3>Why diversify? One stock vs. many</h3>
+  <p>Every stock carries two kinds of risk. <b>Company risk</b> is a bad CEO, a failed product, or a scandal. <b>Market risk</b> is a recession or a crash that hits everything at once. Owning many companies cancels out most of the company risk, because one firm's disaster is offset by another's success. Nothing cancels market risk.</p>
+  <div class="sim">
+    <div class="sim-title">Diversification simulator: 2,000 imaginary investors, one year</div>
+    <div class="controls">
+      <div class="ctl"><label for="dvN">Stocks in each portfolio: <span class="val" id="dvNV"></span></label><input type="range" id="dvN" min="1" max="100" step="1" value="1"></div>
+    </div>
+    <div class="btnrow"><button class="b" id="dvRun">Run again</button></div>
+    <canvas class="chart" id="dvChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Number of investors at each one-year return</span></div>
+    <div class="results" id="dvStats"></div>
+    <p class="muted">Toy model: each investor's stocks share one market return (average 8%, typical swing ±16%). Each stock also gets its own company-specific luck (typical swing ±30%). Slide from 1 to 100 and watch the spread shrink, but never to zero.</p>
+  </div>
+  <div class="pager"><a href="#inflation">← Inflation</a><a href="#bonds">Next: Bonds →</a></div>
+</section>
+
+<!-- ============ 5. BONDS ============ -->
+<section class="tab" id="bonds">
+  <h2>5. Bonds</h2>
+  <p><b>A bond is a loan you make</b> to a government or company. In return they promise to pay you interest (the <b>coupon</b>) every year and return the original amount (the <b>face value</b>, often $1,000) on a set date (<b>maturity</b>).</p>
+  <table>
+    <tr><th>Issuer</th><th>Example</th><th>Risk</th></tr>
+    <tr><td>US Treasury</td><td>Treasury bills, notes, bonds</td><td>Lowest default risk; backed by the US government</td></tr>
+    <tr><td>Cities and states</td><td>Municipal bonds</td><td>Low to moderate; interest often tax-advantaged</td></tr>
+    <tr><td>Companies</td><td>Corporate bonds</td><td>Depends on the company's credit rating. Low-rated "junk" bonds pay more because they default more often</td></tr>
+  </table>
+
+  <h3>The rule that confuses everyone: when rates go up, bond prices go down</h3>
+  <p>Say you own a bond paying 3%, and new bonds start paying 5%. Nobody will pay full price for your 3% bond when they can get 5% elsewhere. To sell it, you must cut the price until the buyer's overall return also works out to 5%. The reverse is true too: when rates fall, your older higher-paying bond becomes worth more.</p>
+  <p>If you hold the bond to maturity (and the issuer doesn't default), you still get every coupon and your full face value back. The price swings only matter if you need to sell early. That turned out to be a fatal problem for a bank in 2023 (section 9).</p>
+
+  <div class="sim">
+    <div class="sim-title">Bond price simulator</div>
+    <div class="btnrow"><button class="b" id="bdSVB">Load the SVB-style example</button></div>
+    <div class="controls">
+      <div class="ctl"><label for="bdCoupon">Your bond's coupon: <span class="val" id="bdCouponV"></span></label><input type="range" id="bdCoupon" min="0" max="10" step="0.05" value="3"></div>
+      <div class="ctl"><label for="bdYears">Years left to maturity: <span class="val" id="bdYearsV"></span></label><input type="range" id="bdYears" min="1" max="30" step="1" value="10"></div>
+      <div class="ctl"><label for="bdMkt">Today's market interest rate: <span class="val" id="bdMktV"></span></label><input type="range" id="bdMkt" min="0" max="10" step="0.05" value="3"></div>
+    </div>
+    <canvas class="chart" id="bdChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Price of your $1,000 bond at each market rate</span><span><i style="background:#b3322a"></i>Where rates are now</span></div>
+    <div class="results" id="bdStats"></div>
+    <p class="muted">Simplified: one coupon payment per year, no default risk. Longer bonds swing more. Slide "years left" from 1 to 30 and watch the curve get steeper. "Duration" measures that sensitivity: price change ≈ −duration × rate change.</p>
+  </div>
+  <div class="pager"><a href="#stocks">← Stocks</a><a href="#fed">Next: The Fed →</a></div>
+</section>
+
+<!-- ============ 6. THE FED ============ -->
+<section class="tab" id="fed">
+  <h2>6. The Fed</h2>
+  <p><b>The Federal Reserve ("the Fed") is the United States' central bank.</b> Congress gave it two main goals, called the dual mandate: <b>maximum employment</b> and <b>stable prices</b>. It defines stable prices as about 2% inflation a year.</p>
+  <h3>Its main tools</h3>
+  <table>
+    <tr><th>Tool</th><th>Plain English</th></tr>
+    <tr><td>The federal funds rate</td><td>The Fed sets a target for the overnight rate banks charge each other. It ripples out into mortgages, car loans, credit cards, and savings accounts.</td></tr>
+    <tr><td>Buying or selling bonds</td><td>Buying bonds ("quantitative easing") pushes long-term rates down and adds money to the system. Shrinking its holdings ("quantitative tightening") does the opposite.</td></tr>
+    <tr><td>Emergency lender</td><td>In a panic, the Fed can lend to banks so a bank run doesn't spread. This happened in March 2023 after Silicon Valley Bank failed.</td></tr>
+  </table>
+
+  <h3>How a rate change ripples through everything</h3>
+  <div class="btnrow"><button class="b on" id="fedUp">Fed RAISES rates</button><button class="b" id="fedDown">Fed CUTS rates</button></div>
+  <div class="flow" id="fedFlow"></div>
+  <p class="muted">These are the usual directions, not guarantees. Markets often move ahead of the Fed, reacting to what they expect it to do rather than what it just did.</p>
+
+  <div class="callout"><p><b>Recent example:</b> To fight the 2021–2022 inflation surge, the Fed raised its rate from near 0% in early 2022 to above 5% by mid-2023, its fastest hiking campaign since the early 1980s. Bond prices fell sharply in 2022, savings accounts finally paid real interest again, and one bank that had loaded up on low-rate bonds collapsed (section 9).</p></div>
+  <p class="small">For the current rate and the Fed's latest decisions, check <a href="https://www.federalreserve.gov/monetarypolicy.htm">federalreserve.gov</a>. This page deliberately doesn't hard-code a number that will go stale.</p>
+  <div class="pager"><a href="#bonds">← Bonds</a><a href="#funds">Next: Mutual vs. index funds →</a></div>
+</section>
+
+<!-- ============ 7. FUNDS ============ -->
+<section class="tab" id="funds">
+  <h2>7. Mutual funds vs. index funds</h2>
+  <p>Buying hundreds of stocks one at a time is impractical. A <b>fund</b> pools money from many investors and buys a basket for all of them. You own a slice of the basket.</p>
+  <table>
+    <tr><th></th><th>Actively managed mutual fund</th><th>Index fund</th></tr>
+    <tr><td>Strategy</td><td>A manager tries to pick winners and beat the market</td><td>Buys everything in an index (like the S&amp;P 500) and holds it</td></tr>
+    <tr><td>Typical yearly fee (expense ratio)</td><td>Often around 0.5%–1%+</td><td>Broad index funds can be well under 0.1%</td></tr>
+    <tr><td>Goal</td><td>Beat the index</td><td>Match the index, minus a tiny fee</td></tr>
+  </table>
+  <p class="small"><b>ETF vs. mutual fund:</b> an ETF (exchange-traded fund) is a fund that trades on the stock exchange throughout the day like a stock. "Index" vs. "active" describes the strategy; "ETF" vs. "mutual fund" describes the wrapper. You can have index mutual funds and active ETFs.</p>
+
+  <h3>The book's core argument, and the data behind it</h3>
+  <p>If prices take a random walk, most professional stock-pickers can't consistently beat the market, especially after their fees. Malkiel made this argument in 1973, before index funds were even available to regular investors. The data has backed him up since:</p>
+  <ul>
+    <li>In 2025, <b>79%</b> of actively managed US large-company stock funds trailed the S&amp;P 500 (S&amp;P Dow Jones Indices' SPIVA scorecard).</li>
+    <li>Over the 15 years through 2024, about <b>90%</b> trailed it.</li>
+    <li>Last year's winners rarely stay winners. That makes it hard to pick the few that will beat the index in advance.</li>
+  </ul>
+  <p>Fees are the one thing you can control. Across all equity mutual funds offered in 2025, the simple average expense ratio was about <b>1.09%</b> (Investment Company Institute). Investors who choose carefully pay far less.</p>
+
+  <div class="sim">
+    <div class="sim-title">Fee drag simulator: same investments, different fees</div>
+    <div class="controls">
+      <div class="ctl"><label for="feStart">Starting amount ($)</label><input type="number" id="feStart" value="10000" min="0" step="1000"></div>
+      <div class="ctl"><label for="feMonthly">Added every month ($)</label><input type="number" id="feMonthly" value="300" min="0" step="50"></div>
+      <div class="ctl"><label for="feRet">Market return before fees: <span class="val" id="feRetV"></span></label><input type="range" id="feRet" min="0" max="12" step="0.5" value="7"></div>
+      <div class="ctl"><label for="feYears">Years: <span class="val" id="feYearsV"></span></label><input type="range" id="feYears" min="1" max="50" step="1" value="30"></div>
+      <div class="ctl"><label for="feA">Fund A fee: <span class="val" id="feAV"></span></label><input type="range" id="feA" min="0" max="2.5" step="0.05" value="1"></div>
+      <div class="ctl"><label for="feB">Fund B fee: <span class="val" id="feBV"></span></label><input type="range" id="feB" min="0" max="2.5" step="0.01" value="0.05"></div>
+    </div>
+    <canvas class="chart" id="feChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Fund B (low fee)</span><span><i style="background:#b3322a"></i>Fund A (higher fee)</span></div>
+    <div class="results" id="feStats"></div>
+    <p class="muted">Assumes both funds earn the same market return before fees. The SPIVA data suggests that's generous to the active fund.</p>
+  </div>
+  <div class="callout idea"><p><b>The catch with "owning the whole market":</b> the S&amp;P 500 is weighted by size, so a handful of giant companies drive a big share of its moves. You're diversified, but not equally across companies. See the NVIDIA case in section 9.</p></div>
+  <div class="pager"><a href="#fed">← The Fed</a><a href="#options">Next: Calls &amp; puts →</a></div>
+</section>
+
+<!-- ============ 8. OPTIONS ============ -->
+<section class="tab" id="options">
+  <h2>8. Calls &amp; puts</h2>
+  <div class="callout warn"><p><b>Advanced and high-risk.</b> Options are not needed for ordinary long-term investing. They're here so the headlines make sense. Many beginners who trade short-term options lose most of what they put in.</p></div>
+  <p>An <b>option</b> is a contract that gives you the <i>right, but not the obligation</i>, to buy or sell a stock at a set price (the <b>strike</b>) before a set date (<b>expiration</b>). You pay up front for that right; the price is the <b>premium</b>. In the US, one contract usually covers 100 shares.</p>
+  <table>
+    <tr><th></th><th>You profit if the stock…</th><th>Most you can lose (as the buyer)</th><th>Everyday analogy</th></tr>
+    <tr><td><b>Call</b> = right to <b>buy</b></td><td>rises well above the strike</td><td>The premium you paid</td><td>A non-refundable deposit that locks in a house price</td></tr>
+    <tr><td><b>Put</b> = right to <b>sell</b></td><td>falls well below the strike</td><td>The premium you paid</td><td>Insurance on your car: it pays out when something bad happens</td></tr>
+  </table>
+  <p>Every option has a <b>seller</b> on the other side who collects the premium and takes on the obligation. Selling a call on a stock you don't own (a "naked call") has <b>unlimited</b> possible losses, because there's no ceiling on how high a stock can go.</p>
+
+  <div class="sim">
+    <div class="sim-title">Option payoff at expiration</div>
+    <div class="btnrow">
+      <button class="b on" data-opt="buy-call">Buy a call</button>
+      <button class="b" data-opt="buy-put">Buy a put</button>
+      <button class="b" data-opt="sell-call">Sell a call</button>
+      <button class="b" data-opt="sell-put">Sell a put</button>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label for="opNow">Stock price today ($)</label><input type="number" id="opNow" value="100" min="1" step="1"></div>
+      <div class="ctl"><label for="opStrike">Strike price ($)</label><input type="number" id="opStrike" value="105" min="1" step="1"></div>
+      <div class="ctl"><label for="opPrem">Premium per share ($)</label><input type="number" id="opPrem" value="4" min="0" step="0.25"></div>
+      <div class="ctl"><label for="opQty">Contracts (×100 shares)</label><input type="number" id="opQty" value="1" min="1" step="1"></div>
+    </div>
+    <canvas class="chart" id="opChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Option profit / loss</span><span id="opShareLegend"><i style="background:#c9a227"></i>Same cash spent on shares instead</span></div>
+    <div class="results" id="opStats"></div>
+    <p class="muted">Profit at the expiration date only, ignoring commissions. Before expiration an option's price also depends on time remaining and expected volatility. Real option pricing is more complicated.</p>
+  </div>
+
+  <h3>Leverage: why options make headlines</h3>
+  <p>In the default example, $400 buys one call controlling 100 shares, or just 4 shares outright. If the stock jumps 20% to $120, the call earns $1,100 (+275%) while the 4 shares earn $80 (+20%). If the stock just sits at $100, the call expires worthless (−100%) while the shares lose nothing. Options magnify both directions, and time works against the buyer.</p>
+  <h3>Short selling (related, not an option)</h3>
+  <p><b>Shorting</b> means borrowing shares, selling them, and hoping to buy them back cheaper later. Your gain is capped at 100% (the stock can only fall to zero), but your possible loss is unlimited. When a heavily shorted stock rises fast, short sellers rush to buy back shares, pushing the price even higher. That's a <b>short squeeze</b> (see GameStop in section 9).</p>
+  <div class="pager"><a href="#funds">← Mutual vs. index funds</a><a href="#cases">Next: Real-world drama →</a></div>
+</section>
+
+<!-- ============ 9. CASES ============ -->
+<section class="tab" id="cases">
+  <h2>9. Real-world drama: who made and lost money</h2>
+  <p>Theory is easy when markets are calm. These are six real episodes from the last few years, using real closing prices. In each one, imaginary investors with <b>$10,000</b> make the choices real people made. <b>The investors are hypothetical; the prices are real.</b></p>
+  <p class="muted">Charts connect key closing prices only, not every trading day. Stock prices are not adjusted for dividends. Figures checked against news reports as of November 24, 2026.</p>
+
+  <!-- NVIDIA 2026 -->
+  <div class="case" id="case-nvda">
+    <h3><span class="tag">Oct–Nov 2026</span>NVIDIA: the CEO scandal and the biggest one-day gain in history</h3>
+    <p>NVIDIA, the world's most valuable chipmaker, hit a record close of <b>$238.90</b> on October 5, 2026. Then a scandal around its co-founder and CEO, Jensen Huang, combined with existing worries about an AI bubble, sent the stock on one of the wildest rides any giant company has had.</p>
+    <ul class="timeline">
+      <li><b>Oct 5:</b> Record close of $238.90.</li>
+      <li><b>Oct 29:</b> The New York Times reports Huang had a close relationship with a woman US officials suspect of being a Chinese intelligence asset.</li>
+      <li><b>Nov 8–9:</b> Huang admits an affair; the board opens an independent investigation. The stock falls 4.3% on Monday, erasing about $192 billion in value.</li>
+      <li><b>Nov 11:</b> Closes at $173.73, then drops about 8% after hours on a report of a second relationship, with a direct report.</li>
+      <li><b>Nov 12:</b> Huang resigns; CFO Colette Kress becomes interim CEO. The stock opens at $151, then recovers to close at $166.19 (−4.3%).</li>
+      <li><b>Nov 20:</b> Reuters reports an SEC probe into NVIDIA's accounting. The stock falls 14% to <b>$125.53</b>, about 47% below the October record. The Nasdaq ends the week down 10%, its worst week since early 2020.</li>
+      <li><b>Nov 23:</b> The board reinstates Huang as CEO. The stock jumps <b>31.5%</b> to $165.05, which MarketWatch called the biggest one-day gain (in market value) in stock-market history.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="nvda"></canvas>
+    <div class="people">
+      <div class="person"><div class="who">The panic seller</div>Bought at the October record, sold in disgust at the Nov 20 low.<div class="amt bad">$5,254</div>Locked in a 47% loss one trading day before a 31% rebound.</div>
+      <div class="person"><div class="who">The holder</div>Bought at the October record, did nothing.<div class="amt bad">$6,909</div>Still down 31%. Holding didn't make them whole. Buying at peak hype is expensive.</div>
+      <div class="person"><div class="who">The dip buyer</div>Bought at the Nov 20 close, in the middle of the panic.<div class="amt good">$13,148</div>+31% in one day. Brave or lucky; one bad headline could have meant another −20%.</div>
+      <div class="person"><div class="who">The late short seller</div>Shorted $10,000 at the Nov 20 low, betting on more pain.<div class="amt bad">−$3,148</div>Lost 31% overnight. Short sellers got squeezed.</div>
+    </div>
+    <div class="lesson"><b>Lessons:</b> A single person can move a company worth trillions. If you own an S&amp;P 500 index fund, you were exposed too, because NVIDIA made up more than 6% of the index. And the best day came right after one of the worst. See <a href="#stocks">Stocks</a>, <a href="#funds">Index funds</a>, and <a href="#options">Short selling</a>.</div>
+    <div class="callout warn"><p><b>Still unfolding:</b> As of November 24, 2026, the internal investigation and the reported SEC probe were unresolved. Treat this case as a snapshot, not a final verdict.</p></div>
+    <p class="src">Sources: <a href="https://www.axios.com/2026/11/11/nvidia-jensen-huang-affair-shares">Axios</a> · <a href="https://www.tweaktown.com/news/114589/about-200-billion-wiped-off-nvidias-value-after-jensen-huang-admits-to-affair-with-suspected-chinese-spy/index.html">TweakTown</a> · <a href="https://gulfnews.com/business/second-affair-steeper-sell-off-nvidia-ceo-jensen-huang-under-fire-1.500744501">Gulf News</a> · <a href="https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-13-2026/">Gotrade (Nov 12)</a> · <a href="https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-23-2026/">Gotrade (Nov 20)</a> · <a href="https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-24-2026/">Gotrade (Nov 23)</a> · <a href="https://www.cnbc.com/2026/11/23/anthropic-nvidia-shares.html">CNBC</a> · <a href="https://www.crowdfundinsider.com/?p=316268">Crowdfund Insider (Oct 5 record)</a> · <a href="https://sfstandard.com/2026/11/12/nvidia-shares-tumble-as-wall-street-reacts-huang-s-exit/">SF Standard</a></p>
+  </div>
+
+  <!-- DeepSeek 2025 -->
+  <div class="case" id="case-deepseek">
+    <h3><span class="tag">Jan 2025</span>The DeepSeek shock: one headline wipes out $589 billion</h3>
+    <p>A Chinese startup, DeepSeek, released a free AI model it claimed was built for a fraction of what US labs spend. Investors suddenly feared the world might need far fewer expensive NVIDIA chips.</p>
+    <ul class="timeline">
+      <li><b>Fri, Jan 24, 2025:</b> NVIDIA closes at $142.62.</li>
+      <li><b>Mon, Jan 27:</b> Falls about 17% to $118.42, erasing roughly $589 billion, at the time the largest one-day loss of market value for any company in history.</li>
+      <li><b>April 2025:</b> Drops below $100 during the tariff selloff (next case).</li>
+      <li><b>Feb 25, 2026:</b> Trades at $194.67, well above the pre-DeepSeek price.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="deepseek"></canvas>
+    <div class="people">
+      <div class="person"><div class="who">The panic seller</div>Sold at the Jan 27 close.<div class="amt bad">$8,303</div>Turned a scary headline into a permanent 17% loss.</div>
+      <div class="person"><div class="who">The holder</div>Held from Jan 24, 2025 to Feb 25, 2026.<div class="amt good">$13,650</div>+36%, but had to sit through a drop of more than 30% along the way.</div>
+      <div class="person"><div class="who">The dip buyer</div>Bought at the Jan 27 close.<div class="amt good">$16,439</div>+64% by February 2026.</div>
+    </div>
+    <div class="lesson"><b>Lesson:</b> Even the most-watched company in the world got repriced overnight by news nobody saw coming. That's the random walk in action. See <a href="#start">Start here</a>.</div>
+    <p class="src">Sources: <a href="https://www.bloomberg.com/news/articles/2025-01-27/asml-sinks-as-china-ai-startup-triggers-panic-in-tech-stocks">Bloomberg</a> · <a href="https://techcrunch.com/2025/01/27/nvidia-drops-600bn-off-its-market-cap-amid-the-rise-of-deepseek">TechCrunch</a> · <a href="https://gurufocus.com/news/2669498/nvidia-nvda-faces-historic-600-billion-market-cap-loss-amid-ai-competition-concerns">GuruFocus</a> · <a href="https://tradingeconomics.com/nvda:us/news/528410">Trading Economics</a></p>
+  </div>
+
+  <!-- Tariffs 2025 -->
+  <div class="case" id="case-tariff">
+    <h3><span class="tag">Apr 2025</span>The tariff crash and the 9.5% day</h3>
+    <p>On the evening of April 2, 2025, the White House announced sweeping tariffs on nearly all US imports. The whole market, not just one stock, went into freefall. A week later, a 90-day pause on most of the tariffs triggered one of the biggest up days ever.</p>
+    <ul class="timeline">
+      <li><b>Feb 19, 2025:</b> S&amp;P 500 record close, 6,144.</li>
+      <li><b>Apr 2:</b> Closes at 5,670.97, just before the tariff announcement.</li>
+      <li><b>Apr 3–8:</b> Four straight losing days to 4,982.77, down about 12% in four sessions and nearly 19% from the February record.</li>
+      <li><b>Apr 9:</b> A 90-day pause is announced. The S&amp;P 500 gains <b>9.5%</b> to 5,456.90, its best day since 2008.</li>
+      <li><b>Jun 27:</b> New record close at 6,173.07, less than three months after the low.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="tariff"></canvas>
+    <div class="people">
+      <div class="person"><div class="who">The panic seller</div>Had $10,000 in an S&amp;P 500 index fund on Apr 2. Sold at the Apr 8 close, waited for things to "calm down."<div class="amt bad">$8,786</div>Missed the 9.5% day and the whole recovery.</div>
+      <div class="person"><div class="who">The holder</div>Same fund, did nothing, felt sick for a week.<div class="amt good">$10,885</div>Up about 9% by June 27, before dividends.</div>
+    </div>
+    <div class="lesson"><b>Lesson:</b> The best days tend to arrive in the middle of the worst stretches. J.P. Morgan found that 7 of the 10 best market days over 20 years came within about two weeks of one of the 10 worst. A $10,000 S&amp;P 500 investment from 2005 grew to $71,750 by the end of 2024; missing just the 10 best days cut that to $32,871. See <a href="#interest">The power of interest</a>.</div>
+    <p class="src">Sources: <a href="https://finance.yahoo.com/news/stock-futures-struggle-trumps-reciprocal-111039567.html">Yahoo Finance</a> · <a href="https://abcnews.go.com/Business/wireStory/major-us-stock-indexes-fared-wednesday-492025-120655995">AP via ABC News</a> · <a href="https://www.npr.org/2025/06/27/nx-s1-5447477/stocks-sandp-new-record-high">NPR</a> · <a href="https://www.chase.com/personal/investments/learning-and-insights/article/market-timing-dangerous-habit">J.P. Morgan / Chase</a> · <a href="https://nbcmiami.com/news/business/money-report/selling-out-during-the-markets-worst-days-can-hurt-you-research-shows-heres-how-much-you-could-lose/3585543">CNBC via NBC</a></p>
+  </div>
+
+  <!-- COVID 2020 -->
+  <div class="case" id="case-covid">
+    <h3><span class="tag">Feb–Aug 2020</span>COVID: the fastest bear market on record</h3>
+    <p>As the pandemic shut down economies worldwide, the S&amp;P 500 lost about a third of its value in just over a month. Then, helped by massive support from the Fed and Congress, it recovered faster than almost anyone predicted, even though the economy was still in terrible shape.</p>
+    <ul class="timeline">
+      <li><b>Feb 19, 2020:</b> Record close, 3,386.15.</li>
+      <li><b>Mar 23:</b> Bottom at 2,237.40, down about 34% in barely a month.</li>
+      <li><b>Aug 18:</b> New record close, 3,389.78, after a 51.5% rally from the low.</li>
+      <li><b>Dec 31:</b> Ends the year at 3,756.07.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="covid"></canvas>
+    <div class="people">
+      <div class="person"><div class="who">The panic seller</div>Invested at the February peak, sold at the March 23 bottom.<div class="amt bad">$6,608</div>Sold at almost exactly the worst moment.</div>
+      <div class="person"><div class="who">The holder</div>Invested at the February peak, did nothing.<div class="amt good">$11,092</div>Back to even by August, +11% by year-end, before dividends.</div>
+      <div class="person"><div class="who">The bottom buyer</div>Invested on March 23 (nobody knew it was the bottom).<div class="amt good">$16,788</div>+68% in nine months.</div>
+    </div>
+    <div class="lesson"><b>Lesson:</b> The stock market isn't the economy. It looks ahead and moves on expectations. Unemployment was still in double digits when stocks hit new records. Waiting until the news gets better usually means buying back in at higher prices.</div>
+    <p class="src">Sources: <a href="https://www.pbs.org/newshour/economy/sp-500-closes-at-a-record-erasing-last-of-pandemic-losses">AP via PBS</a> · <a href="https://www.axios.com/2020/08/18/sp500-stock-record-high-pandemic">Axios</a> · <a href="https://www.mainepublic.org/2020-08-18/the-big-comeback-s-p-500-closes-at-record-high-6-months-after-coronavirus-plunge">NPR via Maine Public</a></p>
+  </div>
+
+  <!-- SVB 2023 -->
+  <div class="case" id="case-svb">
+    <h3><span class="tag">Mar 2023</span>Silicon Valley Bank: how "safe" bonds sank a bank in 44 hours</h3>
+    <p>SVB took in a flood of deposits from tech startups in 2020–2021 and parked much of it in long-term government and mortgage bonds paying very little, when rates were near zero. Then the Fed raised rates faster than it had in 40 years. Those bonds lost value (see the <a href="#bonds">Bonds</a> tab), and the losses on SVB's held-to-maturity bonds alone were larger than the bank's entire $15.8 billion of shareholder equity.</p>
+    <ul class="timeline">
+      <li><b>Mar 8, 2023:</b> SVB announces it sold $21 billion of bonds at a $1.8 billion loss and needs to raise $2.25 billion. Stock closes at $267.83.</li>
+      <li><b>Mar 9:</b> Venture investors tell startups to pull their money. Customers try to withdraw <b>$42 billion</b> in one day. The stock falls 60% to $106.04.</li>
+      <li><b>Mar 10:</b> Trading halted; regulators seize the bank, the second-largest bank failure in US history.</li>
+      <li><b>Mar 12:</b> The government announces all deposits will be protected, even above the $250,000 insurance limit.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="svb"></canvas>
+    <div class="legend"><span><i style="background:#b3322a"></i>Fed funds rate target (upper end, %), climbing while SVB held low-rate bonds</span></div>
+    <div class="people">
+      <div class="person"><div class="who">The shareholder</div>Owned $10,000 of SVB stock on Mar 8.<div class="amt bad">$3,959 → ~$0</div>Down 60% the next day, then trading stopped. Shareholders were effectively wiped out.</div>
+      <div class="person"><div class="who">The depositor</div>A startup with $10,000 (or $10 million) in an SVB account.<div class="amt good">$10,000</div>Got every dollar back, but only because regulators chose to protect deposits above the insured limit.</div>
+    </div>
+    <div class="lesson"><b>Lesson:</b> A bond can be safe from default and still lose market value when rates rise. That only becomes a real loss if you're forced to sell early, which is exactly what a bank run does. See <a href="#bonds">Bonds</a> and <a href="#fed">The Fed</a>.</div>
+    <p class="src">Sources: <a href="https://fortune.com/2023/03/12/the-5-most-pressing-questions-answered-about-silicon-valley-banks-collapse/">Fortune</a> · <a href="https://www.axios.com/2023/03/18/silicon-valley-bank-timeline">Axios</a> · <a href="https://www.kitco.com/news/off-the-wire/2023-03-08/svb-financial-launches-175-bln-stock-convertible-offerings">Reuters via Kitco</a> · <a href="https://fortune.com/2023/03/10/svb-collapse-fdic-takeover-martin-gruenberg-620-billion-hole-banks-balance-sheet/amp/">Fortune (equity vs. losses)</a> · <a href="https://en.wikipedia.org/wiki/Collapse_of_Silicon_Valley_Bank">Wikipedia</a></p>
+  </div>
+
+  <!-- GameStop 2021 -->
+  <div class="case" id="case-gme">
+    <h3><span class="tag">Jan 2021</span>GameStop: the short squeeze</h3>
+    <p>Hedge funds had bet heavily against GameStop, a struggling video-game retailer; at one point more shares had been sold short than the company had shares in total. Retail traders on Reddit's r/WallStreetBets noticed and piled in with shares and call options, forcing the short sellers to buy back at ever-higher prices.</p>
+    <ul class="timeline">
+      <li><b>Jan 20, 2021:</b> Closes at $39.12, already up from under $20 earlier in the month.</li>
+      <li><b>Jan 22 → 26:</b> $65.01 → $147.98.</li>
+      <li><b>Jan 27:</b> Record close of <b>$347.51</b>. Hedge fund Melvin Capital, which had needed a $2.75 billion rescue, closes its short position at a huge loss.</li>
+      <li><b>Jan 28:</b> Hits $483 intraday, then several brokers restrict buying. Closes at $193.60.</li>
+      <li><b>Feb 4:</b> $53.50. Down more than 80% in a week.</li>
+    </ul>
+    <canvas class="chart case-chart" data-case="gme"></canvas>
+    <div class="people">
+      <div class="person"><div class="who">The early bird</div>Bought Jan 20, sold at the Jan 27 close.<div class="amt good">$88,832</div>+788% in a week. Most people who say they'll sell at the top don't.</div>
+      <div class="person"><div class="who">The FOMO buyer</div>Bought at the Jan 27 close after seeing the headlines.<div class="amt bad">$1,540</div>−85% in eight days.</div>
+      <div class="person"><div class="who">The "diamond hands"</div>Bought Jan 20, refused to sell, still holding Feb 9 ($50.31).<div class="amt good">$12,860</div>Was up almost 9× on paper, kept +29%.</div>
+      <div class="person"><div class="who">The short seller</div>Melvin Capital, a multibillion-dollar hedge fund.<div class="amt bad">−53%</div>Its loss for the month of January 2021.</div>
+    </div>
+    <div class="lesson"><b>Lessons:</b> Short sellers face unlimited losses, and call options add fuel to a squeeze. Prices driven by crowd mood ("castle in the air") can collapse as fast as they rise. By the time a stock is on the evening news, the easy money is usually gone. See <a href="#options">Calls &amp; puts</a> and <a href="#stocks">Stocks</a>.</div>
+    <p class="muted">GameStop prices shown as they traded in 2021, before its 4-for-1 stock split in 2022.</p>
+    <p class="src">Sources: <a href="https://www.cnbc.com/amp/2021/01/27/hedge-fund-targeted-by-reddit-board-melvin-capital-closed-out-of-gamestop-short-position-tuesday.html">CNBC</a> · <a href="https://www.yahoo.com/now/game-stop-amc-saga-make-it-a-day-for-the-history-books-morning-brief-110758771.html">Yahoo Finance</a> · <a href="https://www.nme.com/news/gaming-news/gamestop-reddit-wall-street-what-is-happening-2866949">NME</a> · <a href="https://www.coinspeaker.com/reddit-rally-gamestop-gme-stock-drops-42-down-more-than-80-this-week/amp">Coinspeaker</a> · <a href="https://www.bloomberg.com/news/articles/2021-02-09/gamestop-selloff-deepens-erasing-30-billion-in-value-from-peak">Bloomberg</a> · <a href="https://www.bloomberg.com/news/articles/2021-01-31/melvin-lost-53-in-january-hurt-by-gamestop-other-bets-dj">Bloomberg (Melvin)</a></p>
+  </div>
+
+  <div class="callout idea"><p><b>The pattern across all six:</b> The people who lost the most usually did one of three things: sold in a panic, piled in after the headlines, or made big bets with leverage. The people who did best mostly owned something diversified and left it alone, or had the nerve (and luck) to buy while everyone else was selling.</p></div>
+  <div class="pager"><a href="#options">← Calls &amp; puts</a><a href="#math">Next: The math →</a></div>
+</section>
+
+<!-- ============ 10. THE MATH ============ -->
+<section class="tab" id="math">
+  <h2>10. The math (for the curious)</h2>
+  <p class="lede">Everything on this page runs on a handful of formulas. Here they are, with the intuition behind each and worked examples taken from the earlier sections. Nothing beyond algebra and logarithms, plus one formula with a bell curve at the end.</p>
+  <p class="muted">Notation: <i>r</i> = yearly rate as a decimal (7% → 0.07), <i>t</i> = years, <i>n</i> = compounding periods per year, ln = natural log, <i>σ</i> (sigma) = volatility, the standard deviation of returns.</p>
+
+  <h3>1. Compound growth</h3>
+  <div class="eq">FV = P × (1 + r/n)<sup>n·t</sup></div>
+  <p>Each period multiplies the balance by (1 + r/n). After <i>n·t</i> periods, you've multiplied that many times. Compound more often and, in the limit, you get <b>continuous compounding</b>:</p>
+  <div class="eq">FV = P × e<sup>r·t</sup></div>
+  <p>The gain from compounding more often is small. $1,000 at 7% for 40 years becomes $14,974 compounded yearly, $16,326 monthly, and $16,445 continuously. Rate and time matter far more than frequency.</p>
+  <p><b>Regular contributions</b> form a geometric series. A deposit <i>C</i> made each period grows for a different number of periods, and summing them gives:</p>
+  <div class="eq">FV = C × [ (1 + i)<sup>N</sup> − 1 ] ÷ i</div>
+  <p>Here <i>i</i> is the rate per deposit period and <i>N</i> is the number of deposits. The simulator in section 2 uses an effective monthly rate, i = (1 + r/n)<sup>n/12</sup> − 1, so monthly deposits work with any compounding choice.</p>
+  <p><b>Early Emma, checked by hand:</b> $200/month at 7% compounded monthly (i = 0.07/12 ≈ 0.005833) for 120 months gives 200 × (1.005833<sup>120</sup> − 1) ÷ 0.005833 ≈ <b>$34,600</b> at age 35. Then 30 years of growth with no deposits: × 1.005833<sup>360</sup> ≈ × 8.12 → <b>≈ $281,000</b>. Larry's 360 deposits: 200 × (8.12 − 1) ÷ 0.005833 ≈ <b>$244,000</b>.</p>
+
+  <h3>2. Why the Rule of 72 works</h3>
+  <p>Doubling means (1 + r)<sup>t</sup> = 2. Take logs of both sides:</p>
+  <div class="eq">t = ln 2 ÷ ln(1 + r) ≈ 0.693 ÷ r × (1 + r/2)</div>
+  <p>The approximation uses ln(1 + r) ≈ r − r²/2. At typical rates around 8%, the correction factor (1 + 0.04) turns 69.3 into about 72. The number 72 also divides evenly by 2, 3, 4, 6, 8, 9, and 12, which makes mental math easy. With continuous compounding, the exact rule is the "Rule of 69.3."</p>
+
+  <h3>3. Real returns (the Fisher equation)</h3>
+  <div class="eq">1 + real = (1 + nominal) ÷ (1 + inflation)</div>
+  <p>The shortcut "nominal − inflation" overstates the real return by roughly real × inflation. That error is tiny at 2–3% inflation and matters at 1970s-style rates.</p>
+
+  <h3>4. Averages lie: arithmetic vs. geometric returns</h3>
+  <p>Lose 50%, then gain 50%. The <b>arithmetic</b> average return is 0%, but you're down 25%, because 0.5 × 1.5 = 0.75. What you actually earn is the <b>geometric</b> average, and volatility always drags it below the arithmetic average:</p>
+  <div class="eq">geometric ≈ arithmetic − σ² ÷ 2</div>
+  <p>This "volatility drag" is why a steady 10% beats a bumpy average of 10%. It's also why 2× and inverse ETFs (like the 2× short NVIDIA fund in the case study) slowly lose value in choppy markets even when the stock goes nowhere. They reset every day, so the drag compounds.</p>
+  <div class="sim">
+    <div class="sim-title">Volatility drag: steady vs. bumpy, same arithmetic average</div>
+    <div class="controls">
+      <div class="ctl"><label for="vdUp">Good years: <span class="val" id="vdUpV"></span></label><input type="range" id="vdUp" min="0" max="100" step="1" value="40"></div>
+      <div class="ctl"><label for="vdDn">Bad years: <span class="val" id="vdDnV"></span></label><input type="range" id="vdDn" min="-90" max="0" step="1" value="-20"></div>
+      <div class="ctl"><label for="vdYears">Years (alternating good/bad): <span class="val" id="vdYearsV"></span></label><input type="range" id="vdYears" min="2" max="40" step="2" value="20"></div>
+    </div>
+    <canvas class="chart" id="vdChart"></canvas>
+    <div class="legend"><span><i style="background:#0b6e6e"></i>Steady: same return every year (the arithmetic average)</span><span><i style="background:#b3322a"></i>Bumpy: alternates good and bad years</span></div>
+    <div class="results" id="vdStats"></div>
+  </div>
+
+  <h3>5. Recovery math: why losses hurt more than gains help</h3>
+  <p>After a loss <i>L</i>, you need a gain of:</p>
+  <div class="eq">required gain = L ÷ (1 − L)</div>
+  <div class="sim">
+    <div class="controls">
+      <div class="ctl"><label for="rcL">Loss: <span class="val" id="rcLV"></span></label><input type="range" id="rcL" min="1" max="95" step="1" value="34"></div>
+    </div>
+    <canvas class="chart" id="rcChart"></canvas>
+    <div class="results" id="rcStats"></div>
+  </div>
+  <table>
+    <tr><th>Loss</th><th>Gain needed to break even</th><th>Real example (section 9)</th></tr>
+    <tr><td>−34%</td><td>+51.5%</td><td>S&amp;P 500, COVID 2020. The actual rally from the low to the August record was exactly 51.5%.</td></tr>
+    <tr><td>−47.5%</td><td>+90%</td><td>NVIDIA from the October 2026 record to the Nov 20 low. Even after the +31.5% day it was still down 31%.</td></tr>
+    <tr><td>−84.6%</td><td>+550%</td><td>GameStop, Jan 27 to Feb 4, 2021</td></tr>
+  </table>
+
+  <h3>6. Volatility grows with the square root of time</h3>
+  <p>In a random walk, daily moves are independent, so their <i>variances</i> add rather than their standard deviations. Over <i>t</i> days, the spread grows with √t, not t:</p>
+  <div class="eq">σ<sub>annual</sub> ≈ σ<sub>daily</sub> × √252 &nbsp;&nbsp;(about 252 trading days per year)</div>
+  <p>A stock that typically moves 1% a day has roughly 16% annual volatility. The coin-flip chart in section 1 moves 0.5–2% a day (a typical daily move of about 1.3%), which works out to about 21% a year, in the range of a fairly volatile large stock. The same math explains why a year's return is a coin toss but a 30-year return is much more predictable: the expected gain grows with <i>t</i> while the noise only grows with √t.</p>
+
+  <h3>7. Diversification as a formula</h3>
+  <p>The simulator in section 4 uses a simple "single-index" model. Each stock's return is the market return plus its own independent noise. For an equal-weight portfolio of <i>N</i> stocks:</p>
+  <div class="eq">σ<sub>portfolio</sub>² = σ<sub>market</sub>² + σ<sub>company</sub>² ÷ N</div>
+  <p>With the simulator's numbers (16% market, 30% company): one stock gives √(0.16² + 0.30²) ≈ <b>34%</b>; 100 stocks give √(0.16² + 0.30²/100) ≈ <b>16.3%</b>. The company term shrinks toward zero, but the market term never does. That's "you can diversify away company risk but not market risk," in one line.</p>
+  <p>For any two assets with weights w₁, w₂ and correlation ρ (rho, from −1 to +1):</p>
+  <div class="eq">σ<sub>p</sub>² = w₁²σ₁² + w₂²σ₂² + 2·w₁w₂·ρ·σ₁σ₂</div>
+  <p>The lower the correlation, the more the third term cancels out. That's why stocks and high-quality bonds are often paired. In a crisis, correlations among stocks tend to jump toward 1, which is why diversification feels weakest exactly when you want it most.</p>
+
+  <h3>8. Bond pricing, duration, and convexity</h3>
+  <p>A bond's price is the present value of every payment it will make, discounted at today's market rate <i>y</i>:</p>
+  <div class="eq">Price = Σ C ÷ (1 + y)<sup>t</sup> &nbsp;+&nbsp; Face ÷ (1 + y)<sup>T</sup></div>
+  <p>Raise <i>y</i> and every denominator grows, so the price falls. That's the inverse rule in one formula. <b>Macaulay duration</b> is the present-value-weighted average time until you get paid. <b>Modified duration</b> D* = D ÷ (1 + y) converts it into price sensitivity:</p>
+  <div class="eq">ΔP ÷ P ≈ −D* × Δy &nbsp;+&nbsp; ½ × Convexity × (Δy)²</div>
+  <p><b>The SVB-style example from section 5</b> (1.8% coupon, 4 years left, market rate jumps from 1.8% to 4.75%, so Δy = 0.0295):</p>
+  <ul>
+    <li>Modified duration ≈ 3.83, so the duration-only estimate is −3.83 × 0.0295 ≈ <b>−11.3%</b>.</li>
+    <li>Convexity ≈ 18.6 adds back ½ × 18.6 × 0.0295² ≈ +0.8%, giving <b>−10.5%</b>.</li>
+    <li>The exact repricing is $894.78, or <b>−10.5%</b>. The two-term approximation is almost perfect.</li>
+  </ul>
+  <p>Convexity is why the price curve in the bond simulator bends: price losses slow down as rates rise, and gains speed up as rates fall.</p>
+
+  <h3>9. Fee drag, quantified</h3>
+  <p>A fee <i>f</i> turns each year's growth factor from (1 + r) into (1 + r − f). Over <i>t</i> years, a lump sum ends up at about:</p>
+  <div class="eq">(1 + r − f)<sup>t</sup> ÷ (1 + r)<sup>t</sup> ≈ e<sup>−f·t</sup> of what it would have been with no fee</div>
+  <p>A 0.95-point fee gap over 30 years gives e<sup>−0.285</sup> ≈ 0.75, so a lump sum ends up about <b>25% smaller</b>. The fee simulator in section 7 shows a smaller hit (about 18%) because monthly contributions made in later years pay the fee for fewer years.</p>
+
+  <h3>10. What is a stock "worth"? The Gordon growth model</h3>
+  <p>The "firm foundation" view in its simplest form: if a stock pays a dividend <i>D</i> next year that grows at rate <i>g</i> forever, and investors demand return <i>r</i>, then:</p>
+  <div class="eq">Price = D ÷ (r − g)</div>
+  <div class="sim">
+    <div class="sim-title">Why small changes in assumptions swing prices wildly</div>
+    <div class="controls">
+      <div class="ctl"><label for="ggD">Next year's dividend ($)</label><input type="number" id="ggD" value="2" min="0.01" step="0.25"></div>
+      <div class="ctl"><label for="ggR">Required return r: <span class="val" id="ggRV"></span></label><input type="range" id="ggR" min="3" max="15" step="0.25" value="8"></div>
+      <div class="ctl"><label for="ggG">Growth forever g: <span class="val" id="ggGV"></span></label><input type="range" id="ggG" min="0" max="12" step="0.25" value="5"></div>
+    </div>
+    <div class="results" id="ggStats"></div>
+  </div>
+  <p>Because <i>r − g</i> is a small number in the denominator, nudging growth from 5% to 6% raises the "fair" price by 50%, and raising the required return from 8% to 9% cuts it by 25%. That sensitivity is why growth stocks swing so violently on news about their future (AI demand, a CEO's exit) and on interest rates (section 6).</p>
+
+  <h3>11. Options: payoffs, parity, and Black–Scholes</h3>
+  <p>At expiration, payoffs are simple:</p>
+  <div class="eq">Call = max(S − K, 0) &nbsp;&nbsp;&nbsp; Put = max(K − S, 0)</div>
+  <p><b>Put–call parity</b> ties the prices of a call and a put with the same strike and expiration together. If it didn't hold, traders could make riskless money:</p>
+  <div class="eq">C − P = S − K·e<sup>−rT</sup></div>
+  <p>Before expiration, the classic <b>Black–Scholes</b> model prices a European call by assuming the stock follows a random walk with constant volatility (log-normal returns):</p>
+  <div class="eq">C = S·N(d₁) − K·e<sup>−rT</sup>·N(d₂)<br>d₁ = [ ln(S/K) + (r + σ²/2)·T ] ÷ (σ√T), &nbsp;&nbsp; d₂ = d₁ − σ√T</div>
+  <p class="small">N(·) is the standard normal cumulative distribution (the area under the bell curve). N(d₁) is the option's <b>delta</b>: roughly how many dollars the option moves per $1 move in the stock.</p>
+  <div class="sim">
+    <div class="sim-title">Black–Scholes calculator</div>
+    <div class="controls">
+      <div class="ctl"><label for="bsS">Stock price S ($)</label><input type="number" id="bsS" value="100" min="0.01" step="1"></div>
+      <div class="ctl"><label for="bsK">Strike K ($)</label><input type="number" id="bsK" value="105" min="0.01" step="1"></div>
+      <div class="ctl"><label for="bsT">Days to expiration: <span class="val" id="bsTV"></span></label><input type="range" id="bsT" min="1" max="730" step="1" value="30"></div>
+      <div class="ctl"><label for="bsV">Volatility σ: <span class="val" id="bsVV"></span></label><input type="range" id="bsV" min="5" max="150" step="1" value="40"></div>
+      <div class="ctl"><label for="bsR">Risk-free rate r: <span class="val" id="bsRV"></span></label><input type="range" id="bsR" min="0" max="10" step="0.25" value="4"></div>
+    </div>
+    <div class="results" id="bsStats"></div>
+    <p class="muted">The defaults match the option example in section 8. At 40% volatility and 30 days, the fair call price is about $2.71, less than the $4 premium assumed there. Raise volatility and watch both options get more expensive: uncertainty is what option buyers pay for.</p>
+  </div>
+  <div class="callout warn"><p><b>Where the model breaks:</b> Black–Scholes assumes smooth, continuous price changes with constant volatility. Real markets jump. NVIDIA's −14% and +31.5% days in November 2026, two trading days apart, are exactly the kind of moves the model treats as nearly impossible. Real option prices reflect that with higher volatility for far-from-the-money strikes (the "volatility smile").</p></div>
+  <div class="pager"><a href="#cases">← Real-world drama</a><a href="#reads">Next: Next reads →</a></div>
+</section>
+
+<!-- ============ 11. NEXT READS ============ -->
+<section class="tab" id="reads">
+  <h2>11. Next reads</h2>
+  <p>This page is a starting point. These are better resources for going deeper:</p>
+  <ul class="reads">
+    <li><b>The book:</b> Burton G. Malkiel, <i>A Random Walk Down Wall Street</i> (W. W. Norton, 50th-anniversary 13th edition, 2023). <a href="https://en.wikipedia.org/wiki/A_Random_Walk_Down_Wall_Street">Wikipedia summary</a></li>
+    <li><b>SEC investor education:</b> <a href="https://www.investor.gov/">Investor.gov</a>, the US Securities and Exchange Commission's site for beginners, including a compound interest calculator.</li>
+    <li><b>Bogleheads wiki:</b> <a href="https://www.bogleheads.org/wiki/Main_Page">bogleheads.org/wiki</a>, a community guide to low-cost index investing.</li>
+    <li><b>Active vs. passive data:</b> <a href="https://www.spglobal.com/spdji/en/research-insights/spiva/">S&amp;P SPIVA scorecards</a></li>
+    <li><b>Fund fees:</b> <a href="https://www.ici.org/news-release/mutual-fund-and-etf-fees-remained-near-historic-lows-in-2025">ICI report on mutual fund and ETF fees</a></li>
+    <li><b>The Fed:</b> <a href="https://www.federalreserve.gov/monetarypolicy.htm">Federal Reserve monetary policy</a></li>
+    <li><b>Economic data:</b> <a href="https://fred.stlouisfed.org/">FRED</a> (St. Louis Fed) for inflation, interest rates, and more.</li>
+    <li><b>Wikipedia background:</b>
+      <a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis">Efficient-market hypothesis</a> ·
+      <a href="https://en.wikipedia.org/wiki/Random_walk_hypothesis">Random walk hypothesis</a> ·
+      <a href="https://en.wikipedia.org/wiki/Index_fund">Index fund</a> ·
+      <a href="https://en.wikipedia.org/wiki/Bond_(finance)">Bond</a> ·
+      <a href="https://en.wikipedia.org/wiki/Option_(finance)">Option</a> ·
+      <a href="https://en.wikipedia.org/wiki/Inflation">Inflation</a> ·
+      <a href="https://en.wikipedia.org/wiki/Compound_interest">Compound interest</a> ·
+      <a href="https://en.wikipedia.org/wiki/Short_squeeze">Short squeeze</a>
+    </li>
+  </ul>
+  <h3>Sources for figures on this page</h3>
+  <ul class="small">
+    <li>SPIVA 2025 one-year result (79%): <a href="https://spglobal.com/spdji/en/spiva/article/spiva-us">S&amp;P Dow Jones Indices, SPIVA U.S. Year-End 2025</a>. 15-year figure through 2024 (89.5%): <a href="https://ritholtz.com/2025/05/the-data-on-active-large-cap-underperformance">SPIVA data via Ritholtz</a>.</li>
+    <li>Equity mutual fund simple-average expense ratio 1.09% (2025): <a href="https://www.icifactbook.org/pdf/2026-factbook-ch6.pdf">ICI 2026 Fact Book, ch. 6</a>.</li>
+    <li>Book edition details: <a href="https://bcf.princeton.edu/events/book-talk-a-random-walk-down-wall-street-the-best-investment-guide-that-money-can-buy/">Princeton Bendheim Center</a>.</li>
+    <li>Case study sources are listed under each case.</li>
+  </ul>
+  <div class="pager"><a href="#math">← The math</a><a href="#start">Back to start ↺</a></div>
+</section>
+
+<footer>
+  <p>Educational content only, not financial, legal, or tax advice. I'm not a licensed financial advisor. Simulators are simplified models with editable assumptions. Past performance doesn't guarantee future results. Market figures checked as of November 24, 2026.</p>
+</footer>
+</div>
+
+<script src="site-header.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function each(list, fn) { for (var i = 0; i < list.length; i++) { fn(list[i], i); } }
+  function num(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
+  function money(v) {
+    var neg = v < 0; v = Math.abs(v);
+    var s;
+    if (v >= 1e9) { s = "$" + (v / 1e9).toFixed(2) + "B"; }
+    else if (v >= 1e7) { s = "$" + (v / 1e6).toFixed(1) + "M"; }
+    else { s = "$" + Math.round(v).toLocaleString("en-US"); }
+    return (neg ? "−" : "") + s;
+  }
+  function moneyAxis(v) {
+    var a = Math.abs(v), s;
+    if (a >= 1e6) { s = "$" + (a / 1e6).toFixed(a >= 1e7 ? 0 : 1) + "M"; }
+    else if (a >= 1e3) { s = "$" + (a / 1e3).toFixed(a >= 1e4 ? 0 : 1) + "k"; }
+    else { s = "$" + Math.round(a); }
+    return (v < 0 ? "−" : "") + s;
+  }
+  function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d) + "%"; }
+  function stat(k, v, cls) {
+    return '<div class="stat"><div class="k">' + k + '</div><div class="v' + (cls ? " " + cls : "") + '">' + v + "</div></div>";
+  }
+  function bindLabel(id, fmt) {
+    var el = $(id), out = $(id + "V");
+    function upd() { out.textContent = fmt(parseFloat(el.value)); }
+    el.addEventListener("input", upd); upd();
+  }
+  function onInputs(ids, fn) { each(ids, function (id) { $(id).addEventListener("input", fn); $(id).addEventListener("change", fn); }); }
+  function dayNum(s) { var p = s.split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2]) / 86400000; }
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function dayLabel(d, withYear) { var dt = new Date(d * 86400000); var s = MONTHS[dt.getUTCMonth()] + " " + dt.getUTCDate(); return withYear ? s + " '" + String(dt.getUTCFullYear()).slice(2) : s; }
+  function randn() { var u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  /* ---------- tiny canvas chart ---------- */
+  function niceStep(range, n) {
+    if (range <= 0) return 1;
+    var raw = range / n, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), r = raw / mag;
+    return (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
+  }
+  function prep(canvas, h) {
+    var w = canvas.clientWidth || (canvas.parentNode && canvas.parentNode.clientWidth) || 600;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.style.height = h + "px";
+    canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    return { ctx: ctx, w: w, h: h };
+  }
+  function lineChart(canvas, o) {
+    var h = o.height || 260, c = prep(canvas, h), ctx = c.ctx, w = c.w;
+    var pad = { l: o.padL || 58, r: 16, t: 14, b: 30 };
+    var xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+    each(o.series, function (s) { each(s.data, function (p) {
+      if (p[0] < xmin) xmin = p[0]; if (p[0] > xmax) xmax = p[0];
+      if (p[1] < ymin) ymin = p[1]; if (p[1] > ymax) ymax = p[1];
+    }); });
+    if (o.xMin !== undefined) xmin = o.xMin; if (o.xMax !== undefined) xmax = o.xMax;
+    if (o.yMin !== undefined) ymin = Math.min(ymin, o.yMin);
+    if (o.yZero) { ymin = Math.min(0, ymin); ymax = Math.max(0, ymax); }
+    if (ymax === ymin) { ymax += 1; ymin -= 1; }
+    var ystep = niceStep(ymax - ymin, 5);
+    ymin = Math.floor(ymin / ystep) * ystep; ymax = Math.ceil(ymax / ystep) * ystep;
+    if (xmax === xmin) xmax = xmin + 1;
+    var pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+    function X(x) { return pad.l + (x - xmin) / (xmax - xmin) * pw; }
+    function Y(y) { return pad.t + (1 - (y - ymin) / (ymax - ymin)) * ph; }
+
+    ctx.font = "12px -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+    ctx.fillStyle = "#6b7580"; ctx.strokeStyle = "#ece8de"; ctx.lineWidth = 1;
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for (var yv = ymin; yv <= ymax + ystep * 0.001; yv += ystep) {
+      var yy = Math.round(Y(yv)) + 0.5;
+      ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke();
+      ctx.fillText((o.yFmt || String)(yv), pad.l - 6, yy);
+    }
+    if (ymin < 0 && ymax > 0) { ctx.strokeStyle = "#9aa3ab"; ctx.beginPath(); ctx.moveTo(pad.l, Y(0)); ctx.lineTo(w - pad.r, Y(0)); ctx.stroke(); }
+    ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillStyle = "#6b7580";
+    var ticks = o.xTicks;
+    if (!ticks) {
+      ticks = []; var xs = niceStep(xmax - xmin, Math.max(2, Math.floor(pw / 90)));
+      for (var xv = Math.ceil(xmin / xs) * xs; xv <= xmax + 1e-9; xv += xs) ticks.push([xv, (o.xFmt || String)(xv)]);
+    }
+    var lastRight = -1e9;
+    each(ticks, function (t) {
+      var tx = X(t[0]), tw = ctx.measureText(t[1]).width;
+      if (tx - tw / 2 < lastRight + 4) return;
+      ctx.fillText(t[1], Math.min(Math.max(tx, pad.l + tw / 2), w - pad.r - tw / 2), h - pad.b + 7);
+      lastRight = tx + tw / 2;
+    });
+    if (o.bands) each(o.bands, function (b) {
+      ctx.fillStyle = b.color; ctx.fillRect(X(b.x0), pad.t, X(b.x1) - X(b.x0), ph);
+    });
+    each(o.series, function (s) {
+      var d = s.data; if (!d.length) return;
+      function path() {
+        ctx.beginPath(); ctx.moveTo(X(d[0][0]), Y(d[0][1]));
+        for (var i = 1; i < d.length; i++) {
+          if (s.step) ctx.lineTo(X(d[i][0]), Y(d[i - 1][1]));
+          ctx.lineTo(X(d[i][0]), Y(d[i][1]));
+        }
+      }
+      if (s.fill) {
+        path(); ctx.lineTo(X(d[d.length - 1][0]), Y(Math.max(ymin, 0))); ctx.lineTo(X(d[0][0]), Y(Math.max(ymin, 0))); ctx.closePath();
+        ctx.fillStyle = s.fill; ctx.fill();
+      }
+      path(); ctx.strokeStyle = s.color; ctx.lineWidth = s.width || 2.5; ctx.lineJoin = "round";
+      if (ctx.setLineDash) ctx.setLineDash(s.dash || []);
+      ctx.stroke(); if (ctx.setLineDash) ctx.setLineDash([]);
+      if (s.dots) each(d, function (p) { ctx.beginPath(); ctx.arc(X(p[0]), Y(p[1]), 3.5, 0, 2 * Math.PI); ctx.fillStyle = s.color; ctx.fill(); });
+    });
+    if (o.vline) {
+      ctx.strokeStyle = o.vline.color || "#b3322a"; ctx.lineWidth = 2; if (ctx.setLineDash) ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(X(o.vline.x), pad.t); ctx.lineTo(X(o.vline.x), pad.t + ph); ctx.stroke(); if (ctx.setLineDash) ctx.setLineDash([]);
+    }
+    if (o.marks) each(o.marks, function (m) {
+      var mx = X(m.x), my = Y(m.y);
+      ctx.beginPath(); ctx.arc(mx, my, 5, 0, 2 * Math.PI); ctx.fillStyle = m.color || "#b3322a"; ctx.fill();
+      if (m.label) {
+        ctx.font = "bold 12px -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+        var tw = ctx.measureText(m.label).width, lx = mx + 8, ly = my + (m.below ? 12 : -12);
+        if (m.side) { lx = mx - 10 - tw; ly = my; if (lx < pad.l + 2) lx = mx + 10; }
+        if (lx + tw > w - pad.r) lx = mx - 8 - tw;
+        ctx.textAlign = "left"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.fillRect(lx - 2, ly - 8, tw + 4, 16);
+        ctx.fillStyle = m.color || "#b3322a"; ctx.fillText(m.label, lx, ly);
+        ctx.font = "12px -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+      }
+    });
+  }
+  function histChart(canvas, bins, o) {
+    var h = 240, c = prep(canvas, h), ctx = c.ctx, w = c.w;
+    var pad = { l: 44, r: 12, t: 12, b: 30 }, pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
+    var maxc = 1; each(bins, function (b) { if (b.n > maxc) maxc = b.n; });
+    var bw = pw / bins.length;
+    ctx.font = "12px -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif";
+    ctx.strokeStyle = "#ece8de"; ctx.fillStyle = "#6b7580"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    var ys = niceStep(maxc, 4);
+    for (var yv = 0; yv <= maxc; yv += ys) { var yy = pad.t + ph - yv / maxc * ph; ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke(); ctx.fillText(String(yv), pad.l - 6, yy); }
+    each(bins, function (b, i) {
+      var bh = b.n / maxc * ph;
+      ctx.fillStyle = b.x1 <= 0 ? "#c4554c" : "#0b6e6e";
+      ctx.fillRect(pad.l + i * bw + 1, pad.t + ph - bh, Math.max(1, bw - 2), bh);
+    });
+    ctx.fillStyle = "#6b7580"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+    each(bins, function (b, i) { if (i % o.labelEvery === 0) ctx.fillText(o.fmt(b.x0), pad.l + i * bw, h - pad.b + 7); });
+  }
+
+  /* ---------- tabs ---------- */
+  var TABS = ["start", "interest", "inflation", "stocks", "bonds", "fed", "funds", "options", "cases", "math", "reads"];
+  var drawers = {};
+  var current = null;
+  function showTab(id, scroll) {
+    if (TABS.indexOf(id) < 0) id = "start";
+    current = id;
+    each(document.querySelectorAll("section.tab"), function (s) {
+      if (s.id === id) s.classList.add("active"); else s.classList.remove("active");
+    });
+    each(document.querySelectorAll("#tabs a"), function (a) {
+      if (a.getAttribute("href") === "#" + id) a.classList.add("on"); else a.classList.remove("on");
+    });
+    if (drawers[id]) drawers[id]();
+    if (scroll) { var nav = $("tabs"); var top = nav.getBoundingClientRect().top + (window.pageYOffset || 0) - 70; window.scrollTo(0, Math.max(0, top)); }
+  }
+  function fromHash(scroll) {
+    var h = (location.hash || "").replace("#", "");
+    if (h.indexOf("case-") === 0) { showTab("cases", false); var el = $(h); if (el) el.scrollIntoView(); return; }
+    showTab(h, scroll);
+  }
+  window.addEventListener("hashchange", function () { fromHash(true); });
+  var rT = null;
+  window.addEventListener("resize", function () { clearTimeout(rT); rT = setTimeout(function () { if (drawers[current]) drawers[current](); }, 150); });
+
+  /* ---------- 1. random walk ---------- */
+  var rwData = [];
+  function rwGen() {
+    rwData = []; var p = 50;
+    for (var d = 0; d <= 252; d++) { rwData.push([d, p]); p = p * (1 + (Math.random() < 0.5 ? -1 : 1) * (0.005 + Math.random() * 0.015)); }
+  }
+  function rwDraw() {
+    if (!rwData.length) rwGen();
+    lineChart($("rwChart"), { series: [{ data: rwData, color: "#0b6e6e", width: 2 }], yFmt: function (v) { return "$" + v.toFixed(0); }, xFmt: function (v) { return "Day " + v; } });
+    var hi = -1, lo = 1e9; each(rwData, function (p) { if (p[1] > hi) hi = p[1]; if (p[1] < lo) lo = p[1]; });
+    var end = rwData[rwData.length - 1][1];
+    $("rwStats").innerHTML = stat("Started at", "$50.00") + stat("Ended at", "$" + end.toFixed(2), end >= 50 ? "good" : "bad") + stat("High / low", "$" + hi.toFixed(0) + " / $" + lo.toFixed(0)) + stat("Real cause of every move", "Coin flips");
+  }
+  $("rwFlip").addEventListener("click", function () { rwGen(); rwDraw(); });
+
+  /* ---------- 2. compounding ---------- */
+  function simulate(start, monthly, rate, years, comp) {
+    var rm = Math.pow(1 + rate / comp, comp / 12) - 1;
+    var bal = start, put = start, out = [[0, bal, put]];
+    for (var m = 1; m <= years * 12; m++) { bal = bal * (1 + rm) + monthly; put += monthly; if (m % 12 === 0) out.push([m / 12, bal, put]); }
+    return out;
+  }
+  bindLabel("ciRate", function (v) { return v.toFixed(1) + "%"; });
+  bindLabel("ciYears", function (v) { return v + " yrs"; });
+  function ciDraw() {
+    var r = num("ciRate") / 100, yrs = num("ciYears"), mo = num("ciMonthly");
+    var s = simulate(num("ciStart"), mo, r, yrs, num("ciComp"));
+    var bal = [], put = [];
+    each(s, function (p) { bal.push([p[0], p[1]]); put.push([p[0], p[2]]); });
+    lineChart($("ciChart"), { yZero: true, series: [
+      { data: bal, color: "#0b6e6e", fill: "rgba(11,110,110,0.15)" },
+      { data: put, color: "#c9a227", fill: "rgba(201,162,39,0.25)" }
+    ], yFmt: moneyAxis, xFmt: function (v) { return "Yr " + v; } });
+    var last = s[s.length - 1], growth = last[1] - last[2];
+    $("ciStats").innerHTML = stat("Final balance", money(last[1])) + stat("You put in", money(last[2])) +
+      stat("Growth (interest on interest)", money(growth), "good") + stat("Share of final that is growth", last[1] > 0 ? pct(growth / last[1], 0) : "—");
+    elDraw(r, mo, num("ciComp"));
+  }
+  function elDraw(r, mo, comp) {
+    if (mo <= 0) mo = 200;
+    var rm = Math.pow(1 + r / comp, comp / 12) - 1, e = 0, l = 0, eS = [[25, 0]], lS = [[25, 0]];
+    for (var m = 1; m <= 40 * 12; m++) {
+      var age = 25 + m / 12;
+      e = e * (1 + rm) + (age <= 35 ? mo : 0);
+      l = l * (1 + rm) + (age > 35 ? mo : 0);
+      if (m % 12 === 0) { eS.push([age, e]); lS.push([age, l]); }
+    }
+    lineChart($("elChart"), { yZero: true, series: [{ data: lS, color: "#b3322a" }, { data: eS, color: "#0b6e6e" }], yFmt: moneyAxis, xFmt: function (v) { return "Age " + v; } });
+    var win = e >= l ? "Emma" : "Larry";
+    $("elStats").innerHTML = stat("Emma put in", money(mo * 120)) + stat("Emma at 65", money(e), "good") +
+      stat("Larry put in", money(mo * 360)) + stat("Larry at 65", money(l), "bad") +
+      stat("Winner at " + (r * 100).toFixed(1) + "%", win + (e >= l ? ", with a third of the deposits" : ""));
+  }
+  onInputs(["ciStart", "ciMonthly", "ciRate", "ciYears", "ciComp"], ciDraw);
+  bindLabel("r72", function (v) { return v.toFixed(1) + "%"; });
+  function r72Draw() {
+    var r = num("r72");
+    $("r72Stats").innerHTML = stat("Rule of 72 estimate", (72 / r).toFixed(1) + " years") + stat("Exact answer", (Math.log(2) / Math.log(1 + r / 100)).toFixed(1) + " years") +
+      stat("Doublings in 40 years", (40 / (Math.log(2) / Math.log(1 + r / 100))).toFixed(1) + "×");
+  }
+  onInputs(["r72"], r72Draw);
+  drawers.start = rwDraw;
+  drawers.interest = function () { ciDraw(); r72Draw(); };
+
+  /* ---------- 3. inflation ---------- */
+  bindLabel("inRate", function (v) { return v.toFixed(1) + "%"; });
+  bindLabel("inYears", function (v) { return v + " yrs"; });
+  function inDraw() {
+    var amt = num("inAmt"), i = num("inRate") / 100, y = num("inYears"), item = num("inItem"), pts = [];
+    for (var t = 0; t <= y; t++) pts.push([t, amt / Math.pow(1 + i, t)]);
+    lineChart($("inChart"), { yZero: true, series: [{ data: pts, color: "#b3322a", fill: "rgba(179,50,42,0.12)" }], yFmt: moneyAxis, xFmt: function (v) { return "Yr " + v; } });
+    var end = amt / Math.pow(1 + i, y);
+    $("inStats").innerHTML = stat("Buying power after " + y + " yrs", money(end), "bad") + stat("Lost to inflation", pct(1 - end / (amt || 1), 0), "bad") +
+      stat("Your $" + item.toFixed(2) + " item will cost", "$" + (item * Math.pow(1 + i, y)).toFixed(2));
+  }
+  onInputs(["inAmt", "inRate", "inYears", "inItem"], inDraw);
+  each(document.querySelectorAll("[data-infl]"), function (b) {
+    b.addEventListener("click", function () { $("inRate").value = b.getAttribute("data-infl"); $("inRateV").textContent = parseFloat($("inRate").value).toFixed(1) + "%"; inDraw(); });
+  });
+  bindLabel("rrNom", function (v) { return v.toFixed(2) + "%"; });
+  bindLabel("rrInf", function (v) { return v.toFixed(2) + "%"; });
+  function rrDraw() {
+    var n = num("rrNom") / 100, i = num("rrInf") / 100, real = (1 + n) / (1 + i) - 1;
+    $("rrStats").innerHTML = stat("Real return (exact)", pct(real, 2), real >= 0 ? "good" : "bad") + stat("Quick estimate", pct(n - i, 2)) +
+      stat("Buying power of $10,000 after 10 yrs", money(10000 * Math.pow(1 + real, 10)), real >= 0 ? "good" : "bad");
+  }
+  onInputs(["rrNom", "rrInf"], rrDraw);
+  drawers.inflation = function () { inDraw(); rrDraw(); };
+
+  /* ---------- 4. diversification ---------- */
+  bindLabel("dvN", function (v) { return v + (v === 1 ? " stock" : " stocks"); });
+  function dvDraw() {
+    var N = num("dvN"), runs = 2000, res = [];
+    for (var k = 0; k < runs; k++) {
+      var mkt = 0.08 + 0.16 * randn(), sum = 0;
+      for (var j = 0; j < N; j++) { sum += Math.max(-1, mkt + 0.30 * randn()); }
+      res.push(sum / N);
+    }
+    var lo = -0.9, hi = 1.0, step = 0.05, bins = [];
+    for (var x = lo; x < hi - 1e-9; x += step) bins.push({ x0: x, x1: x + step, n: 0 });
+    each(res, function (r) { var idx = Math.floor((Math.min(Math.max(r, lo), hi - 1e-9) - lo) / step); bins[idx].n++; });
+    histChart($("dvChart"), bins, { labelEvery: 4, fmt: function (v) { return Math.round(v * 100) + "%"; } });
+    res.sort(function (a, b) { return a - b; });
+    var big = 0; each(res, function (r) { if (r <= -0.3) big++; });
+    $("dvStats").innerHTML = stat("Middle 90% of outcomes", pct(res[Math.floor(runs * 0.05)], 0) + " to " + pct(res[Math.floor(runs * 0.95)], 0)) +
+      stat("Chance of losing 30%+", pct(big / runs, 1), "bad") + stat("Typical swing (model)", "±" + pct(Math.sqrt(0.16 * 0.16 + 0.09 / N), 0));
+  }
+  onInputs(["dvN"], dvDraw);
+  $("dvRun").addEventListener("click", dvDraw);
+  drawers.stocks = dvDraw;
+
+  /* ---------- 5. bonds ---------- */
+  bindLabel("bdCoupon", function (v) { return v.toFixed(2) + "%"; });
+  bindLabel("bdYears", function (v) { return v + " yrs"; });
+  bindLabel("bdMkt", function (v) { return v.toFixed(2) + "%"; });
+  function bondPrice(c, n, y) {
+    var p = 0, cf = 1000 * c;
+    for (var t = 1; t <= n; t++) p += cf / Math.pow(1 + y, t);
+    return p + 1000 / Math.pow(1 + y, n);
+  }
+  function bdDraw() {
+    var c = num("bdCoupon") / 100, n = num("bdYears"), y = num("bdMkt") / 100, pts = [];
+    for (var r = 0; r <= 10.0001; r += 0.25) pts.push([r, bondPrice(c, n, r / 100)]);
+    var p = bondPrice(c, n, y);
+    var dur = (bondPrice(c, n, y - 0.0005) - bondPrice(c, n, y + 0.0005)) / (2 * 0.0005 * p);
+    lineChart($("bdChart"), { series: [{ data: pts, color: "#0b6e6e" }], marks: [{ x: y * 100, y: p, label: "$" + Math.round(p), color: "#b3322a" }],
+      yFmt: function (v) { return "$" + Math.round(v); }, xFmt: function (v) { return v + "%"; } });
+    var ch = p / 1000 - 1;
+    $("bdStats").innerHTML = stat("Price of your bond now", "$" + p.toFixed(0), ch >= 0 ? "good" : "bad") + stat("vs. the $1,000 you paid", (ch >= 0 ? "+" : "") + pct(ch, 1), ch >= 0 ? "good" : "bad") +
+      stat("Duration (rate sensitivity)", dur.toFixed(1) + " yrs") + stat("If rates rise 1 more point", "≈ −" + pct(dur / 100, 1), "bad");
+  }
+  onInputs(["bdCoupon", "bdYears", "bdMkt"], bdDraw);
+  $("bdSVB").addEventListener("click", function () {
+    $("bdCoupon").value = 1.8; $("bdYears").value = 4; $("bdMkt").value = 4.75;
+    each(["bdCoupon", "bdYears", "bdMkt"], function (id) { var ev = document.createEvent("Event"); ev.initEvent("input", true, true); $(id).dispatchEvent(ev); });
+  });
+  drawers.bonds = bdDraw;
+
+  /* ---------- 6. Fed flow ---------- */
+  var fedRows = [
+    ["Fed's target rate", "The Fed raises its target", "The Fed cuts its target", 1],
+    ["Loan, mortgage & credit card rates", "Borrowing gets more expensive", "Borrowing gets cheaper", 1],
+    ["Savings & CD yields", "Cash pays more interest", "Cash pays less interest", 1],
+    ["Spending, hiring & business investment", "People and companies cut back", "People and companies spend and hire more", -1],
+    ["Inflation", "Prices rise more slowly (after a delay of months)", "Prices can rise faster (after a delay of months)", -1],
+    ["Prices of existing bonds", "Bonds paying the old, lower rates are worth less", "Bonds paying the old, higher rates are worth more", -1],
+    ["Stock valuations", "Future profits are worth less today; fast-growing companies are hit hardest", "Future profits are worth more today; fast-growing companies benefit most", -1],
+    ["US dollar", "Higher rates tend to attract money from abroad", "Lower rates tend to push money elsewhere", 1]
+  ];
+  function fedDraw(dir) {
+    var html = "";
+    each(fedRows, function (r) {
+      var up = r[3] * dir > 0;
+      html += '<div class="row"><div class="arrow ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + '</div><div class="box"><b>' + r[0] + "</b>" + (dir > 0 ? r[1] : r[2]) + "</div></div>";
+    });
+    $("fedFlow").innerHTML = html;
+    if (dir > 0) { $("fedUp").classList.add("on"); $("fedDown").classList.remove("on"); } else { $("fedDown").classList.add("on"); $("fedUp").classList.remove("on"); }
+  }
+  $("fedUp").addEventListener("click", function () { fedDraw(1); });
+  $("fedDown").addEventListener("click", function () { fedDraw(-1); });
+  fedDraw(1);
+
+  /* ---------- 7. fees ---------- */
+  bindLabel("feRet", function (v) { return v.toFixed(1) + "%"; });
+  bindLabel("feYears", function (v) { return v + " yrs"; });
+  bindLabel("feA", function (v) { return v.toFixed(2) + "%"; });
+  bindLabel("feB", function (v) { return v.toFixed(2) + "%"; });
+  function feDraw() {
+    var st = num("feStart"), mo = num("feMonthly"), g = num("feRet") / 100, y = num("feYears");
+    var a = simulate(st, mo, g - num("feA") / 100, y, 12), b = simulate(st, mo, g - num("feB") / 100, y, 12), aS = [], bS = [];
+    each(a, function (p) { aS.push([p[0], p[1]]); }); each(b, function (p) { bS.push([p[0], p[1]]); });
+    lineChart($("feChart"), { yZero: true, series: [{ data: bS, color: "#0b6e6e" }, { data: aS, color: "#b3322a" }], yFmt: moneyAxis, xFmt: function (v) { return "Yr " + v; } });
+    var fa = a[a.length - 1][1], fb = b[b.length - 1][1];
+    $("feStats").innerHTML = stat("Fund B (low fee)", money(fb), "good") + stat("Fund A (higher fee)", money(fa), "bad") +
+      stat("Cost of the higher fee", money(fb - fa), "bad") + stat("Share of B's result lost", fb > 0 ? pct((fb - fa) / fb, 0) : "—", "bad");
+  }
+  onInputs(["feStart", "feMonthly", "feRet", "feYears", "feA", "feB"], feDraw);
+  drawers.funds = feDraw;
+
+  /* ---------- 8. options ---------- */
+  var opMode = "buy-call";
+  function opDraw() {
+    var now = num("opNow"), K = num("opStrike"), prem = num("opPrem"), q = Math.max(1, Math.round(num("opQty"))) * 100;
+    var isCall = opMode.indexOf("call") > 0, isBuy = opMode.indexOf("buy") === 0, sign = isBuy ? 1 : -1;
+    var hi = Math.max(K, now) * 1.6, pts = [], sh = [], cash = prem * q, shares = cash / now;
+    function pl(S) { var intrinsic = isCall ? Math.max(0, S - K) : Math.max(0, K - S); return sign * (intrinsic - prem) * q; }
+    for (var i = 0; i <= 160; i++) { var S = hi * i / 160; pts.push([S, pl(S)]); if (isBuy) sh.push([S, shares * (S - now)]); }
+    var series = [{ data: pts, color: "#0b6e6e", width: 3 }];
+    if (isBuy) series.unshift({ data: sh, color: "#c9a227", dash: [6, 4], width: 2 });
+    var be = isCall ? K + prem : K - prem;
+    lineChart($("opChart"), { yZero: true, padL: 64, series: series, vline: { x: now, color: "#9aa3ab" },
+      marks: be > 0 ? [{ x: be, y: 0, label: "Breakeven $" + be.toFixed(2), color: "#b3322a", below: !isBuy }] : [],
+      yFmt: moneyAxis, xFmt: function (v) { return "$" + Math.round(v); } });
+    $("opShareLegend").style.display = isBuy ? "inline-block" : "none";
+    var maxP, maxL;
+    if (isBuy) { maxL = money(-cash); maxP = isCall ? "Unlimited" : money((K - prem) * q); }
+    else { maxP = money(cash); maxL = isCall ? "Unlimited" : money(-(K - prem) * q); }
+    var tenUp = pl(now * 1.2);
+    $("opStats").innerHTML = stat(isBuy ? "Premium you pay" : "Premium you collect", money(cash)) + stat("Breakeven at expiry", "$" + be.toFixed(2)) +
+      stat("Max profit", maxP, "good") + stat("Max loss", maxL, "bad") + stat("If stock ends 20% higher", money(tenUp), tenUp >= 0 ? "good" : "bad");
+  }
+  each(document.querySelectorAll("[data-opt]"), function (b) {
+    b.addEventListener("click", function () {
+      opMode = b.getAttribute("data-opt");
+      each(document.querySelectorAll("[data-opt]"), function (x) { if (x === b) x.classList.add("on"); else x.classList.remove("on"); });
+      opDraw();
+    });
+  });
+  onInputs(["opNow", "opStrike", "opPrem", "opQty"], opDraw);
+  drawers.options = opDraw;
+
+  /* ---------- 9. case charts ---------- */
+  function pts(list) { var o = []; each(list, function (p) { o.push([dayNum(p[0]), p[1]]); }); return o; }
+  function ticksFrom(list, withYear) { var o = []; each(list, function (p) { o.push([dayNum(p[0]), dayLabel(dayNum(p[0]), withYear)]); }); return o; }
+  var CASES = {
+    nvda: { data: [["2026-10-05", 238.90], ["2026-11-11", 173.73], ["2026-11-12", 166.19], ["2026-11-18", 150.96], ["2026-11-19", 145.98], ["2026-11-20", 125.53], ["2026-11-23", 165.05]],
+      ticks: [["2026-10-05"], ["2026-10-29"], ["2026-11-12"], ["2026-11-20"]], fmt: "$", marks: [["2026-11-20", 125.53, "Nov 20: $125.53"], ["2026-11-23", 165.05, "+31.5%"]] },
+    deepseek: { data: [["2025-01-24", 142.62], ["2025-01-27", 118.42], ["2026-02-25", 194.67]],
+      ticks: [["2025-01-24"], ["2025-06-01"], ["2025-10-01"], ["2026-02-25"]], year: true, fmt: "$", marks: [["2025-01-27", 118.42, "Jan 27: −17%"]] },
+    tariff: { data: [["2025-02-19", 6144.15], ["2025-04-02", 5670.97], ["2025-04-03", 5396.52], ["2025-04-04", 5074.08], ["2025-04-07", 5062.25], ["2025-04-08", 4982.77], ["2025-04-09", 5456.90], ["2025-06-27", 6173.07]],
+      ticks: [["2025-02-19"], ["2025-04-02"], ["2025-05-15"], ["2025-06-27"]], fmt: "", marks: [["2025-04-08", 4982.77, "Apr 8 low"], ["2025-04-09", 5456.90, "Apr 9: +9.5%"]] },
+    covid: { data: [["2020-02-19", 3386.15], ["2020-03-23", 2237.40], ["2020-08-18", 3389.78], ["2020-12-31", 3756.07]],
+      ticks: [["2020-02-19"], ["2020-03-23"], ["2020-08-18"], ["2020-12-31"]], fmt: "", marks: [["2020-03-23", 2237.40, "Mar 23: −34%"]] },
+    svb: { step: true, data: [["2022-01-01", 0.25], ["2022-03-17", 0.50], ["2022-05-05", 1.00], ["2022-06-16", 1.75], ["2022-07-28", 2.50], ["2022-09-22", 3.25], ["2022-11-03", 4.00], ["2022-12-15", 4.50], ["2023-02-02", 4.75], ["2023-03-10", 4.75]],
+      ticks: [["2022-01-01"], ["2022-06-16"], ["2022-11-03"], ["2023-03-10"]], year: true, fmt: "%", color: "#b3322a", marks: [["2023-03-10", 4.75, "SVB fails"]] },
+    gme: { data: [["2021-01-20", 39.12], ["2021-01-22", 65.01], ["2021-01-26", 147.98], ["2021-01-27", 347.51], ["2021-01-28", 193.60], ["2021-02-04", 53.50], ["2021-02-09", 50.31]],
+      ticks: [["2021-01-20"], ["2021-01-27"], ["2021-02-04"], ["2021-02-09"]], fmt: "$", marks: [["2021-01-27", 347.51, "Jan 27: $347.51"]] }
+  };
+  function casesDraw() {
+    each(document.querySelectorAll(".case-chart"), function (cv) {
+      var c = CASES[cv.getAttribute("data-case")];
+      var marks = []; each(c.marks, function (m) { marks.push({ x: dayNum(m[0]), y: m[1], label: m[2], color: c.color === "#b3322a" ? "#24313d" : "#b3322a", side: m[1] === Math.min.apply(null, c.data.map(function (d) { return d[1]; })) }); });
+      lineChart(cv, { height: 230, yZero: c.fmt === "%", series: [{ data: pts(c.data), color: c.color || "#0b6e6e", dots: !c.step, step: !!c.step, fill: c.step ? "rgba(179,50,42,0.10)" : null }],
+        xTicks: ticksFrom(c.ticks, c.year), marks: marks,
+        yFmt: function (v) { return c.fmt === "$" ? "$" + Math.round(v) : c.fmt === "%" ? v.toFixed(1) + "%" : Math.round(v).toLocaleString("en-US"); } });
+    });
+  }
+  drawers.cases = casesDraw;
+
+  /* ---------- 10. math tab ---------- */
+  bindLabel("vdUp", function (v) { return "+" + v + "%"; });
+  bindLabel("vdDn", function (v) { return v + "%"; });
+  bindLabel("vdYears", function (v) { return v + " yrs"; });
+  function vdDraw() {
+    var u = num("vdUp") / 100, d = num("vdDn") / 100, y = num("vdYears"), a = (u + d) / 2;
+    var st = [[0, 10000]], bu = [[0, 10000]], vs = 10000, vb = 10000;
+    for (var t = 1; t <= y; t++) { vs *= 1 + a; vb *= 1 + (t % 2 ? u : d); st.push([t, vs]); bu.push([t, vb]); }
+    lineChart($("vdChart"), { yZero: true, series: [{ data: st, color: "#0b6e6e" }, { data: bu, color: "#b3322a" }], yFmt: moneyAxis, xFmt: function (v) { return "Yr " + v; } });
+    var g = Math.sqrt((1 + u) * (1 + d)) - 1, sig = Math.abs(u - d) / 2;
+    $("vdStats").innerHTML = stat("Arithmetic average", pct(a, 1)) + stat("Geometric (what you earn)", pct(g, 2), g >= a - 1e-9 ? "" : "bad") +
+      stat("Estimate: avg − σ²/2", pct(a - sig * sig / 2, 2)) + stat("Steady vs. bumpy after " + y + " yrs", money(vs) + " vs. " + money(vb));
+  }
+  onInputs(["vdUp", "vdDn", "vdYears"], vdDraw);
+  bindLabel("rcL", function (v) { return "−" + v + "%"; });
+  function rcDraw() {
+    var L = num("rcL") / 100, curve = [];
+    for (var x = 0; x <= 90; x += 1) curve.push([x, x / (100 - x) * 100]);
+    var need = L / (1 - L) * 100;
+    lineChart($("rcChart"), { height: 220, yZero: true, series: [{ data: curve, color: "#0b6e6e" }],
+      marks: [{ x: L * 100, y: Math.min(need, 900), label: "+" + need.toFixed(1) + "% needed", color: "#b3322a" }],
+      yFmt: function (v) { return Math.round(v) + "%"; }, xFmt: function (v) { return "−" + v + "%"; } });
+    $("rcStats").innerHTML = stat("Loss", "−" + (L * 100).toFixed(0) + "%", "bad") + stat("Gain needed to break even", "+" + need.toFixed(1) + "%", "good") +
+      stat("Years to recover at 7%/yr", (Math.log(1 / (1 - L)) / Math.log(1.07)).toFixed(1));
+  }
+  onInputs(["rcL"], rcDraw);
+  bindLabel("ggR", function (v) { return v.toFixed(2) + "%"; });
+  bindLabel("ggG", function (v) { return v.toFixed(2) + "%"; });
+  function ggDraw() {
+    var D = num("ggD"), r = num("ggR") / 100, g = num("ggG") / 100;
+    function px(rr, gg) { return rr > gg ? "$" + (D / (rr - gg)).toFixed(2) : "∞ (model breaks: g ≥ r)"; }
+    $("ggStats").innerHTML = stat("Price = D ÷ (r − g)", px(r, g)) + stat("If growth is 1 point higher", px(r, g + 0.01), "good") +
+      stat("If required return is 1 point higher", px(r + 0.01, g), "bad") + stat("Dividend yield at that price", r > g ? pct(r - g, 2) : "—");
+  }
+  onInputs(["ggD", "ggR", "ggG"], ggDraw);
+  bindLabel("bsT", function (v) { return v + " days"; });
+  bindLabel("bsV", function (v) { return v + "%"; });
+  bindLabel("bsR", function (v) { return v.toFixed(2) + "%"; });
+  function erf(x) {
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  function dol(v) { return (v < 0 ? "−$" : "$") + Math.abs(v).toFixed(2); }
+  function Ncdf(x) { return 0.5 * (1 + erf(x / Math.SQRT2)); }
+  function bsDraw() {
+    var S = num("bsS"), K = num("bsK"), T = num("bsT") / 365, v = num("bsV") / 100, r = num("bsR") / 100;
+    if (S <= 0 || K <= 0 || T <= 0 || v <= 0) { $("bsStats").innerHTML = stat("Check inputs", "—"); return; }
+    var d1 = (Math.log(S / K) + (r + v * v / 2) * T) / (v * Math.sqrt(T)), d2 = d1 - v * Math.sqrt(T);
+    var C = S * Ncdf(d1) - K * Math.exp(-r * T) * Ncdf(d2), P = K * Math.exp(-r * T) * Ncdf(-d2) - S * Ncdf(-d1);
+    $("bsStats").innerHTML = stat("Call value", "$" + C.toFixed(2), "good") + stat("Put value", "$" + P.toFixed(2), "bad") +
+      stat("Call delta N(d₁)", Ncdf(d1).toFixed(2)) + stat("Parity check: C − P = S − Ke⁻ʳᵀ", dol(C - P) + " = " + dol(S - K * Math.exp(-r * T))) +
+      stat("Chance call ends in the money (risk-neutral N(d₂))", pct(Ncdf(d2), 0));
+  }
+  onInputs(["bsS", "bsK", "bsT", "bsV", "bsR"], bsDraw);
+  drawers.math = function () { vdDraw(); rcDraw(); ggDraw(); bsDraw(); };
+
+  /* ---------- init ---------- */
+  fromHash(false);
+  // If JS is on but a non-active tab's chart is opened later, it draws on activation.
+})();
+</script>
+</body>
+</html>
